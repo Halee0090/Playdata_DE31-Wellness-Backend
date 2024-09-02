@@ -23,6 +23,12 @@ def create_or_update_recommend(db:Session, user_id: int, rec_kcal: float, rec_ca
     
     existing_recommend = get_recommend_by_user_id(db, user_id)
     
+    # 소수점 두 자리까지 반올림
+    rec_kcal = round(rec_kcal, 2)
+    rec_car = round(rec_car, 2)
+    rec_prot = round(rec_prot, 2)
+    rec_fat = round(rec_fat, 2)
+    
     if existing_recommend: #객체가 실제로 존재한다면
         if existing_recommend.updated_at < user_updated_at:
             # Update existing recommendation

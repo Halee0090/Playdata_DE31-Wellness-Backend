@@ -33,6 +33,11 @@ def recommend_nutrition(user_id: int, db: Session):
             rec_prot = (rec_kcal * 0.3) / 4  # 1g 4kcal
             rec_fat = (rec_kcal * 0.2) / 9  # 1g 9kcal
 
+            rec_kcal = round(rec_kcal, 2)
+            rec_car = round(rec_car, 2)
+            rec_prot = round(rec_prot, 2)
+            rec_fat = round(rec_fat, 2)
+            
             # 데이터베이스에 저장 또는 업데이트
             recommendation = crud.create_or_update_recommend(db, user_id, rec_kcal, rec_car, rec_prot, rec_fat)
         else:

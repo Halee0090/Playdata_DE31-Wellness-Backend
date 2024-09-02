@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from typing import Generator
 
 # 데이터베이스 URL 설정 
-URL_DATABASE = "postgresql+psycopg2://wellness:wellness123@localhost:5432/wellness_db"
+URL_DATABASE = "postgresql+psycopg2://{}:{}@localhost:5432/{}"
 
 # SQLAlchemy 엔진 생성
 engine = create_engine(URL_DATABASE)

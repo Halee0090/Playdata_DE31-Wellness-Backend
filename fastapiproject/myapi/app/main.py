@@ -8,7 +8,7 @@ from app.models import Total_Today
 from datetime import date, datetime
 from app.recommend import recommend_nutrition
 from app.database import get_db
-
+from decimal import Decimal, ROUND_HALF_UP
 
 app = FastAPI(
     docs_url="/docs",  # Swagger UI 비활성화
@@ -43,14 +43,14 @@ def get_recommend_eaten(
     
     return {
     "status": "success",
-    "total_kcal": round(total_today.total_kcal, 2),
-    "total_car": round(total_today.total_car, 2),
-    "total_prot": round(total_today.total_prot, 2),
-    "total_fat": round(total_today.total_fat, 2),
-    "rec_kcal": round(recommendation.rec_kcal, 2),
-    "rec_car": round(recommendation.rec_car, 2),
-    "rec_prot": round(recommendation.rec_prot, 2),
-    "rec_fat": round(recommendation.rec_fat, 2),
+    "total_kcal": Decimal(total_today.total_kcal).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+    "total_car": Decimal(total_today.total_car).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+    "total_prot": Decimal(total_today.total_prot).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+    "total_fat": Decimal(total_today.total_fat).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+    "rec_kcal": Decimal(recommendation.rec_kcal).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+    "rec_car": Decimal(recommendation.rec_car).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+    "rec_prot": Decimal(recommendation.rec_prot).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+    "rec_fat": Decimal(recommendation.rec_fat).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
     "condition": total_today.condition
 }
 
@@ -73,9 +73,9 @@ def get_or_update_recommendation(user_id: int, db: Session):
             raise HTTPException(status_code=500, detail="Failed to update recommendations")
     return recommendation
 
-def get_or_create_total_today(user_id: int, date: date, db: Session):
+def get_or_create_total_today(user_id: int, today: date, db: Session):
     """총 섭취량을 조회하거나 새로 생성합니다."""
-    total_today = db.query(models.Total_Today).filter_by(user_id=user_id, date=date).first()
+    total_today = db.query(models.Total_Today).filter_by(user_id=user_id, today=today).first()
     if not total_today:
         total_today = models.Total_Today(
             user_id=user_id,
@@ -86,7 +86,7 @@ def get_or_create_total_today(user_id: int, date: date, db: Session):
             condition=False,
             created_at=func.now(),
             updated_at=func.now(),
-            date=date,
+            today=today,
             history_ids=[]
         )
         db.add(total_today)

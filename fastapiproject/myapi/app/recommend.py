@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app import crud, models
 from fastapi import HTTPException
 from datetime import datetime
+from decimal import Decimal, ROUND_HALF_UP
 
 def recommend_nutrition(user_id: int, db: Session):
     try:
@@ -22,23 +23,23 @@ def recommend_nutrition(user_id: int, db: Session):
         if not existing_recommendation or existing_recommendation.updated_at < user.updated_at:
             # BMR 계산 (해리스-베네딕트 방정식 사용)
             if user.gender == 1:  # 남성이 1이라 가정
-                bmr = 88.362 + (13.397 * user.weight) + (4.799 * user.height) - (5.677 * user.age)
+                bmr = Decimal('88.362') + (Decimal('13.397') * user.weight) + (Decimal('4.799') * Decimal(str(user.height))) - (Decimal('5.677') * Decimal(str(user.age)))
             else:  # 남성이 아닌 경우 여성이라 가정
-                bmr = 447.593 + (9.247 * user.weight) + (3.098 * user.height) - (4.330 * user.age)
+                bmr = Decimal('447.593')+ (Decimal('9.247') * user.weight) + (Decimal('3.098') * Decimal(str(user.height))) - (Decimal('4.330') * Decimal(str(user.age)))
 
-            rec_kcal = bmr * 1.55  # 보통 활동량이라고 가정
+            rec_kcal = bmr * Decimal('1.55')  # 보통 활동량이라고 가정
 
             # 탄, 단, 지 비율 설정 5:3:2
-            rec_car = (rec_kcal * 0.5) / 4  # 1g 4kcal
-            rec_prot = (rec_kcal * 0.3) / 4  # 1g 4kcal
-            rec_fat = (rec_kcal * 0.2) / 9  # 1g 9kcal
+            rec_car = (rec_kcal * Decimal('0.5')) / Decimal('4')  # 1g 4kcal
+            rec_prot = (rec_kcal * Decimal('0.3')) / Decimal('4')  # 1g 4kcal
+            rec_fat = (rec_kcal * Decimal('0.2')) / Decimal('9')  # 1g 9kcal
 
-            rec_kcal = round(rec_kcal, 2)
-            rec_car = round(rec_car, 2)
-            rec_prot = round(rec_prot, 2)
-            rec_fat = round(rec_fat, 2)
+            rec_kcal = rec_kcal.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+            rec_car = rec_car.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+            rec_prot = rec_prot.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+            rec_fat = rec_fat.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
-            print(rec_car)
+            
 
             # 데이터베이스에 저장 또는 업데이트
             recommendation = crud.create_or_update_recommend(db, user_id, rec_kcal, rec_car, rec_prot, rec_fat)
@@ -48,11 +49,11 @@ def recommend_nutrition(user_id: int, db: Session):
 
         return {
             "status": "success",
-            "rec_kcal": round(recommendation.rec_kcal, 2),
-            "rec_car": round(recommendation.rec_car, 2),
-            "rec_prot": round(recommendation.rec_prot, 2),
-            "rec_fat": round(recommendation.rec_fat, 2),
-            "last_updated": recommendation.updated_at
+            "rec_kcal": recommendation.rec_kcal,
+            "rec_car": recommendation.rec_car,
+            "rec_prot": recommendation.rec_prot,
+            "rec_fat": recommendation.rec_fat,
+            "updated_at": recommendation.updated_at
         }
 
     except HTTPException as http_ex:

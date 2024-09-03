@@ -19,55 +19,6 @@ Base.metadata.create_all(bind=engine)
 
 
 
-# 3. 섭취 및 권장 칼로리, 탄수화물, 단백질, 지방 조회(홈 화면)
-# @app.get("/recommend/eaten_nutrient")
-# def recommend_nutrition(user_id: int, db: Session = Depends(database.get_db)):
-#     nutrition = recommend.recommend_nutrition(user_id, db)
-#     if not nutrition:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     return nutrition
-
-# @app.get("/recommend/eaten_nutrient")
-# def get_recommend_eaten(user_id: int, date: datetime, db: Session = Depends(database.get_db)):
-#     # 총 섭취량 조회
-#     total_today = db.query(models.Total_Today).filter_by(user_id=user_id, date=date).first()
-        
-#     if not total_today: # 만약 없을 경우 새 객체를 추가
-#         total_today = models.Total_Today(
-#             user_id=user_id,
-#             total_kcal=0,
-#             total_car=0,
-#             total_prot=0,
-#             total_fat=0,
-#             condition=False,# 컨디션 계산해서 넣어야함
-#             created_at=func.now(),
-#             updated_at=func.now(),
-#             date=date,# date맞는지 확인
-#             history_ids=None
-#         )
-#         db.add(total_today)
-#         db.commit()
-#         db.refresh(total_today)
-    
-#     recommendation = db.query(models.Recommend).filter_by(user_id=user_id).first()
-
-#     if not recommendation:
-#         return {"status": "error", "message": "No recommendation found for the user"}
-    
-#     return {
-#         "status": "success",
-#         "total_kcal": total_today.total_kcal,
-#         "total_car": total_today.total_car,
-#         "total_prot": total_today.total_prot,
-#         "total_fat": total_today.total_fat,
-#         "rec_kcal": recommendation.rec_kcal,
-#         "rec_car": recommendation.rec_car,
-#         "rec_prot": recommendation.rec_prot,
-#         "rec_fat": recommendation.rec_fat,
-#         "condition": total_today.condition
-#     }
-
-
 @app.get("/recommend/eaten_nutrient")
 def get_recommend_eaten(
     user_id: int, 
@@ -91,17 +42,17 @@ def get_recommend_eaten(
     total_today = get_or_create_total_today(user_id, date, db)
     
     return {
-        "status": "success",
-        "total_kcal": round(total_today.total_kcal, 2),
-        "total_car": round(total_today.total_car, 2),
-        "total_prot": round(total_today.total_prot, 2),
-        "total_fat": round(total_today.total_fat, 2),        
-        "rec_kcal": round(recommendation.rec_kcal, 2),
-        "rec_car": round(recommendation.rec_car, 2),
-        "rec_prot": round(recommendation.rec_prot, 2),
-        "rec_fat": round(recommendation.rec_fat, 2),
-        "condition": total_today.condition
-    }
+    "status": "success",
+    "total_kcal": round(total_today.total_kcal, 2),
+    "total_car": round(total_today.total_car, 2),
+    "total_prot": round(total_today.total_prot, 2),
+    "total_fat": round(total_today.total_fat, 2),
+    "rec_kcal": round(recommendation.rec_kcal, 2),
+    "rec_car": round(recommendation.rec_car, 2),
+    "rec_prot": round(recommendation.rec_prot, 2),
+    "rec_fat": round(recommendation.rec_fat, 2),
+    "condition": total_today.condition
+}
 
 def get_or_update_recommendation(user_id: int, db: Session):
     """사용자 권장 영양소를 조회하거나 업데이트합니다."""

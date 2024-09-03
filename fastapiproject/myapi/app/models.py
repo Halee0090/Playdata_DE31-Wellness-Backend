@@ -10,7 +10,7 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'user_info'
 
-    id = Column(Integer, primary_key=True,  autoincrement=True)
+    id = Column(Integer, primary_key=True)
     nickname = Column(String(30), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     age = Column(Integer, nullable=False)
@@ -24,7 +24,7 @@ class User(Base):
     
 class Recommend(Base):
     __tablename__ = 'recommend'
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user_info.id'), nullable=False)
     rec_kcal = Column(Float, nullable=False)
     rec_car = Column(Float, nullable=False)
@@ -52,7 +52,7 @@ class Meal_Type(Base):
 
 class History(Base):
     __tablename__ = 'history'
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user_info.id'), nullable=False)
     food_id = Column(Integer, ForeignKey('food_list.id'), nullable=False)
     meal_type_id = Column(Integer, ForeignKey('meal_type.id'), nullable=False)

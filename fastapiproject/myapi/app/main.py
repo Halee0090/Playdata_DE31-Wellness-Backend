@@ -92,14 +92,14 @@ def get_recommend_eaten(
     
     return {
         "status": "success",
-        "total_kcal": total_today.total_kcal,
-        "total_car": total_today.total_car,
-        "total_prot": total_today.total_prot,
-        "total_fat": total_today.total_fat,
-        "rec_kcal": recommendation.rec_kcal,
-        "rec_car": recommendation.rec_car,
-        "rec_prot": recommendation.rec_prot,
-        "rec_fat": recommendation.rec_fat,
+        "total_kcal": round(total_today.total_kcal, 2),
+        "total_car": round(total_today.total_car, 2),
+        "total_prot": round(total_today.total_prot, 2),
+        "total_fat": round(total_today.total_fat, 2),        
+        "rec_kcal": round(recommendation.rec_kcal, 2),
+        "rec_car": round(recommendation.rec_car, 2),
+        "rec_prot": round(recommendation.rec_prot, 2),
+        "rec_fat": round(recommendation.rec_fat, 2),
         "condition": total_today.condition
     }
 

@@ -10,9 +10,9 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'user_info'
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True,  autoincrement=True)
     nickname = Column(String(30), nullable=False)
-    email = Column(String(100), unique=True, nullable=True)
+    email = Column(String(100), unique=True, nullable=False)
     age = Column(Integer, nullable=False)
     gender = Column(Integer, nullable=False)
     height = Column(Float, nullable=False)

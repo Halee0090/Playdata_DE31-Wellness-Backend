@@ -37,9 +37,13 @@ def get_recommend_eaten(
     
     # 권장 영양소 정보 확인 및 업데이트
     recommendation = get_or_update_recommendation(user_id, db)
-    
+
     # 총 섭취량 조회 및 기본값 설정
-    total_today = get_or_create_total_today(user_id, date, db)
+    total_today = get_or_create_total_today(user_id, date_obj, db)
+
+    # condition 업데이트
+    total_today.condition = total_today.total_kcal > recommendation.rec_kcal
+    db.commit()
     
     return {
     "status": "success",
@@ -64,10 +68,10 @@ def get_or_update_recommendation(user_id: int, db: Session):
             recommendation = crud.create_or_update_recommend(
                 db,
                 user_id,
-                recommendation_result["rec_kcal"],
-                recommendation_result["rec_car"],
-                recommendation_result["rec_prot"],
-                recommendation_result["rec_fat"]
+                Decimal(str(recommendation_result["rec_kcal"])),
+                Decimal(str(recommendation_result["rec_car"])),
+                Decimal(str(recommendation_result["rec_prot"])),
+                Decimal(str(recommendation_result["rec_fat"]))
             )
         else:
             raise HTTPException(status_code=500, detail="Failed to update recommendations")
@@ -79,10 +83,10 @@ def get_or_create_total_today(user_id: int, today: date, db: Session):
     if not total_today:
         total_today = models.Total_Today(
             user_id=user_id,
-            total_kcal=0,
-            total_car=0,
-            total_prot=0,
-            total_fat=0,
+            total_kcal=Decimal('0'),
+            total_car=Decimal('0'),
+            total_prot=Decimal('0'),
+            total_fat=Decimal('0'),
             condition=False,
             created_at=func.now(),
             updated_at=func.now(),

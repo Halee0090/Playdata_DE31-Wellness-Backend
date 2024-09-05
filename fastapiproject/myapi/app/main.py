@@ -4,12 +4,12 @@ from app import recommend, database, models, crud
 from app.database import Base, engine
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from app.models import Total_Today
+from app.models import Total_Today, History
 from datetime import date, datetime
 from app.recommend import recommend_nutrition
 from app.database import get_db
 from decimal import Decimal, ROUND_HALF_UP
-
+from typing import List
 app = FastAPI(
     docs_url="/docs",  # Swagger UI 비활성화
     redoc_url="/redocs" 
@@ -42,7 +42,7 @@ def get_recommend_eaten(
     total_today = get_or_create_total_today(user_id, date_obj, db)
 
     # condition 업데이트
-    total_today.condition = total_today.total_kcal > recommendation.rec_kcal
+    total_today.condition = total_today.total_kcal > recommendation.rec_kcal  ### 컨디션 지정 필요함!!!!
     db.commit()
     
     return {
@@ -69,7 +69,7 @@ def get_or_update_recommendation(user_id: int, db: Session):
                 db,
                 user_id,
                 Decimal(str(recommendation_result["rec_kcal"])),
-                Decimal(str(recommendation_result["rec_car"])),
+                Decimal(str(recommendation_result["rec_car"])), 
                 Decimal(str(recommendation_result["rec_prot"])),
                 Decimal(str(recommendation_result["rec_fat"]))
             )
@@ -97,3 +97,69 @@ def get_or_create_total_today(user_id: int, today: date, db: Session):
         db.commit()
         db.refresh(total_today)
     return total_today
+
+
+
+
+@app.get("/history/meals")
+def get_meal_history(
+        user_id: int = Query(..., description="User id"),
+        date: date = Query(..., description="Date of meals"),
+        db: Session = Depends(get_db)
+):
+    try:
+
+        total_today = crud. get_total_today(db, user_id, date)
+        
+        if not total_today:
+            raise HTTPException(status_code=404, detail="Total today recored not found")
+
+        histories = crud.get_history_ids(db, total_today.history_ids)
+        
+        if not histories:
+            raise HTTPException(status_code=404, detail="No history records found")
+        
+        # total 정보 수집
+        meals = []
+        total_kcal = Decimal('0')
+        total_car = Decimal('0')
+        total_prot = Decimal('0')
+        total_fat = Decimal('0')
+
+        for history in histories:
+            food = crud.get_food_id(db, history.food_id)
+            meal_type = crud.get_meal_type_id(db, history.meal_type_id)
+
+            if not food or not meal_type:
+                continue  # meal_type 데이터 넣어야함!!!
+
+            meals.append({
+                    "meal_type": meal_type.type_name,
+                    "food_name": food.food_name,
+                    "food_kcal": food.food_kcal,
+                    "food_car": food.food_car,
+                    "food_prot": food.food_prot,
+                    "food_fat": food.food_fat
+                })
+            
+            # 총 영양소 계산
+            total_kcal += food.food_kcal
+            total_car += food.food_car
+            total_prot += food.food_prot
+            total_fat += food.food_fat
+
+        # Total_Today 레코드 업데이트
+        total_today.total_kcal = total_kcal
+        total_today.total_car = total_car
+        total_today.total_prot = total_prot
+        total_today.total_fat = total_fat
+        crud.update_total_today(db, total_today)
+
+        return {
+                "status": "success",
+                "meals": meals
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+

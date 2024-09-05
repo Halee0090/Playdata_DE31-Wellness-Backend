@@ -37,10 +37,10 @@ class Food_List(Base):
     category_id = Column(Integer, nullable=False)
     food_name = Column(String(15), nullable=False)
     category_name = Column(String(10), nullable=False)
-    food_kcal = Column(Float, nullable=False)
-    food_car = Column(Float, nullable=False)
-    food_prot = Column(Float, nullable=False)
-    food_fat = Column(Float, nullable=False)
+    food_kcal = Column(DECIMAL(6, 2), nullable=False)
+    food_car = Column(DECIMAL(6, 2), nullable=False)
+    food_prot = Column(DECIMAL(6, 2), nullable=False)
+    food_fat = Column(DECIMAL(6, 2), nullable=False)
 
 
 class Meal_Type(Base):

@@ -111,18 +111,24 @@ def get_history_ids(db: Session, history_ids: list[int]):
     ).all()
 #food_id를 사용하여 Food_List 레코드를 조회
 def get_food_id(db: Session, food_id: int):
-     return db.query(models.Food_List).filter(
+    food = db.query(models.Food_List).filter(
           models.Food_List.id == food_id
      ).first()
+    if food is None:
+        raise HTTPException(status_code=404, detail=f"Food with ID {food_id} not found")
+    return food
 #meal_type_id를 사용하여 Meal_Type 레코드를 조회
 def get_meal_type_id(db: Session, meal_type_id: int):
-     return db.query(models.Meal_Type).filter(
+    meal_type = db.query(models.Meal_Type).filter(
           models.Meal_Type.id == meal_type_id
-     ).first()
+    ).first()
+    if meal_type is None:
+        raise HTTPException(status_code=404, detail=f"MealType with ID {meal_type_id} not found")
+    return meal_type
+       
 #Total_Today 레코드를 업데이트
 def update_total_today(db: Session, total_today: models.Total_Today):
     total_today.updated_at = func.now()
-    db.add(total_today)
     db.commit()
     db.refresh(total_today)
     return total_today

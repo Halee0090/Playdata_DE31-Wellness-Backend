@@ -76,14 +76,14 @@ def get_meal_history(
 ):
     try:
 
-        total_today = crud. get_total_today(db, user_id, date)
+        total_today = crud.get_total_today(db, user_id, date)
         
-        if not total_today:
+        if total_today is None:
             raise HTTPException(status_code=404, detail="Total today recored not found")
 
         histories = crud.get_history_ids(db, total_today.history_ids)
         
-        if not histories:
+        if histories is None:
             raise HTTPException(status_code=404, detail="No history records found")
         
         # total 정보 수집
@@ -97,7 +97,7 @@ def get_meal_history(
             food = crud.get_food_id(db, history.food_id)
             meal_type = crud.get_meal_type_id(db, history.meal_type_id)
 
-            if not food or not meal_type:
+            if food is None or meal_type is None:
                 continue  # meal_type 데이터 넣어야함!!!
 
             meals.append({
@@ -124,7 +124,11 @@ def get_meal_history(
 
         return {
                 "status": "success",
-                "meals": meals
+                "meals": meals,
+                "total_kcal": Decimal(total_kcal).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+                "total_car": Decimal(total_car).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+                "total_prot": Decimal(total_prot).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+                "total_fat": Decimal(total_fat).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         }
 
     except Exception as e:

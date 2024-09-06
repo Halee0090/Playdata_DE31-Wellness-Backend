@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, Query
 from pydantic import BaseModel
 from app import recommend, database, models, crud
 from app.database import Base, engine
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session 
 from sqlalchemy import func
 from app.models import Total_Today, History
 from datetime import date, datetime
@@ -22,7 +22,7 @@ Base.metadata.create_all(bind=engine)
 @app.get("/recommend/eaten_nutrient")
 def get_recommend_eaten(
     user_id: int, 
-    date: str = Query(..., regex=r"^\d{4}-\d{2}-\d{2}$"),
+    date: str = Query(..., pattern=r"^\d{4}-\d{2}-\d{2}$"),
     db: Session = Depends(get_db)
 ):
      # 문자열 date를 datetime 객체로 변환
@@ -30,20 +30,26 @@ def get_recommend_eaten(
          date_obj = datetime.strptime(date, "%Y-%m-%d").date()
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid date format. Please use YYYY-MM-DD.")
+    
     # 사용자 정보 확인
     user = db.query(models.User).filter(models.User.id == user_id).first()
-    if not user:
+    
+    # 사용자가 없을 경우
+    if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # 권장 영양소 정보 확인 및 업데이트
-    recommendation = get_or_update_recommendation(user_id, db)
-
+   
+     # 권장 영양소 정보 확인 및 업데이트
+    recommendation = crud.get_or_update_recommendation(db, user_id)
+    if recommendation is None:
+        raise HTTPException(status_code=500, detail="Failed to retrieve or create recommendations")
     # 총 섭취량 조회 및 기본값 설정
-    total_today = get_or_create_total_today(user_id, date_obj, db)
+    total_today = crud.get_or_create_total_today(db, user_id, date_obj)
+
 
     # condition 업데이트
-    total_today.condition = total_today.total_kcal > recommendation.rec_kcal  ### 컨디션 지정 필요함!!!!
-    db.commit()
+    total_today.condition = total_today.total_kcal > recommendation.rec_kcal  
+    crud.update_total_today(db,total_today)
     
     return {
     "status": "success",
@@ -58,45 +64,6 @@ def get_recommend_eaten(
     "condition": total_today.condition
 }
 
-def get_or_update_recommendation(user_id: int, db: Session):
-    """사용자 권장 영양소를 조회하거나 업데이트합니다."""
-    recommendation = db.query(models.Recommend).filter(models.Recommend.user_id == user_id).first()
-    if not recommendation:
-        # 권장 영양소가 없는 경우 새로 계산 및 저장
-        recommendation_result = recommend.recommend_nutrition(user_id, db)
-        if recommendation_result["status"] == "success":
-            recommendation = crud.create_or_update_recommend(
-                db,
-                user_id,
-                Decimal(str(recommendation_result["rec_kcal"])),
-                Decimal(str(recommendation_result["rec_car"])), 
-                Decimal(str(recommendation_result["rec_prot"])),
-                Decimal(str(recommendation_result["rec_fat"]))
-            )
-        else:
-            raise HTTPException(status_code=500, detail="Failed to update recommendations")
-    return recommendation
-
-def get_or_create_total_today(user_id: int, today: date, db: Session):
-    """총 섭취량을 조회하거나 새로 생성합니다."""
-    total_today = db.query(models.Total_Today).filter_by(user_id=user_id, today=today).first()
-    if not total_today:
-        total_today = models.Total_Today(
-            user_id=user_id,
-            total_kcal=Decimal('0'),
-            total_car=Decimal('0'),
-            total_prot=Decimal('0'),
-            total_fat=Decimal('0'),
-            condition=False,
-            created_at=func.now(),
-            updated_at=func.now(),
-            today=today,
-            history_ids=[]
-        )
-        db.add(total_today)
-        db.commit()
-        db.refresh(total_today)
-    return total_today
 
 
 
@@ -162,4 +129,3 @@ def get_meal_history(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-

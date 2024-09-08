@@ -8,7 +8,6 @@ async def test_classify_image(client):
             "/api/v1/model/predict?user_id=1",
             files={"file": ("test_image.jpeg", img, "image/jpeg")}
         )
-
     # 상태 코드가 200인지 확인
     assert response.status_code == 200
 

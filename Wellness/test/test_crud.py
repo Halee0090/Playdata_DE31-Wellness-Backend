@@ -4,7 +4,7 @@ from app.models import FoodList, Recommend, Userinfo
 def test_get_recommend_by_user(db_session):
     # 먼저 Userinfo 테이블에 사용자를 추가합니다.
     user = Userinfo(
-        id=1,
+        id=None,
         age=30,
         gender=1,
         height=175.5,

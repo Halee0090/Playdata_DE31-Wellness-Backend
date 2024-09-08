@@ -83,7 +83,7 @@ async def classify_image(
         meal_type = determine_meal_type(date) if date else "기타"
 
         # 모델에 분류 요청 (model_api.py의 /predict_url/에 요청)
-        model_api_url = "http://127.0.0.1:8001/predict_url/"  # model_api 서버로 요청
+        model_api_url = "http://localhost:8001/predict_url/"  # model_api 서버로 요청
         try:
             response = requests.post(model_api_url, params={"image_url": image_url})
             response.raise_for_status
@@ -130,4 +130,4 @@ async def classify_image(
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 if __name__ == "__main__":
-    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app.main:app", host="localhost", port=8000, reload=True)

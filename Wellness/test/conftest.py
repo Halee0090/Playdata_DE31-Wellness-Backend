@@ -4,10 +4,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from app.database import Base, get_db
 from app.main import app
+import os
+from dotenv import load_dotenv
 
-# PostgreSQL 데이터베이스 URL (테스트용 데이터베이스를 사용하세요)
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:playdata123@localhost/test_db"
+# .env 파일의 환경 변수 로드
+load_dotenv()
 
+# PostgreSQL 데이터베이스 URL을 환경 변수에서 가져옴
+SQLALCHEMY_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 
 # PostgreSQL용 엔진 생성
 engine = create_engine(SQLALCHEMY_DATABASE_URL)

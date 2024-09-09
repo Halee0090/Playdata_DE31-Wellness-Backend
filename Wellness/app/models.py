@@ -1,19 +1,15 @@
-from sqlalchemy import Column, Integer, DECIMAL, DATE, VARCHAR, TIMESTAMP, func
+from sqlalchemy import ForeignKey, Column, Integer, String, Float, DECIMAL, DateTime, TIMESTAMP, DATE, Boolean, ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import ForeignKey
+from sqlalchemy.sql import func
 from app.database import Base
+from datetime import datetime
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.ext.declarative import declarative_base
 
 class FoodList(Base):
     __tablename__ = "food_list"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    category_id = Column(Integer, unique=True, nullable=False)
-    category_name = Column(VARCHAR(10), nullable=False)  # 'character varying' 대신 'String' 사용
-    food_name = Column(VARCHAR(5), nullable=False)  # 'character varying' 대신 'String' 사용
-    food_kcal = Column(DECIMAL(6,2), nullable=False)
-    food_car = Column(DECIMAL(6,2), nullable=False)
-    food_prot = Column(DECIMAL(6,2), nullable=False)
-    food_fat = Column(DECIMAL(6,2), nullable=False)
+
     
 class Userinfo(Base):
     __tablename__ =  "user_info"

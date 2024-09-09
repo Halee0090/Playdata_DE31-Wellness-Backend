@@ -1,0 +1,10 @@
+FROM python:3.11
+WORKDIR /code
+# 의존성 파일 복사
+COPY wellness/pyproject.toml /code/pyproject.toml
+COPY wellness/poetry.lock /code/poetry.lock
+# Poetry 설치 및 의존성 설치
+RUN pip install poetry && \
+    poetry install --no-dev
+COPY wellness/app /code/app
+CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]

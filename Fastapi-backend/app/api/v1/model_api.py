@@ -18,7 +18,7 @@ app = FastAPI()
 s3_client = boto3.client('s3')
 
 # 학습된 모델 로드
-model = torch.load('C:\\Users\\Playdata\\backend_project\\Wellness\\model\\model_acc9893_loss0184.pth', map_location=torch.device('cpu'))
+model = torch.load('C:\\Users\\Playdata\\backend_project\\Fastapi-backend\\app\\api\\v1\\best_model_epoch_19.pth', map_location=torch.device('cpu'))
 model.eval()
 
 # 이미지 전처리 정의

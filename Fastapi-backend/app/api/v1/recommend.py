@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get("/eaten_nutrient")
 def get_recommend_eaten(
     user_id: int, 
-    date: str = Query(...),
+    date: str = Query(..., pattern=r"^\d{4}-\d{2}-\d{2}$"),
     db: Session = Depends(get_db)
 ):
     # 문자열 date를 datetime 객체로 변환
@@ -54,3 +54,4 @@ def get_recommend_eaten(
     "rec_fat": Decimal(recommendation.rec_fat).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
     "condition": total_today.condition
     }
+

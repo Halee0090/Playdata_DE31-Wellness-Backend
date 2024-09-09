@@ -1,8 +1,12 @@
-import datetime
-import logging
-import requests  
-from fastapi import FastAPI, Query, UploadFile, File, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import FastAPI, Depends, HTTPException, Query
+from pydantic import BaseModel
+from app import recommend, database, models, crud
+from app.database import Base, engine
+from sqlalchemy.orm import Session 
+from sqlalchemy import func
+from app.models import Total_Today, History
+from datetime import date, datetime
+from app.recommend import recommend_nutrition
 from app.database import get_db
 from app.s3 import upload_image_to_s3
 from app.crud import get_food_by_category, get_recommend_by_user
@@ -14,9 +18,6 @@ import datetime
 import os
 
 
-# 로깅 설정
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 app = FastAPI()
 

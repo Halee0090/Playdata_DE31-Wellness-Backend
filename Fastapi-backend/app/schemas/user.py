@@ -1,7 +1,9 @@
 from pydantic import BaseModel, EmailStr, constr
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Optional
+from typing import ClassVar
+from sqlalchemy import TIMESTAMP, Column
+from sqlalchemy.sql import func
 
 class UserBase(BaseModel):
     age: int
@@ -13,31 +15,25 @@ class UserBase(BaseModel):
     nickname: str = constr(max_length=20)
 
 class UserCreate(UserBase):
+    pass
+
+class User(UserBase):
+    id: int
+    created_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), nullable=False)
+    updated_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)
+    class Config:
+        from_attributes = True  # 이전의 orm_mode = True
+
+class UserUpdate(BaseModel):
+    birthday: date
     age: int
     gender: int
     height: Decimal
     weight: Decimal
-    birthday: date
     email: EmailStr
     nickname: str = constr(max_length=20)
 
-class User(UserBase):
-    id: int
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        orm_mode = True
-
-class UserUpdate(UserBase):
-    birthday: Optional[date] = None
-    age: Optional[int] = None
-    height: Optional[Decimal] = None
-    weight: Optional[Decimal] = None
-    email: Optional[EmailStr] = None
-    nickname: Optional[str] = None
-
-# 응답 스키마 추가
+# 응답 스키마
 class WellnessInfo(BaseModel):
     user_birthday: date
     user_age: int

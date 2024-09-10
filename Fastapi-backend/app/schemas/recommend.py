@@ -1,13 +1,16 @@
 from pydantic import BaseModel
-from typing import Optional
-from datetime import datetime
+from decimal import Decimal
+from typing import ClassVar
+from sqlalchemy import TIMESTAMP, Column
+from sqlalchemy.sql import func
+
 
 class RecommendBase(BaseModel):
     user_id: int
-    rec_kcal: float
-    rec_car: float
-    rec_prot: float
-    rec_fat: float
+    rec_kcal: Decimal
+    rec_car: Decimal
+    rec_prot: Decimal
+    rec_fat: Decimal
 
 class RecommendCreate(RecommendBase):
     pass
@@ -17,7 +20,8 @@ class RecommendUpdate(RecommendBase):
 
 class RecommendInDB(RecommendBase):
     id: int
-    updated_at: datetime
+    updated_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)
 
     class Config:
-        orm_mode = True
+        arbitrary_types_allowed = True
+        from_attributes = True

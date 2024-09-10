@@ -3,7 +3,7 @@ services:
   main-service:
     build:
       context: .  
-      dockerfile: Dockerfile  
+      dockerfile: ./Dockerfile  
     container_name: main_service
     volumes:
       - ./app:/app  
@@ -14,11 +14,11 @@ services:
 
   model-service:
     build:
-      context: ./app/api/v1/model
-      dockerfile: Dockerfile-model  
+      context: .
+      dockerfile: ./app/api/v1/model/Dockerfile-model 
     container_name: model_service
     volumes:
-      - ./app/api/v1/model:/app
+      - ./app:/app
     ports:
       - "8001:8001"  
     environment:

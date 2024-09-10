@@ -19,7 +19,6 @@ s3_client = boto3.client('s3')
 
 # 학습된 모델 로드
 model = torch.load('C:\\Users\\Playdata\\backend_project\\Fastapi-backend\\app\\api\\v1\\model\\best_model_epoch_19', map_location=torch.device('cpu'))
-model.eval()
 
 # 이미지 전처리 정의
 preprocess = transforms.Compose([

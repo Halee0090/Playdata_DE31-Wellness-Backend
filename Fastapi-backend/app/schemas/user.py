@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, constr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
@@ -10,7 +10,7 @@ class UserBase(BaseModel):
     weight: Decimal
     birthday: date
     email: EmailStr
-    nickname: str = constr(max_length=20)
+    nickname: str = Field(..., max_length=20)
 
 class UserCreate(UserBase):
     age: int
@@ -19,12 +19,12 @@ class UserCreate(UserBase):
     weight: Decimal
     birthday: date
     email: EmailStr
-    nickname: str = constr(max_length=20)
+    nickname: str = Field(..., max_length=20)
 
 class User(UserBase):
     id: int
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime]  # 자동 생성되므로 Optional로 지정
+    updated_at: Optional[datetime]  # 자동 갱신되므로 Optional로 지정
 
     class Config:
         orm_mode = True

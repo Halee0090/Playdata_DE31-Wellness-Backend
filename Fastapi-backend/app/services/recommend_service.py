@@ -19,7 +19,7 @@ def recommend_nutrition(user_id: int, db: Session):
         # 사용자 정보가 업데이트되었거나 권장 영양소 정보가 없는 경우에만 새로 계산
         if not existing_recommendation or existing_recommendation.updated_at < user.updated_at:
             # BMR 계산 (해리스-베네딕트 방정식 사용)
-            if user.gender == 1:  # 남성일 경우
+            if user.gender == 0:  # 남성일 경우
                 bmr = Decimal('88.362') + (Decimal('13.397') * user.weight) + (Decimal('4.799') * Decimal(str(user.height))) - (Decimal('5.677') * Decimal(str(user.age)))
             else:  # 여성이거나 다른 경우
                 bmr = Decimal('447.593') + (Decimal('9.247') * user.weight) + (Decimal('3.098') * Decimal(str(user.height))) - (Decimal('4.330') * Decimal(str(user.age)))

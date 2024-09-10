@@ -41,3 +41,4 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
         },
         "message": "User information saved successfully"
     }
+

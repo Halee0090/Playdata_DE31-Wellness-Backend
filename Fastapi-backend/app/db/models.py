@@ -5,6 +5,7 @@ from app.db.session import Base
 from sqlalchemy.dialects.postgresql import ARRAY
 
 
+
 class User(Base):
     __tablename__ = 'user_info'
 

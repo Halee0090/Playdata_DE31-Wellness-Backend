@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from app.api.v1 import recommend, model, user
 from app.db import models
 from pytz import timezone
+
 app = FastAPI()
 app.state.timezone = timezone('Asia/Seoul')
 

@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   main-service:
     build:
@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile  
     container_name: main_service
     volumes:
-      - ./:/app  
+      - ./app:/app  
     ports:
       - "8000:8000"  
     environment:
@@ -14,13 +14,13 @@ services:
 
   model-service:
     build:
-      context: . 
+      context: ./app/api/v1/model
       dockerfile: Dockerfile-model  
     container_name: model_service
     volumes:
-      - ./:/app/api/v1 
+      - ./app/api/v1/model:/app
     ports:
-      - "8001:8000"  
+      - "8001:8001"  
     environment:
       - ENV_FILE=.env  
 

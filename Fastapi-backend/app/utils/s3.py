@@ -4,6 +4,7 @@ from botocore.exceptions import NoCredentialsError
 from fastapi import HTTPException
 from io import BytesIO
 
+
 def upload_image_to_s3(image_bytes: BytesIO, bucket_name: str, file_name: str) -> str:
     """S3에 이미지를 업로드하고 URL을 반환하는 함수"""
     s3 = boto3.client('s3')

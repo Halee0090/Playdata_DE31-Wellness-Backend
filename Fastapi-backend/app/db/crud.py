@@ -1,8 +1,10 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from app.api.v1 import recommend
 from app.db.models import Food_List, Recommend
 from app.db import models
+from app.db.models import History
 from sqlalchemy.sql import func
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import date
@@ -103,4 +105,21 @@ def get_recommend_by_user(db: Session, user_id: int) -> Recommend:
           raise HTTPException(status_code=400, detail="Recommendation not found")
      
      return Recommendation
+ 
+def create_history(db: Session, user_id: int, food_id: int, meal_type_id: int, image_url: str, date: date):
+    new_history = History(
+        user_id=user_id,
+        food_id=food_id,
+        meal_type_id=meal_type_id,
+        image_url=image_url,
+        date=date
+    )
+    db.add(new_history)
+    return new_history
+
+def get_today_history(db: Session, user_id: int, today: date):
+    return db.query(History).filter(
+        History.user_id == user_id,
+        History.date == today
+    ).all()
 

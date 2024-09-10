@@ -15,6 +15,9 @@ TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_eng
 # Base 클래스 생성
 Base = declarative_base()
 
+# 모델 정의를 데이터베이스에 반영합니다.
+Base.metadata.create_all(engine)
+
 # DB 연결 세션 함수
 def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()

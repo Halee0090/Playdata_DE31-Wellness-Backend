@@ -8,7 +8,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 class User(Base):
     __tablename__ = 'user_info'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     age = Column(Integer, nullable=False)
     gender = Column(Integer, nullable=False)
     height = Column(DECIMAL(4, 1), nullable=False)

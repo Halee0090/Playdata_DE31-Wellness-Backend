@@ -5,13 +5,14 @@ from app.db import crud, models
 from app.db.session import get_db
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime
+from app.db.models import User, Recommend
 
 router = APIRouter()
 
 @router.get("/eaten_nutrient")
 def get_recommend_eaten(
     user_id: int, 
-    date: str = Query(..., pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    date: str = Query(...),
     db: Session = Depends(get_db)
 ):
     # 문자열 date를 datetime 객체로 변환

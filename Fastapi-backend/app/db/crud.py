@@ -6,6 +6,10 @@ from app.db import models
 from sqlalchemy.sql import func
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import date
+from app.api.v1 import recommend
+from app.db import models
+from app.schemas import UserCreate
+from app import schemas
 
 # 공통 예외 처리 헬퍼 함수
 def execute_db_operation(db: Session, operation):
@@ -84,7 +88,8 @@ def get_or_update_recommendation(db: Session, user_id: int):
                 Decimal(recommendation_result["rec_prot"]),
                 Decimal(recommendation_result["rec_fat"]),
             )
-        raise HTTPException(status_code=500, detail="Failed to retrieve recommendations")
+        else:
+            raise HTTPException(status_code=500, detail="Failed to retrieve recommendations")
     return recommendation
 
 def get_food_by_category(db: Session, category_id: int) -> Food_List:
@@ -104,3 +109,20 @@ def get_recommend_by_user(db: Session, user_id: int) -> Recommend:
      
      return Recommendation
 
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.User).filter(models.User.email == email).first()
+
+def create_user(db: Session, user: schemas.UserCreate):
+    db_user = models.User(
+        birthday=user.birthday,
+        age=user.age,
+        gender=user.gender,
+        nickname=user.nickname,
+        height=user.height,
+        weight=user.weight,
+        email=user.email
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user

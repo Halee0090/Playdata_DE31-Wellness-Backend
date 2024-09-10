@@ -10,7 +10,7 @@ from app.api.v1 import recommend
 from app.db import models
 from app.schemas import UserCreate
 from app import schemas
-
+from app.services.recommend_service import recommend_nutrition
 # 공통 예외 처리 헬퍼 함수
 def execute_db_operation(db: Session, operation):
     try:
@@ -23,13 +23,16 @@ def execute_db_operation(db: Session, operation):
 
 # 사용자의 마지막 업데이트 시간 조회
 def get_user_updated_at(db: Session, user_id: int):
-    return execute_db_operation(db, lambda: db.query(models.User).filter(models.User.id == user_id).first())
-
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user:
+        return user.updated_at
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
 # 사용자 ID로 권장 영양소 조회
 def get_recommend_by_user_id(db: Session, user_id: int):
     return execute_db_operation(db, lambda: db.query(models.Recommend).filter(models.Recommend.user_id == user_id).first())
 
-# 권장 영양소 생성 및 업데이트
+
 def create_or_update_recommend(db: Session, user_id: int, rec_kcal: Decimal, rec_car: Decimal, rec_prot: Decimal, rec_fat: Decimal):
     user_updated_at = get_user_updated_at(db, user_id)
     
@@ -41,20 +44,27 @@ def create_or_update_recommend(db: Session, user_id: int, rec_kcal: Decimal, rec
 
     def operation():
         existing_recommend = get_recommend_by_user_id(db, user_id)
-        if existing_recommend and existing_recommend.updated_at < user_updated_at:
-            existing_recommend.rec_kcal, existing_recommend.rec_car, existing_recommend.rec_prot, existing_recommend.rec_fat = rec_kcal, rec_car, rec_prot, rec_fat
-            existing_recommend.updated_at = func.now()
-            db.refresh(existing_recommend)
+        if existing_recommend:
+            if existing_recommend.updated_at < user_updated_at:
+                existing_recommend.rec_kcal = rec_kcal
+                existing_recommend.rec_car = rec_car
+                existing_recommend.rec_prot = rec_prot
+                existing_recommend.rec_fat = rec_fat
+                existing_recommend.updated_at = func.now()
             return existing_recommend
         else:
             new_recommend = models.Recommend(
-                user_id=user_id, rec_kcal=rec_kcal, rec_car=rec_car, rec_prot=rec_prot, rec_fat=rec_fat, updated_at=func.now()
+                user_id=user_id,
+                rec_kcal=rec_kcal,
+                rec_car=rec_car,
+                rec_prot=rec_prot,
+                rec_fat=rec_fat,
+                updated_at=func.now()
             )
             db.add(new_recommend)
             return new_recommend
     
     return execute_db_operation(db, operation)
-
 # 총 섭취량 조회 또는 생성
 def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
     def operation():
@@ -78,18 +88,21 @@ def update_total_today(db: Session, total_today: models.Total_Today):
 def get_or_update_recommendation(db: Session, user_id: int):
     recommendation = get_recommend_by_user_id(db, user_id)
     if not recommendation:
-        recommendation_result = recommend.recommend_nutrition(user_id, db)
-        if recommendation_result["status"] == "success":
-            return create_or_update_recommend(
-                db,
-                user_id,
-                Decimal(recommendation_result["rec_kcal"]),
-                Decimal(recommendation_result["rec_car"]),
-                Decimal(recommendation_result["rec_prot"]),
-                Decimal(recommendation_result["rec_fat"]),
-            )
-        else:
-            raise HTTPException(status_code=500, detail="Failed to retrieve recommendations")
+        try:
+            recommendation_result = recommend_nutrition(user_id, db)
+            if recommendation_result["status"] == "success":
+                return create_or_update_recommend(
+                    db,
+                    user_id,
+                    Decimal(recommendation_result["rec_kcal"]),
+                    Decimal(recommendation_result["rec_car"]),
+                    Decimal(recommendation_result["rec_prot"]),
+                    Decimal(recommendation_result["rec_fat"]),
+                )
+            else:
+                raise HTTPException(status_code=500, detail="Failed to retrieve recommendations")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to process recommendation: {str(e)}")
     return recommendation
 
 def get_food_by_category(db: Session, category_id: int) -> Food_List:

@@ -1,5 +1,5 @@
 # Dockerfile for Wellnessapp (main API)
-FROM python:3.9
+FROM python:3.9-slim
 
 # Set the working directory
 WORKDIR /app

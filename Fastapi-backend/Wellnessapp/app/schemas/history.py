@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
 
 # 요청 본문으로 받을 데이터 모델 정의

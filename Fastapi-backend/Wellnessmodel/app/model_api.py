@@ -8,17 +8,29 @@ from io import BytesIO
 import os
 import botocore
 from urllib.parse import urlparse
-
+import logging  
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 app = FastAPI()
 
+# 로깅 설정
+logger = logging.getLogger(__name__)
+
 # s3 클라이언트 설정
 s3_client = boto3.client('s3')
 
 # 학습된 모델 로드
+<<<<<<< HEAD:Fastapi-backend/Wellnessmodel/app/model_api.py
+<<<<<<< HEAD:Fastapi-backend/Wellnessmodel/app/model_api.py
+model = torch.load('C:\\Users\\Playdata\\backend_project\\Fastapi-backend\\Wellnessmodel\\app\\best_model_epoch_19', map_location=torch.device('cpu'))
+model.eval()
+=======
 model = torch.load('C:\\Users\\Playdata\\backend_project\\Fastapi-backend\\app\\api\\v1\\model\\best_model_epoch_19', map_location=torch.device('cpu'))
+>>>>>>> 01bf127ceb6ae1ac184c5337e84f8fd8a900eca0:Fastapi-backend/app/api/v1/model/model_api.py
+=======
+model = torch.load('C:\\Users\\Playdata\\backend_project\\Fastapi-backend\\app\\api\\v1\\model\\best_model_epoch_19', map_location=torch.device('cpu'))
+>>>>>>> d680b9789759adb1017d8fa47a7075b69a71c99a:Fastapi-backend/app/api/v1/model/model_api.py
 
 # 이미지 전처리 정의
 preprocess = transforms.Compose([
@@ -115,6 +127,4 @@ async def predict_url(image_url: str):
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host='localhost', port=8001)
-
-
+    uvicorn

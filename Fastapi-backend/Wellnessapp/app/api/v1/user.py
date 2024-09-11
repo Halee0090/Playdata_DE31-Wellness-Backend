@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.db import models, crud
-from app import deps, schemas
-from app.db.session import Session
-from app.db.session import get_db
-from app.schemas import UserCreate, UserResponse
+from db import models, crud
+import deps, schemas
+from db.session import Session
+from db.session import get_db
+from schemas import UserCreate, UserResponse
 
 
 router = APIRouter()
-@router.post("/users.info", response_model=schemas.UserResponse)
+@router.post("/users_info", response_model=schemas.UserResponse)
 def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
     # 이메일 중복 체크
     db_user = crud.get_user_by_email(db, email=user.email)

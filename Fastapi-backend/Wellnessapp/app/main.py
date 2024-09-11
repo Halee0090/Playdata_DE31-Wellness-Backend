@@ -1,8 +1,8 @@
 # /app/main.py
 from fastapi import FastAPI
-from app.api.v1 import recommend, model, user
-from app.db import models
-from app.api.v1.history import router as history_router
+from api.v1 import recommend, model, user
+from db import models
+from api.v1.history import router as history_router
 
 app = FastAPI()
 

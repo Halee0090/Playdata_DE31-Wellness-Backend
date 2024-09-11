@@ -1,7 +1,7 @@
 # /app/main.py
 from fastapi import FastAPI
 from Wellnessapp.app.api.v1 import recommend, model, user
-from Wellnessapp.app.db import models
+from .db import models
 from pytz import timezone
 from Wellnessapp.app.api.v1.history import router as history_router
 

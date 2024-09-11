@@ -2,6 +2,14 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
+# 요청 본문으로 받을 데이터 모델 정의
+class HistoryCreateRequest(BaseModel):
+    user_id: int
+    category_id: int
+    meal_type_id: int
+    image_url: str
+    date: datetime
+
 class HistoryBase(BaseModel):
     user_id: int
     category_id: int

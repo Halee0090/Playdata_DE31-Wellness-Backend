@@ -2,18 +2,18 @@
 FROM python:3.9-slim
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /Fastapi-backend
 
-# Copy the Poetry lock files and project file
-COPY pyproject.toml poetry.lock /app/
+# 로컬 requirements.txt 파일을 컨테이너에 복사
+COPY requirements.txt /Fastapi-backend/
 
-# Install Poetry and dependencies
-RUN pip install --no-cache-dir poetry \
-    && poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
+# requirements.txt에 명시된 패키지 설치
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
-COPY . /app
+COPY ./Wellnessmodel/app /Fastapi-backend
+COPY ./Wellnessmodel/app/best_model_epoch_19 /Fastapi-backend
 
-# Run the FastAPI app for model API
-CMD ["poetry", "run", "uvicorn", "model_api:app", "--host", "0.0.0.0", "--port", "8001"]
+# 모델 API 실행
+CMD ["uvicorn", "model_api:app", "--reload",  "--host", "0.0.0.0", "--port", "8001"]
+

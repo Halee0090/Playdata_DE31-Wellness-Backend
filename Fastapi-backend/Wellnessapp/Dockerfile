@@ -2,18 +2,16 @@
 FROM python:3.9-slim
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /Fastapi-backend
 
-# Copy the Poetry lock files and project file
-COPY pyproject.toml poetry.lock /app/
+# Copy the requirements.txt file
+COPY requirements.txt /Fastapi-backend/
 
-# Install Poetry and dependencies
-RUN pip install --no-cache-dir poetry \
-    && poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
+# Install app
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
-COPY . /app
+COPY ./Wellnessapp/app /Fastapi-backend
 
 # Run the FastAPI app
-CMD ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]

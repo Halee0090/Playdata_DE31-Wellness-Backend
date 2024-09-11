@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 s3_client = boto3.client('s3')
 
 # 학습된 모델 로드
-model = torch.load('/app/best_model_epoch_19', map_location=torch.device('cpu'))
+model = torch.load('best_model_epoch_19', map_location=torch.device('cpu'))
 model.eval()
 
 # 이미지 전처리 정의
@@ -117,6 +117,6 @@ async def predict_url(image_url: str):
         # 다른 모든 예외 처리
         raise HTTPException(status_code=500, detail=f"Server Error: {str(e)}")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import uvicorn
-    uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8001)

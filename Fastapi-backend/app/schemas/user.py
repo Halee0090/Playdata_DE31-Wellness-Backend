@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, constr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import date, datetime
 from decimal import Decimal
 from typing import ClassVar
@@ -12,7 +12,7 @@ class UserBase(BaseModel):
     weight: Decimal
     birthday: date
     email: EmailStr
-    nickname: str = constr(max_length=20)
+    nickname: str = Field(max_length=20)
 
 class UserCreate(UserBase):
     pass
@@ -22,7 +22,7 @@ class User(UserBase):
     created_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     updated_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)
     class Config:
-        from_attributes = True  # 이전의 orm_mode = True
+        from_attributes = True  
 
 class UserUpdate(BaseModel):
     birthday: date
@@ -31,9 +31,8 @@ class UserUpdate(BaseModel):
     height: Decimal
     weight: Decimal
     email: EmailStr
-    nickname: str = constr(max_length=20)
+    nickname: str = Field(max_length=20)
 
-# 응답 스키마
 class WellnessInfo(BaseModel):
     user_birthday: date
     user_age: int

@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  main-service:
+    build:
+      context: .  
+      dockerfile: ./Dockerfile  
+    container_name: main_service
+    volumes:
+      - ./app:/app  
+    ports:
+      - "8000:8000"  
+    environment:
+      - ENV_FILE=.env  
+
+  model-service:
+    build:
+      context: .
+      dockerfile: ./app/api/v1/model/Dockerfile-model 
+    container_name: model_service
+    volumes:
+      - ./app:/app
+    ports:
+      - "8001:8001"  
+    environment:
+      - ENV_FILE=.env  
+
+

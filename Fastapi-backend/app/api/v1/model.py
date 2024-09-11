@@ -14,8 +14,8 @@ router = APIRouter()
 
 @router.post("/predict")
 async def classify_image(
-    file: UploadFile = File(...), 
     user_id: int = Query(...),
+    file: UploadFile =  File(...), 
     db: Session = Depends(get_db)
 ):
     try:

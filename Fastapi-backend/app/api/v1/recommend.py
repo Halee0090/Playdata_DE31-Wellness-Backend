@@ -55,5 +55,3 @@ def get_recommend_eaten(
     "rec_fat": Decimal(recommendation.rec_fat).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
     "condition": total_today.condition
     }
-
-

@@ -27,7 +27,7 @@ class User(UserBase):
     updated_at: Optional[datetime]  # 자동 갱신되므로 Optional로 지정
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserUpdate(UserBase):
     birthday: Optional[date] = None

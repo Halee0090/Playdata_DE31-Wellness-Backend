@@ -4,7 +4,7 @@ from datetime import datetime
 
 class HistoryBase(BaseModel):
     user_id: int
-    food_id: int
+    category_id: int
     meal_type_id: int
     image_url: str
     date: datetime

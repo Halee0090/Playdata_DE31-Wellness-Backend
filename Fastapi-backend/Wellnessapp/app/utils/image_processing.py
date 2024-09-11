@@ -1,6 +1,7 @@
 # /app/utils/image_processing.py
 from PIL import Image, ExifTags
 from io import BytesIO
+import datetime
 
 def extract_exif_data(file_bytes: bytes):
     try:
@@ -9,16 +10,25 @@ def extract_exif_data(file_bytes: bytes):
         if not exif_data:
             return None
         for tag, value in exif_data.items():
-            if ExifTags.TAGS.get(tag, tag) == "DateTimeOriginal":
-                return value  # '2022:03:15 10:20:35'
-        return None
+            decoded_tag = ExifTags.TAGS.get(tag, tag)
+            if decoded_tag == "DateTimeOriginal":
+                return value  # 예: '2022:03:15 10:20:35'
+        return None 
     except Exception as e:
         raise Exception(f"Error extracting Exif data: {str(e)}")
 
 def determine_meal_type(taken_time: str) -> str:
     try:
         time_format = "%Y:%m:%d %H:%M:%S"
-        taken_time_obj = datetime.strptime(taken_time, time_format)
+        
+        # Exif 데이터가 없으면 현재 시간을 사용
+        if isinstance(taken_time, str):
+            taken_time_obj = datetime.datetime.strptime(taken_time, time_format)  # 문자열을 datetime 객체로 변환
+        else:
+            taken_time_obj = datetime.datetime.now()  # Exif 데이터가 없을 경우 현재 서버 시간을 사용
+        
+        # datetime 모듈을 명확하게 호출
+        taken_time_obj = datetime.datetime.strptime(taken_time, time_format)  # datetime의 datetime 모듈 사용
         hour = taken_time_obj.hour
         if 6 <= hour <= 8:
             return "아침"
@@ -28,5 +38,7 @@ def determine_meal_type(taken_time: str) -> str:
             return "저녁"
         else:
             return "기타"
+    except ValueError as e:
+        raise Exception(f"Invalid EXIF datetime format: {str(e)}")
     except Exception as e:
         raise Exception(f"Error determining meal type: {str(e)}")

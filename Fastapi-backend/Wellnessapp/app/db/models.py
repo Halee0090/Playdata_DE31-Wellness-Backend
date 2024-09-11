@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey, Column, Integer, String, DECIMAL, TIMESTAMP, DATE, text, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from app.db.session import Base
+from db.session import Base
 from sqlalchemy.dialects.postgresql import ARRAY
 
 
@@ -16,11 +16,15 @@ class User(Base):
     birthday = Column(DATE, nullable=False)
     email = Column(String(100), nullable=False)
     nickname = Column(String(20), nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), server_default=text('CURRENT_TIMESTAMP'))
-    updated_at = Column(TIMESTAMP(timezone=True), server_default=text('CURRENT_TIMESTAMP'), onupdate=text('CURRENT_TIMESTAMP'))
+    created_at = Column(TIMESTAMP, default=func.now(), nullable=False)
+    updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now(), nullable=False)
     
     # 관계 설정: Recommend 클래스와의 연결
     recommendations = relationship("Recommend", back_populates="user")
+    total_today = relationship("Total_Today", back_populates="user")
+    histories = relationship("History", back_populates="user")
+
+
 
 
 class Recommend(Base):
@@ -50,6 +54,8 @@ class Food_List(Base):
     food_prot = Column(DECIMAL(6, 2), nullable=False)
     food_fat = Column(DECIMAL(6, 2), nullable=False)
 
+    history = relationship("History", back_populates="food")
+
 
 class Meal_Type(Base):
     __tablename__ = 'meal_type'
@@ -57,18 +63,26 @@ class Meal_Type(Base):
     id = Column(Integer, primary_key=True)
     type_name = Column(String(5), nullable=False)
 
+    histories = relationship("History", back_populates="meal_type")
+
 
 class History(Base):
     __tablename__ = 'history'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user_info.id'), nullable=False)
-    food_id = Column(Integer, ForeignKey('food_list.id'), nullable=False)
+    category_id = Column(Integer, ForeignKey('food_list.id'), nullable=False)
     meal_type_id = Column(Integer, ForeignKey('meal_type.id'), nullable=False)
     image_url = Column(String(255), nullable=False)
     date = Column(TIMESTAMP, nullable=False)
     created_at = Column(TIMESTAMP, default=func.now(), nullable=False)
     updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now(), nullable=False)
+
+    user = relationship("User", back_populates="histories")
+    food = relationship("Food_List", back_populates="history")
+    meal_type = relationship("Meal_Type", back_populates="histories")
+
+
 
 
 class Total_Today(Base):
@@ -85,3 +99,5 @@ class Total_Today(Base):
     updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now(), nullable=False)
     today = Column(DATE, nullable=False)
     history_ids = Column(ARRAY(Integer), nullable=False)
+
+    user = relationship("User", back_populates="total_today")

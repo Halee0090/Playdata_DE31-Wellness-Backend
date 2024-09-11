@@ -1,27 +1,26 @@
 version: '3.8'
+
 services:
-  main-service:
+  wellnessapp:
     build:
-      context: .  
-      dockerfile: ./Dockerfile  
-    container_name: main_service
-    volumes:
-      - ./app:/app  
+      context: ./Wellnessapp
+      dockerfile: Dockerfile
+    container_name: wellnessapp
     ports:
-      - "8000:8000"  
+      - "8000:8000"
     environment:
-      - ENV_FILE=.env  
+      - ENV_FILE=.env
+    volumes:
+      - ./Wellnessapp:/app
 
-  model-service:
+  wellnessmodel:
     build:
-      context: .
-      dockerfile: ./app/api/v1/model/Dockerfile-model 
-    container_name: model_service
-    volumes:
-      - ./app:/app
+      context: ./Wellnessmodel
+      dockerfile: Dockerfile-model
+    container_name: wellnessmodel
     ports:
-      - "8001:8001"  
+      - "8001:8001"
     environment:
-      - ENV_FILE=.env  
-
-
+      - ENV_FILE=.env
+    volumes:
+      - ./Wellnessmodel:/app

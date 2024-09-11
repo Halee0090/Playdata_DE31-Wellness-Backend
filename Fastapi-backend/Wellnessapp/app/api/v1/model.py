@@ -1,14 +1,15 @@
 # /app/api/v1/model.py
 from fastapi import APIRouter, HTTPException, Depends, Query, UploadFile, File
 from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.db.crud import get_food_by_category, get_recommend_by_user
-from app.utils.image_processing import extract_exif_data, determine_meal_type
-from app.utils.s3 import upload_image_to_s3
+from db.session import get_db
+from db.crud import get_food_by_category, get_recommend_by_user
+from utils.image_processing import extract_exif_data, determine_meal_type
+from utils.s3 import upload_image_to_s3
 import requests
 from io import BytesIO
 import os
 import uuid
+import datetime
 
 router = APIRouter()
 
@@ -30,6 +31,9 @@ async def classify_image(
             raise HTTPException(status_code=500, detail=f"failed to upload image to s3: {str(e)}")
         
         date = extract_exif_data(file_bytes)
+        if date is None:
+            date = datetime.datetime.now().strftime("%Y:%m:%d %H:%M:%S")  # 현재 시간을 문자열로 설정
+            
         meal_type = determine_meal_type(date) if date else "기타"
 
         model_api_url = "http://localhost:8001/predict_url/"
@@ -52,21 +56,28 @@ async def classify_image(
             raise HTTPException(status_code=404, detail="User not found")
 
         return {
-            "status": "success",
-            "date": date, 
-            "meal_type": meal_type, 
-            "category_id": category_id, 
-            "food_name": food.category_name, 
-            "food_kcal": food.food_kcal, 
-            "food_car": round(food.food_car), 
-            "food_prot": round(food.food_prot), 
-            "food_fat": round(food.food_fat), 
-            "rec_kcal": recommend.rec_kcal, 
-            "rec_car": round(recommend.rec_car), 
-            "rec_prot": round(recommend.rec_prot), 
-            "rec_fat": round(recommend.rec_fat),
-            "image_url": image_url
-        }
+        "status": "success",
+        "status_code": 201,
+        "detail": {
+            "wellness_image_info": {
+                "date": date, 
+                "meal_type": meal_type, 
+                "category_id": category_id, 
+                "food_name": food.category_name, 
+                "food_kcal": food.food_kcal, 
+                "food_car": round(food.food_car), 
+                "food_prot": round(food.food_prot), 
+                "food_fat": round(food.food_fat), 
+                "rec_kcal": recommend.rec_kcal, 
+                "rec_car": round(recommend.rec_car), 
+                "rec_prot": round(recommend.rec_prot), 
+                "rec_fat": round(recommend.rec_fat),
+                "image_url": image_url
+                    }
+                  },
+                "message": "Image Classify Information saved successfully"
+                }
+        
     except HTTPException as e:
         raise e
     except Exception as e:

@@ -2,7 +2,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
 from typing import Generator
-from app.core.config import DATABASE_URL, TEST_DATABASE_URL  # config.py에서 환경 변수 가져오기
+from core.config import DATABASE_URL, TEST_DATABASE_URL  # config.py에서 환경 변수 가져오기
+import core
 
 # SQLAlchemy 엔진 생성
 engine = create_engine(DATABASE_URL)

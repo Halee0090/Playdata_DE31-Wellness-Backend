@@ -1,14 +1,13 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.db import models, crud
-from app import deps, schemas
-from app.db.session import Session
-from app.db.session import get_db
-from app.schemas import UserCreate, UserResponse
-from app.services.recommend_service import recommend_nutrition
+from Wellnessapp.app.db import models, crud
+from Wellnessapp.app import deps, schemas
+from Wellnessapp.app.db.session import Session
+from Wellnessapp.app.db.session import get_db
+from Wellnessapp.app.schemas import UserCreate, UserResponse
 
 
 router = APIRouter()
-@router.post("/users.info", response_model=schemas.UserResponse)
+@router.post("/users_info", response_model=schemas.UserResponse)
 def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
     # 이메일 중복 체크
     db_user = crud.get_user_by_email(db, email=user.email)
@@ -17,13 +16,6 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
     
     # 사용자 정보 저장
     new_user = crud.create_user(db=db, user=user)
-    try:
-        # 권장 영양소 계산 및 저장
-        recommend_nutrition(new_user.id, db)
-    except HTTPException:
-        
-        db.rollback()  
-        raise HTTPException(status_code=500, detail="Failed to calculate nutrition recommendations")
 
     return {
         "status": "success",
@@ -41,3 +33,4 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
         },
         "message": "User information saved successfully"
     }
+        

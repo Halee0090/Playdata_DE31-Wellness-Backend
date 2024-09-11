@@ -1,17 +1,17 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from app.api.v1 import recommend
-from app.db.models import Food_List, Recommend
-from app.db import models
-from app.db.models import History
+from api.v1 import recommend
+from db.models import Food_List, Recommend
+from db import models
+from db.models import History
 from sqlalchemy.sql import func
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import date
-from app.api.v1 import recommend
-from app.db import models
-from app.schemas import UserCreate
-from app import schemas
+from api.v1 import recommend
+from db import models
+from schemas import UserCreate
+import schemas
 
 # 공통 예외 처리 헬퍼 함수
 def execute_db_operation(db: Session, operation):
@@ -111,10 +111,10 @@ def get_recommend_by_user(db: Session, user_id: int) -> Recommend:
      
      return Recommendation
  
-def create_history(db: Session, user_id: int, food_id: int, meal_type_id: int, image_url: str, date: date):
+def create_history(db: Session, user_id: int, category_id: int, meal_type_id: int, image_url: str, date: date):
     new_history = History(
         user_id=user_id,
-        food_id=food_id,
+        category_id=category_id,
         meal_type_id=meal_type_id,
         image_url=image_url,
         date=date

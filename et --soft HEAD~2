@@ -1,0 +1,33 @@
+[33m671e8a8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mhaeun[m[33m)[m Save local changes before rebase
+[33m0539a72[m docker-compose.yaml file added, dockerfile deleted
+[33m4576325[m Merge branch 'dev' of https://github.com/WellnessTeam/Playdata_DE31-Wellness-Backend into haeun
+[33m741c606[m[33m ([m[1;31morigin/haeun[m[33m)[m dokerfile deleted
+[33m5f07a1a[m updated
+[33ma0f6708[m[33m ([m[1;31morigin/dev[m[33m)[m Haeun (#13)
+[33m90268a4[m Merge branch 'dev' into haeun
+[33m1f2aabf[m app/api/v1/recommend.py updated
+[33maf39d6b[m Haeun (#12)
+[33m5585fb6[m update Dockerfile
+[33me3cb7f9[m Haeun (#11)
+[33m315151f[m wellness main screen check & image classify feature developed
+[33mb4c0198[m merge main screen check & image classify completed
+[33m4349c2e[m[33m ([m[1;32morigin[m[33m, [m[1;32mdev[m[33m)[m Seungju > dev  pull request (#10)
+[33m3c234da[m test 파일 수정
+[33m1ef0196[m image upload, model classify, model result return not completed history save
+[33m7318d4f[m delete wellness files
+[33m7391cc1[m Merge branch 'haeun' of https://github.com/WellnessTeam/Playdata_DE31-Wellness-Backend into haeun
+[33m2fcc3f0[m delete all files
+[33m1c32738[m Haeun (#8)
+[33mc001544[m Delete wellness_login directory
+[33md543d65[m docker_Test
+[33m8c501eb[m Revert "docker_Test (#4)" (#7)
+[33m90e66d4[m Revert "docker_Test (#4)" (#6)
+[33mc303a88[m Revert "docker_Test (#4)" (#5)
+[33mcb714f8[m Delete Wellness directory
+[33m137372a[m Delete wellness_login directory
+[33mbf6cb6c[m docker_Test (#4)
+[33m8294f5e[m docker_test
+[33m6133d36[m Delete Wellness directory
+[33mc70279f[m Dockerfile_fastapi (#3)
+[33madaca63[m Dockerfile_fastapi
+[33m99b3439[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/feature/sso_login[m[33m)[m Initial commit

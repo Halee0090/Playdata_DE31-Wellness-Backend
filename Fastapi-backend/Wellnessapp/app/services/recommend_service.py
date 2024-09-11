@@ -1,6 +1,6 @@
 # /app/services/recommend_service.py
 from sqlalchemy.orm import Session
-from app.db import crud, models
+from db import crud, models
 from fastapi import HTTPException
 from decimal import Decimal, ROUND_HALF_UP
 

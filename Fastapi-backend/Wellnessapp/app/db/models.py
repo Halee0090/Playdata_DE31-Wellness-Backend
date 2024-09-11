@@ -5,7 +5,6 @@ from app.db.session import Base
 from sqlalchemy.dialects.postgresql import ARRAY
 
 
-
 class User(Base):
     __tablename__ = 'user_info'
 
@@ -19,7 +18,7 @@ class User(Base):
     nickname = Column(String(20), nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), server_default=text('CURRENT_TIMESTAMP'))
     updated_at = Column(TIMESTAMP(timezone=True), server_default=text('CURRENT_TIMESTAMP'), onupdate=text('CURRENT_TIMESTAMP'))
-   
+    
     # 관계 설정: Recommend 클래스와의 연결
     recommendations = relationship("Recommend", back_populates="user")
 
@@ -33,7 +32,7 @@ class Recommend(Base):
     rec_car = Column(DECIMAL(6, 2), nullable=False)
     rec_prot = Column(DECIMAL(6, 2), nullable=False)
     rec_fat = Column(DECIMAL(6, 2), nullable=False)
-    updated_at = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now(), nullable=False)
     
     # User와 관계 설정
     user = relationship("User", back_populates="recommendations")
@@ -68,8 +67,8 @@ class History(Base):
     meal_type_id = Column(Integer, ForeignKey('meal_type.id'), nullable=False)
     image_url = Column(String(255), nullable=False)
     date = Column(TIMESTAMP, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), default=func.now(), nullable=False)
-    updated_at = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now(), nullable=False)
+    created_at = Column(TIMESTAMP, default=func.now(), nullable=False)
+    updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now(), nullable=False)
 
 
 class Total_Today(Base):
@@ -82,7 +81,7 @@ class Total_Today(Base):
     total_prot = Column(DECIMAL(6, 2), nullable=False)
     total_fat = Column(DECIMAL(6, 2), nullable=False)
     condition = Column(Boolean, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), default=func.now(), nullable=False)
-    updated_at = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now(), nullable=False)
+    created_at = Column(TIMESTAMP, default=func.now(), nullable=False)
+    updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now(), nullable=False)
     today = Column(DATE, nullable=False)
     history_ids = Column(ARRAY(Integer), nullable=False)

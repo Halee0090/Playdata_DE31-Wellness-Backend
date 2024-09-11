@@ -21,16 +21,8 @@ logger = logging.getLogger(__name__)
 s3_client = boto3.client('s3')
 
 # 학습된 모델 로드
-<<<<<<< HEAD:Fastapi-backend/Wellnessmodel/app/model_api.py
-<<<<<<< HEAD:Fastapi-backend/Wellnessmodel/app/model_api.py
-model = torch.load('C:\\Users\\Playdata\\backend_project\\Fastapi-backend\\Wellnessmodel\\app\\best_model_epoch_19', map_location=torch.device('cpu'))
+model = torch.load('/app/best_model_epoch_19', map_location=torch.device('cpu'))
 model.eval()
-=======
-model = torch.load('C:\\Users\\Playdata\\backend_project\\Fastapi-backend\\app\\api\\v1\\model\\best_model_epoch_19', map_location=torch.device('cpu'))
->>>>>>> 01bf127ceb6ae1ac184c5337e84f8fd8a900eca0:Fastapi-backend/app/api/v1/model/model_api.py
-=======
-model = torch.load('C:\\Users\\Playdata\\backend_project\\Fastapi-backend\\app\\api\\v1\\model\\best_model_epoch_19', map_location=torch.device('cpu'))
->>>>>>> d680b9789759adb1017d8fa47a7075b69a71c99a:Fastapi-backend/app/api/v1/model/model_api.py
 
 # 이미지 전처리 정의
 preprocess = transforms.Compose([

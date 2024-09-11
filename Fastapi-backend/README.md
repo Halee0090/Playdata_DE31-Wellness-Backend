@@ -1,6 +1,6 @@
 # Wellness_Backend 프로젝트 구조
 
-# /fastapi-backend
+<!-- # /fastapi-backend
 # │── Wellnessapp
 # │   ├── /app
 # │   ├────├──/api 
@@ -67,4 +67,4 @@
 # │── poetry.lock
 # │── pyproject.toml
 # │── README.md
-# │── requirements.txt
+# │── requirements.txt -->

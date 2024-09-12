@@ -2,13 +2,15 @@ from decimal import Decimal
 from pydantic import BaseModel
 from datetime import datetime
 
+
+# 요청 본문으로 받을 데이터 모델 정의
 class HistoryCreateRequest(BaseModel):
     user_id: int
     category_id: int
     meal_type_id: int
     image_url: str
     date: datetime
-    
+      
 class MealResponse(BaseModel):
     history_id: int
     meal_type_name: str
@@ -18,6 +20,7 @@ class MealResponse(BaseModel):
     food_prot: int
     food_fat: int
     date: datetime
+
 
 class HistoryBase(BaseModel):
     user_id: int

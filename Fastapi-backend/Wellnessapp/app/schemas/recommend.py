@@ -3,6 +3,7 @@ from decimal import Decimal
 from typing import ClassVar
 from sqlalchemy import TIMESTAMP, Column
 from sqlalchemy.sql import func
+from datetime import datetime
 
 
 class RecommendBase(BaseModel):
@@ -20,8 +21,7 @@ class RecommendUpdate(RecommendBase):
 
 class RecommendInDB(RecommendBase):
     id: int
-    updated_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)
-
+    updated_at: datetime
     class Config:
         arbitrary_types_allowed = True
         from_attributes = True

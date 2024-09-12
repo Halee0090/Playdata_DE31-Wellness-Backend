@@ -61,5 +61,3 @@ def get_recommend_eaten(
                 },
         "message": "User recommend information saved successfully"
             }
-
-

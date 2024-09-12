@@ -19,8 +19,8 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    created_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), nullable=False)
-    updated_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)
+    created_at: datetime
+    updated_at: datetime
     class Config:
         from_attributes = True  
 
@@ -41,6 +41,7 @@ class WellnessInfo(BaseModel):
     user_height: Decimal
     user_weight: Decimal
     user_email: EmailStr
+    user_nickname: str = Field(max_length=20)
 
 class UserResponseDetail(BaseModel):
     wellness_info: WellnessInfo

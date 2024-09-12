@@ -1,14 +1,16 @@
 from pydantic import BaseModel
 from typing import Optional
+from decimal import Decimal
+
 
 class FoodListBase(BaseModel):
     category_id: int
     food_name: str
     category_name: str
-    food_kcal: float
-    food_car: float
-    food_prot: float
-    food_fat: float
+    food_kcal: Decimal
+    food_car: Decimal
+    food_prot: Decimal
+    food_fat: Decimal
 
 class FoodListCreate(FoodListBase):
     pass

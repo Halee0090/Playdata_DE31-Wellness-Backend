@@ -1,9 +1,8 @@
 # /app/main.py
 from fastapi import FastAPI
-from Wellnessapp.app.api.v1 import recommend, model, user
-from .db import models
-from pytz import timezone
-from Wellnessapp.app.api.v1.history import router as history_router
+from api.v1 import recommend, model, user
+from db import models
+from api.v1.history import router as history_router
 
 app = FastAPI()
 
@@ -15,4 +14,3 @@ app.include_router(history_router, prefix="/api/v1/history", tags=["History"])
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

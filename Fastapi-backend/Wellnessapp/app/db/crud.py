@@ -1,10 +1,11 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from services import recommend_service
 from api.v1 import recommend
-from db.models import Food_List, Recommend
+from db.models import Food_List, Recommend, Total_Today
 from db import models
-from db.models import History
+from db.models import History, Food_List, Meal_Type
 from sqlalchemy.sql import func
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import date
@@ -12,6 +13,7 @@ from api.v1 import recommend
 from db import models
 from schemas import UserCreate
 import schemas
+from sqlalchemy.orm import Session
 
 # 공통 예외 처리 헬퍼 함수
 def execute_db_operation(db: Session, operation):
@@ -56,6 +58,20 @@ def create_or_update_recommend(db: Session, user_id: int, rec_kcal: Decimal, rec
             return new_recommend
     
     return execute_db_operation(db, operation)
+
+def calculate_and_save_recommendation(db: Session, user: models.User):
+    recommendation_result = recommend_service.recommend_nutrition(user.id, db)
+    if recommendation_result["status"] == "success":
+        return models.Recommend(
+            user_id=user.id,
+            rec_kcal=Decimal(recommendation_result["rec_kcal"]),
+            rec_car=Decimal(recommendation_result["rec_car"]),
+            rec_prot=Decimal(recommendation_result["rec_prot"]),
+            rec_fat=Decimal(recommendation_result["rec_fat"])
+        )
+    else:
+        raise HTTPException(status_code=500, detail="Faild to calculate recommendations")
+
 
 # 총 섭취량 조회 또는 생성
 def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
@@ -125,7 +141,7 @@ def create_history(db: Session, user_id: int, category_id: int, meal_type_id: in
 def get_today_history(db: Session, user_id: int, today: date):
     return db.query(History).filter(
         History.user_id == user_id,
-        History.date == today
+        History.date == Total_Today.today
     ).all()
 
 def get_user_by_email(db: Session, email: str):

@@ -24,9 +24,6 @@ class User(Base):
     total_today = relationship("Total_Today", back_populates="user")
     histories = relationship("History", back_populates="user")
 
-
-
-
 class Recommend(Base):
     __tablename__ = 'recommend'
 
@@ -81,8 +78,6 @@ class History(Base):
     user = relationship("User", back_populates="histories")
     food = relationship("Food_List", back_populates="history")
     meal_type = relationship("Meal_Type", back_populates="histories")
-
-
 
 
 class Total_Today(Base):

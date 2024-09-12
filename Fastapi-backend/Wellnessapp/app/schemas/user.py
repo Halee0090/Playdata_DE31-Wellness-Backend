@@ -1,7 +1,9 @@
 from pydantic import BaseModel, EmailStr, Field
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
-from typing import Optional
+from typing import ClassVar
+from sqlalchemy import TIMESTAMP, Column
+from sqlalchemy.sql import func
 
 class UserBase(BaseModel):
     age: int
@@ -10,34 +12,27 @@ class UserBase(BaseModel):
     weight: Decimal
     birthday: date
     email: EmailStr
-    nickname: str = Field(..., max_length=20)
+    nickname: str = Field(max_length=20)
 
 class UserCreate(UserBase):
+    pass
+
+class User(UserBase):
+    id: int
+    created_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), nullable=False)
+    updated_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)
+    class Config:
+        from_attributes = True  
+
+class UserUpdate(BaseModel):
+    birthday: date
     age: int
     gender: int
     height: Decimal
     weight: Decimal
-    birthday: date
     email: EmailStr
-    nickname: str = Field(..., max_length=20)
+    nickname: str = Field(max_length=20)
 
-class User(UserBase):
-    id: int
-    created_at: Optional[datetime]  # 자동 생성되므로 Optional로 지정
-    updated_at: Optional[datetime]  # 자동 갱신되므로 Optional로 지정
-
-    class Config:
-        from_attributes = True
-
-class UserUpdate(UserBase):
-    birthday: Optional[date] = None
-    age: Optional[int] = None
-    height: Optional[Decimal] = None
-    weight: Optional[Decimal] = None
-    email: Optional[EmailStr] = None
-    nickname: Optional[str] = None
-
-# 응답 스키마 추가
 class WellnessInfo(BaseModel):
     user_birthday: date
     user_age: int
@@ -46,6 +41,7 @@ class WellnessInfo(BaseModel):
     user_height: Decimal
     user_weight: Decimal
     user_email: EmailStr
+    user_nickname: str = Field(max_length=20)
 
 class UserResponseDetail(BaseModel):
     wellness_info: WellnessInfo

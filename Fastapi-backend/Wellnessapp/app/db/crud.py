@@ -1,14 +1,15 @@
+# crud.py
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from services import recommend_service
 from api.v1 import recommend
-from db.models import Food_List, Recommend, Total_Today
+from db.models import Food_List, Recommend, Total_Today, History, Meal_Type
 from db import models
 from db.models import History, Food_List, Meal_Type
 from sqlalchemy.sql import func
 from decimal import Decimal, ROUND_HALF_UP
-from datetime import date
+from datetime import date, datetime
 from api.v1 import recommend
 from db import models
 from schemas import UserCreate
@@ -162,3 +163,20 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+def get_meals_by_user_and_date(db: Session, user_id: int, date: datetime):
+    meals = db.query(
+        History.id.label("history_id"),
+        Meal_Type.type_name.label("meal_type_name"),
+        Food_List.category_name,
+        Food_List.food_kcal,
+        Food_List.food_car,
+        Food_List.food_prot,
+        Food_List.food_fat,
+        History.date
+    ).join(Food_List, History.category_id == Food_List.category_id) \
+     .join(Meal_Type, History.meal_type_id == Meal_Type.id) \
+     .filter(History.date == date) \
+     .filter(History.user_id == user_id) \
+     .all()
+    return meals
+    

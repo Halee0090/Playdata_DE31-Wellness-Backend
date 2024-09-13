@@ -19,8 +19,9 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    created_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), nullable=False)
-    updated_at: ClassVar[TIMESTAMP] = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)
+    created_at: datetime
+    updated_at: datetime
+
     class Config:
         from_attributes = True  
 

@@ -22,7 +22,8 @@ class User(Base):
     # 관계 설정: Recommend 클래스와의 연결
     recommendations = relationship("Recommend", back_populates="user")
     total_today = relationship("Total_Today", back_populates="user")
-    histories = relationship("History", back_populates="user")
+    history = relationship("History", back_populates="user")
+
 
 class Recommend(Base):
     __tablename__ = 'recommend'
@@ -75,7 +76,7 @@ class History(Base):
     created_at = Column(TIMESTAMP, default=func.now(), nullable=False)
     updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now(), nullable=False)
 
-    user = relationship("User", back_populates="histories")
+    user = relationship("User", back_populates="history")
     food = relationship("Food_List", back_populates="history")
     meal_type = relationship("Meal_Type", back_populates="histories")
 

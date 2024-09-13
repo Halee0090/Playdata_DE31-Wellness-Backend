@@ -1,3 +1,4 @@
+from decimal import Decimal
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -14,11 +15,9 @@ class MealResponse(BaseModel):
     history_id: int
     meal_type_name: str
     category_name: str
-    food_kcal: float
-    food_car: int
-    food_prot: int
-    food_fat: int
-    date: datetime
+    food_kcal: Decimal
+
+
 
 
 class HistoryBase(BaseModel):

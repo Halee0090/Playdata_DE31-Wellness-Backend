@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
 from typing import ClassVar
 from sqlalchemy import TIMESTAMP, Column
@@ -21,6 +21,7 @@ class User(UserBase):
     id: int
     created_at: datetime
     updated_at: datetime
+
     class Config:
         from_attributes = True  
 

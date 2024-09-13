@@ -16,10 +16,8 @@ class MealResponse(BaseModel):
     meal_type_name: str
     category_name: str
     food_kcal: Decimal
-    food_car: int
-    food_prot: int
-    food_fat: int
-    date: datetime
+
+
 
 
 class HistoryBase(BaseModel):

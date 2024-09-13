@@ -24,6 +24,7 @@ class User(Base):
     total_today = relationship("Total_Today", back_populates="user")
     history = relationship("History", back_populates="user")
 
+
 class Recommend(Base):
     __tablename__ = 'recommend'
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request
 import requests
 from dotenv import load_dotenv
 import os
@@ -14,23 +14,37 @@ kakao_redirect_url = os.getenv("KAKAO_REDIRECT_URL")
 
 @router.post("/code/kakao")
 async def get_kakao_token(request: Request):
-    data = await request.json()
-    authorization_code = data.get("code")
+    try:
+        data = await request.json()
+        authorization_code = data.get("code")
 
-    # 카카오로 액세스 토큰 요청
-    token_url = "https://kauth.kakao.com/oauth/token"
-    params = {
-        "grant_type": "authorization_code",
-        "client_id": kakao_restapi_key,  # 카카오 REST API 키
-        "redirect_uri": kakao_redirect_url,  # FastAPI 리디렉션 URI
-        "code": authorization_code
-    }
+        if not authorization_code:
+            raise HTTPException(status_code=400, detail="Authorization code is missing")
 
-    response = requests.post(token_url, data=params)
-    
-    if response.status_code == 200:
-        token_data = response.json()
-        access_token = token_data["access_token"]
-        return {"access_token": access_token}
-    else:
-        return {"error": "Failed to get access token", "details": response.json()}
+        # 로그 추가: 인가 코드 출력
+        print(f"Authorization Code: {authorization_code}")
+
+        token_url = "https://kauth.kakao.com/oauth/token"
+        params = {
+            "grant_type": "authorization_code",
+            "client_id": kakao_restapi_key,
+            "redirect_uri": kakao_redirect_url,
+            "code": authorization_code
+        }
+
+        response = requests.post(token_url, data=params)
+
+        if response.status_code == 200:
+            token_data = response.json()
+            access_token = token_data.get("access_token")
+            if not access_token:
+                raise HTTPException(status_code=500, detail="Failed to retrieve access token")
+            return {"access_token": access_token}
+        else:
+            error_details = response.json()
+            raise HTTPException(status_code=response.status_code, detail=f"Failed to get access token: {error_details}")
+
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Network error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")

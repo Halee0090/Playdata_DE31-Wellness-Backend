@@ -251,3 +251,24 @@ def update_total_today_condition(db: Session, total_today_id: int, new_condition
         db.refresh(total_today)
         return total_today
     return None
+
+def update_total_today_condition(db: Session, total_today_id: int, new_condition: bool):
+    try:
+        total_today = db.query(models.Total_Today).filter(models.Total_Today.id == total_today_id).first()
+        if total_today:
+            if total_today.condition != new_condition:
+                total_today.condition = new_condition
+                db.commit() 
+                db.refresh(total_today)  
+        
+        return total_today
+
+    except SQLAlchemyError as e:
+        db.rollback()  
+        print(f"Database error occurred: {e}")
+        return None
+
+    except Exception as e:
+        db.rollback()  
+        print(f"An unexpected error occurred: {e}")
+        return None

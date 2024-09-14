@@ -171,7 +171,10 @@ def get_or_update_recommendation(db: Session, user_id: int):
             
             db.commit()
             db.refresh(recommendation)
-        
+        total_today = get_or_create_total_today(db, user_id, date.today())
+        new_condition = total_today.total_kcal > recommendation.rec_kcal
+        update_total_today_condition(db, total_today.id, new_condition)
+
         return recommendation
 
     except IntegrityError:
@@ -238,3 +241,13 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def update_total_today_condition(db: Session, total_today_id: int, new_condition: bool):
+    total_today = db.query(models.Total_Today).filter(models.Total_Today.id == total_today_id).first()
+    if total_today:
+        total_today.condition = new_condition
+        db.commit()
+        db.refresh(total_today)
+        return total_today
+    return None

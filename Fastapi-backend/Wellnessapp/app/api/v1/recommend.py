@@ -30,11 +30,12 @@ def get_recommend_eaten(
     if recommendation is None:
         raise HTTPException(status_code=500, detail="Failed to retrieve or create recommendations")
 
+    # total_today를 가져오거나 생성
     total_today = crud.get_or_create_total_today(db, user_id, date_obj)
 
-    total_today.condition = total_today.total_kcal > recommendation.rec_kcal  
-    crud.update_total_today(db, total_today)
-    
+    # condition 업데이트
+    new_condition = total_today.total_kcal > recommendation.rec_kcal
+    total_today = crud.update_total_today_condition(db, total_today.id, new_condition)
     return {
         "status": "success",
         "status_code": 200,

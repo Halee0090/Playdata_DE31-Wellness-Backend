@@ -48,3 +48,5 @@ async def get_kakao_token(request: Request):
         raise HTTPException(status_code=500, detail=f"Network error: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
+

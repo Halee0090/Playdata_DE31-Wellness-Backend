@@ -4,6 +4,7 @@ import deps, schemas
 from db.session import Session
 from db.session import get_db
 from schemas import UserCreate, UserResponse
+from datetime import date
 
 router = APIRouter()
 @router.post("/users_info", response_model=schemas.UserResponse)
@@ -19,6 +20,10 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
         # 권장 영양소 계산 및 저장
         recommendation = crud.calculate_and_save_recommendation(db, new_user)
         db.add(recommendation)
+        # total_today 생성
+        today = date.today()
+        total_today = crud.get_or_create_total_today(db, new_user.id, today)
+
         db.commit()
         db.refresh(recommendation)
     except HTTPException as e:

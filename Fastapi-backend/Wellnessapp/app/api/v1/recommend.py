@@ -9,6 +9,8 @@ from db.models import User, Recommend
 
 router = APIRouter()
 
+
+
 @router.get("/eaten_nutrient")
 def get_recommend_eaten(
     user_id: int, 

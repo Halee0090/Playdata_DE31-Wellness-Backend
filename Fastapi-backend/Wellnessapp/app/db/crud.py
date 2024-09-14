@@ -76,19 +76,14 @@ def get_recommend_by_user_id(db: Session, user_id: int):
     
         
 def calculate_and_save_recommendation(db: Session, user: models.User):
-    recommendation_result = recommend_service.recommend_nutrition(user.id, db)
-    if recommendation_result["status"] == "success":
-        return models.Recommend(
-            user_id=user.id,
-            rec_kcal=Decimal(recommendation_result["rec_kcal"]),
-            rec_car=Decimal(recommendation_result["rec_car"]),
-            rec_prot=Decimal(recommendation_result["rec_prot"]),
-            rec_fat=Decimal(recommendation_result["rec_fat"])
-        )
-    else:
-        raise HTTPException(status_code=500, detail="Faild to calculate recommendations")
-
-
+    recommendation_result = recommend_service.recommend_nutrition(user.weight, user.height, user.age, user.gender)
+    return models.Recommend(
+        user_id=user.id,
+        rec_kcal=recommendation_result["rec_kcal"],
+        rec_car=recommendation_result["rec_car"],
+        rec_prot=recommendation_result["rec_prot"],
+        rec_fat=recommendation_result["rec_fat"]
+    )
 # 총 섭취량 조회 또는 생성
 # def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
 #     def operation():

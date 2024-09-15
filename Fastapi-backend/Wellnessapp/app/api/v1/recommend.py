@@ -34,8 +34,8 @@ def get_recommend_eaten(
     total_today = crud.get_or_create_total_today(db, user_id, date_obj)
 
     # condition 업데이트
-    new_condition = total_today.total_kcal > recommendation.rec_kcal
-    total_today = crud.update_total_today_condition(db, total_today.id, new_condition)
+    total_today = crud.update_total_today_condition(db, total_today.id)
+    
     return {
         "status": "success",
         "status_code": 200,

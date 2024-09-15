@@ -1,8 +1,9 @@
 # /app/api/v1/model.py
 from fastapi import APIRouter, HTTPException, Depends, Query, UploadFile, File
 from sqlalchemy.orm import Session
+from api.v1.auth import validate_token
 from db.session import get_db
-from db.crud import get_food_by_category, get_recommend_by_user
+from db.crud import get_food_by_category, get_recommend_by_user, get_recommend_by_user_id
 from utils.image_processing import extract_exif_data, determine_meal_type
 from utils.s3 import upload_image_to_s3
 import requests
@@ -10,12 +11,21 @@ from io import BytesIO
 import os
 import uuid
 import datetime
+from fastapi.responses import JSONResponse
+from decimal import Decimal
+from db import models
 
 router = APIRouter()
 
+# Decimal 타입을 float으로 변환하는 함수
+def decimal_to_float(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError
+
 @router.post("/predict")
 async def classify_image(
-    user_id: int = Query(...),
+    current_user: models.User = Depends(validate_token),  # 토큰 검증 추가
     file: UploadFile =  File(...), 
     db: Session = Depends(get_db)
 ):
@@ -37,6 +47,7 @@ async def classify_image(
         meal_type = determine_meal_type(date) if date else "기타"
 
         model_api_url = "http://Wellnessmodel:8001/predict_url/"
+
         try:
             response = requests.post(model_api_url, params={"image_url": image_url})
             response.raise_for_status()
@@ -51,32 +62,40 @@ async def classify_image(
         if not food:
             raise HTTPException(status_code=404, detail="Food not found")
         
-        recommend = get_recommend_by_user(db, user_id)
+        recommend = get_recommend_by_user(db, current_user.id)
         if not recommend:
             raise HTTPException(status_code=404, detail="User not found")
+        
+        # meal_type과 category_name을 UTF-8로 인코딩
+        meal_type_utf8 = meal_type.encode('utf-8').decode('utf-8')
+        category_name_utf8 = food.category_name.encode('utf-8').decode('utf-8')
 
-        return {
-        "status": "success",
-        "status_code": 201,
-        "detail": {
-            "wellness_image_info": {
-                "date": date, 
-                "meal_type": meal_type, 
-                "category_id": category_id, 
-                "food_name": food.category_name, 
-                "food_kcal": food.food_kcal, 
-                "food_car": round(food.food_car), 
-                "food_prot": round(food.food_prot), 
-                "food_fat": round(food.food_fat), 
-                "rec_kcal": recommend.rec_kcal, 
-                "rec_car": round(recommend.rec_car), 
-                "rec_prot": round(recommend.rec_prot), 
-                "rec_fat": round(recommend.rec_fat),
-                "image_url": image_url
+        # UTF-8로 JSON 응답을 반환, Decimal을 float으로 변환
+        return JSONResponse(
+            content={
+                "status": "success",
+                "status_code": 201,
+                "detail": {
+                    "wellness_image_info": {
+                        "date": date, 
+                        "meal_type": meal_type_utf8,  # UTF-8 인코딩된 값 사용
+                        "category_id": category_id, 
+                        "category_name": category_name_utf8,  # UTF-8 인코딩된 값 사용
+                        "food_kcal": decimal_to_float(food.food_kcal),  # Decimal을 float으로 변환
+                        "food_car": round(float(food.food_car)), 
+                        "food_prot": round(float(food.food_prot)), 
+                        "food_fat": round(float(food.food_fat)), 
+                        "rec_kcal": decimal_to_float(recommend.rec_kcal), 
+                        "rec_car": round(float(recommend.rec_car)), 
+                        "rec_prot": round(float(recommend.rec_prot)), 
+                        "rec_fat": round(float(recommend.rec_fat)),
+                        "image_url": image_url
                     }
-                  },
+                },
                 "message": "Image Classify Information saved successfully"
-                }
+            },
+            media_type="application/json; charset=utf-8"
+        )
         
     except HTTPException as e:
         raise e

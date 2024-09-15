@@ -1,17 +1,64 @@
+# crud.py
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+<<<<<<< HEAD
+from sqlalchemy.exc import SQLAlchemyError
+from services import recommend_service
+from api.v1 import recommend
+from db.models import Food_List, Recommend, Total_Today, History, Meal_Type
+=======
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError, DataError
 from db.models import Food_List, Recommend, Total_Today
+>>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259
 from db import models
 from db.models import History, Food_List, Meal_Type
 from sqlalchemy.sql import func
 from decimal import Decimal, ROUND_HALF_UP
+<<<<<<< HEAD
+from datetime import date, datetime
+from api.v1 import recommend
+from db import models
+from schemas import UserCreate
+import schemas
+from sqlalchemy.orm import Session
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+# 공통 예외 처리 헬퍼 함수
+def execute_db_operation(db: Session, operation):
+    try:
+        result = operation()
+        db.commit()
+        return result
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Database operation failed: {str(e)}")
+=======
 from datetime import date
 from schemas import UserCreate
 import schemas
 from api.v1 import recommend
 from services import recommend_service
+<<<<<<< HEAD
 # 사용자의 마지막 업데이트 기록 조회
+=======
+# 공통 예외 처리 헬퍼 함수
+# def execute_db_operation(db: Session, operation):
+#     try:
+#         result = operation()
+#         db.commit()
+#         return result
+#     except SQLAlchemyError:
+#         db.rollback()
+#         raise HTTPException(status_code=500, detail="Database operation failed")
+>>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259
+
+# 사용자의 마지막 업데이트 시간 조회
+# def get_user_updated_at(db: Session, user_id: int):
+#     return execute_db_operation(db, lambda: db.query(models.User).filter(models.User.id == user_id).first())
+>>>>>>> dca141995a84716078b2d67232dbb72d55edf336
 def get_user_updated_at(db: Session, user_id: int):
     try:
         user = db.query(models.User).filter(models.User.id == user_id).first()
@@ -84,12 +131,34 @@ def get_or_update_recommendation(db: Session, user_id: int):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 # 총 섭취량 조회 또는 생성
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+def get_or_create_total_today(db: Session, current_user: models.User, date_obj: date):
+    try:
+        total_today = db.query(models.Total_Today).filter_by(user_id=current_user.id, today=date_obj).first()
+=======
+# def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
+#     def operation():
+#         total_today = db.query(models.Total_Today).filter_by(user_id=user_id, today=date_obj).first()
+#         if total_today is None:
+#             total_today = models.Total_Today(
+#                 user_id=user_id, total_kcal=Decimal('0'), total_car=Decimal('0'),
+#                 total_prot=Decimal('0'), total_fat=Decimal('0'), condition=False,
+#                 created_at=func.now(), updated_at=func.now(), today=date_obj, history_ids=[]
+#             )
+#             db.add(total_today)
+#             db.refresh(total_today)
+#         return total_today
+#     return execute_db_operation(db, operation)
+>>>>>>> dca141995a84716078b2d67232dbb72d55edf336
 def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
     try:
         total_today = db.query(models.Total_Today).filter_by(user_id=user_id, today=date_obj).first()
+>>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259
         if total_today is None:
             total_today = models.Total_Today(
-                user_id=user_id, total_kcal=Decimal('0'), total_car=Decimal('0'),
+                user_id=current_user.id, total_kcal=Decimal('0'), total_car=Decimal('0'),
                 total_prot=Decimal('0'), total_fat=Decimal('0'), condition=False,
                 created_at=func.now(), updated_at=func.now(), today=date_obj, history_ids=[]
             )
@@ -97,12 +166,18 @@ def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
             db.commit()
             db.refresh(total_today)
         return total_today
+<<<<<<< HEAD
+    except Exception as e:
+        logger.error(f"Error fetching or creating total_today: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database operation failed: {str(e)}")
+=======
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Invalid data: Integrity constraint violated")
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+>>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259
 
 # Total_Today 업데이트
 def update_total_today(db: Session, total_today: models.Total_Today):
@@ -168,6 +243,24 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+<<<<<<< HEAD
+def get_meals_by_user_and_date(db: Session, user_id: int, date: datetime):
+    meals = db.query(
+        History.id.label("history_id"),
+        Meal_Type.type_name.label("meal_type_name"),
+        Food_List.category_name,
+        Food_List.food_kcal,
+        Food_List.food_car,
+        Food_List.food_prot,
+        Food_List.food_fat,
+        History.date
+    ).join(Food_List, History.category_id == Food_List.category_id) \
+     .join(Meal_Type, History.meal_type_id == Meal_Type.id) \
+     .filter(History.date == date) \
+     .filter(History.user_id == user_id) \
+     .all()
+    return meals
+=======
 
 
 # total_today condition 업데이트
@@ -198,6 +291,7 @@ def update_total_today_condition(db: Session, total_today_id: int, new_condition
         db.rollback()  
         print(f"An unexpected error occurred: {e}")
         return None
+<<<<<<< HEAD
     
 # 만 나이 계산 함수 추가(create_user에서 사용)
 def calculate_age(birth_date) -> int:
@@ -209,3 +303,6 @@ def calculate_age(birth_date) -> int:
         age -= 1
     
     return age
+=======
+>>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259
+>>>>>>> dca141995a84716078b2d67232dbb72d55edf336

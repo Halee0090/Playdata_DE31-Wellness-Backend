@@ -1,7 +1,11 @@
+from decimal import Decimal
 from pydantic import BaseModel
+<<<<<<< HEAD
+=======
 from typing import Optional
 from decimal import Decimal
 
+>>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259
 
 class FoodListBase(BaseModel):
     category_id: int

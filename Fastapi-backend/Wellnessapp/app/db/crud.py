@@ -15,6 +15,9 @@ from db import models
 from schemas import UserCreate
 import schemas
 from sqlalchemy.orm import Session
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # 공통 예외 처리 헬퍼 함수

@@ -16,15 +16,16 @@ from schemas import UserCreate
 import schemas
 from sqlalchemy.orm import Session
 
+
 # 공통 예외 처리 헬퍼 함수
 def execute_db_operation(db: Session, operation):
     try:
         result = operation()
         db.commit()
         return result
-    except SQLAlchemyError:
+    except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail="Database operation failed")
+        raise HTTPException(status_code=500, detail="Database operation failed: {str(e)}")
 
 # 사용자의 마지막 업데이트 시간 조회
 def get_user_updated_at(db: Session, user_id: int):
@@ -75,19 +76,21 @@ def calculate_and_save_recommendation(db: Session, user: models.User):
 
 
 # 총 섭취량 조회 또는 생성
-def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
-    def operation():
-        total_today = db.query(models.Total_Today).filter_by(user_id=user_id, today=date_obj).first()
+def get_or_create_total_today(db: Session, current_user: models.User, date_obj: date):
+    try:
+        total_today = db.query(models.Total_Today).filter_by(user_id=current_user.id, today=date_obj).first()
         if total_today is None:
             total_today = models.Total_Today(
-                user_id=user_id, total_kcal=Decimal('0'), total_car=Decimal('0'),
+                user_id=current_user.id, total_kcal=Decimal('0'), total_car=Decimal('0'),
                 total_prot=Decimal('0'), total_fat=Decimal('0'), condition=False,
                 created_at=func.now(), updated_at=func.now(), today=date_obj, history_ids=[]
             )
             db.add(total_today)
             db.refresh(total_today)
         return total_today
-    return execute_db_operation(db, operation)
+    except Exception as e:
+        logger.error(f"Error fetching or creating total_today: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database operation failed: {str(e)}")
 
 # Total_Today 업데이트
 def update_total_today(db: Session, total_today: models.Total_Today):
@@ -179,5 +182,3 @@ def get_meals_by_user_and_date(db: Session, user_id: int, date: datetime):
      .filter(History.user_id == user_id) \
      .all()
     return meals
-    
-

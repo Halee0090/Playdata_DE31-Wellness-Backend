@@ -17,9 +17,6 @@ class MealResponse(BaseModel):
     category_name: str
     food_kcal: Decimal
 
-
-
-
 class HistoryBase(BaseModel):
     user_id: int
     category_id: int

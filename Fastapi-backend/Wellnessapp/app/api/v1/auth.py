@@ -1,50 +1,55 @@
-from fastapi import APIRouter, HTTPException, Request
-import requests
-from dotenv import load_dotenv
-import os
+from datetime import datetime
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import OperationalError
+from db.session import get_db
+from db.models import Auth, User
+import logging
 
-router = APIRouter()
+# 토큰을 Bearer 방식으로 받아오는 OAuth2 스키마
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-# Load environment variables
-load_dotenv()
+# 로깅 설정
+logger = logging.getLogger(__name__)
 
-# Get kakao credentials from environment variables
-kakao_restapi_key = os.getenv("KAKAO_RESTAPI_KEY")
-kakao_redirect_url = os.getenv("KAKAO_REDIRECT_URL")
+async def validate_token(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    # 토큰을 확인하는 로그 추가
+    logger.info(f"Received token: {token}")
 
-@router.post("/code/kakao")
-async def get_kakao_token(request: Request):
-    try:
-        data = await request.json()
-        authorization_code = data.get("code")
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
-        if not authorization_code:
-            raise HTTPException(status_code=400, detail="Authorization code is missing")
+    # 데이터베이스에서 토큰 조회
+    auth_entry = db.query(Auth).filter(Auth.access_token == token).first()
+    
+    if auth_entry is None:
+        # 토큰 조회 실패 시 로그 기록
+        logger.error(f"Token not found in the database: {token}")
+        raise credentials_exception
 
-        # 로그 추가: 인가 코드 출력
-        print(f"Authorization Code: {authorization_code}")
+    # 토큰 만료 여부 확인
+    if auth_entry.access_expired_at < datetime.utcnow():
+        # 만료된 토큰일 경우 로그 기록
+        logger.error(f"Token expired: {token}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # 여기서 User 객체 반환
+    user = db.query(User).filter(User.id == auth_entry.user_id).first()
+    if user is None:
+        logger.error(f"User not found for token: {token}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-        token_url = "https://kauth.kakao.com/oauth/token"
-        params = {
-            "grant_type": "authorization_code",
-            "client_id": kakao_restapi_key,
-            "redirect_uri": kakao_redirect_url,
-            "code": authorization_code
-        }
-
-        response = requests.post(token_url, data=params)
-
-        if response.status_code == 200:
-            token_data = response.json()
-            access_token = token_data.get("access_token")
-            if not access_token:
-                raise HTTPException(status_code=500, detail="Failed to retrieve access token")
-            return {"access_token": access_token}
-        else:
-            error_details = response.json()
-            raise HTTPException(status_code=response.status_code, detail=f"Failed to get access token: {error_details}")
-
-    except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Network error: {str(e)}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    logger.info(f"Token is valid for user_id: {user.id}")
+    return user

@@ -1,7 +1,6 @@
 # crud.py
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-<<<<<<< HEAD
 from sqlalchemy.exc import SQLAlchemyError
 from services import recommend_service
 from api.v1 import recommend

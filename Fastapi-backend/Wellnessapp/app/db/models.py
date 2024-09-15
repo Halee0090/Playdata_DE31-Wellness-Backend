@@ -1,9 +1,23 @@
-from sqlalchemy import ForeignKey, Column, Integer, String, DECIMAL, TIMESTAMP, DATE, text, Boolean
+from sqlalchemy import ForeignKey, Column, Integer, String, DECIMAL, TIMESTAMP, DATE, text, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from db.session import Base
 from sqlalchemy.dialects.postgresql import ARRAY
+from datetime import datetime
 
+class Auth(Base):
+    __tablename__ = 'auth'
+    
+    id= Column(Integer, primary_key=True,autoincrement=True )
+    user_id= Column(Integer, ForeignKey('user_info.id'), nullable=False)
+    access_token= Column(String(255), nullable=False, unique=True)
+    access_created_at= Column(DateTime, default=datetime.utcnow, nullable=False)
+    access_expired_at= Column(DateTime, nullable=False)
+    refresh_token= Column(String(255), nullable=False, unique=True)
+    refresh_created_at= Column(DateTime, default=datetime.utcnow, nullable=False)
+    refresh_expired_at= Column(DateTime, nullable=False)
+    
+    user= relationship("User", back_populates="auth")
 
 class User(Base):
     __tablename__ = 'user_info'
@@ -23,6 +37,7 @@ class User(Base):
     recommendations = relationship("Recommend", back_populates="user")
     total_today = relationship("Total_Today", back_populates="user")
     history = relationship("History", back_populates="user")
+    auth = relationship("Auth", back_populates="user")
 
 
 class Recommend(Base):

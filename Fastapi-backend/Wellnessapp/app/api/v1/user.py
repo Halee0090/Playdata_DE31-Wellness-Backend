@@ -6,6 +6,7 @@ from db.session import get_db
 from schemas import UserCreate, UserResponse
 
 router = APIRouter()
+
 @router.post("/users_info", response_model=schemas.UserResponse)
 def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
     # 이메일 중복 체크

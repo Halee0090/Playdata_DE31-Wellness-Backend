@@ -21,7 +21,10 @@ class User(UserBase):
     id: int
     created_at: datetime
     updated_at: datetime
+<<<<<<< HEAD
 
+=======
+>>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259
     class Config:
         from_attributes = True  
 

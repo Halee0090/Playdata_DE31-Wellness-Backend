@@ -5,15 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from services import recommend_service
 from api.v1 import recommend
 from db.models import Food_List, Recommend, Total_Today, History, Meal_Type
-=======
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError, DataError
 from db.models import Food_List, Recommend, Total_Today
->>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259
-from db import models
-from db.models import History, Food_List, Meal_Type
-from sqlalchemy.sql import func
-from decimal import Decimal, ROUND_HALF_UP
-<<<<<<< HEAD
 from datetime import date, datetime
 from api.v1 import recommend
 from db import models
@@ -34,22 +27,7 @@ def execute_db_operation(db: Session, operation):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail="Database operation failed: {str(e)}")
-=======
-from datetime import date
-from schemas import UserCreate
-import schemas
-from api.v1 import recommend
-from services import recommend_service
-# 공통 예외 처리 헬퍼 함수
-# def execute_db_operation(db: Session, operation):
-#     try:
-#         result = operation()
-#         db.commit()
-#         return result
-#     except SQLAlchemyError:
-#         db.rollback()
-#         raise HTTPException(status_code=500, detail="Database operation failed")
->>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259
+
 
 # 사용자의 마지막 업데이트 시간 조회
 # def get_user_updated_at(db: Session, user_id: int):
@@ -136,7 +114,6 @@ def get_or_create_total_today(db: Session, current_user: models.User, date_obj: 
 def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
     try:
         total_today = db.query(models.Total_Today).filter_by(user_id=user_id, today=date_obj).first()
->>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259
         if total_today is None:
             total_today = models.Total_Today(
                 user_id=current_user.id, total_kcal=Decimal('0'), total_car=Decimal('0'),
@@ -147,18 +124,12 @@ def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
             db.commit()
             db.refresh(total_today)
         return total_today
-<<<<<<< HEAD
-    except Exception as e:
-        logger.error(f"Error fetching or creating total_today: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Database operation failed: {str(e)}")
-=======
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Invalid data: Integrity constraint violated")
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
->>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259
 
 # Total_Today 업데이트
 # def update_total_today(db: Session, total_today: models.Total_Today):
@@ -284,7 +255,6 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
-<<<<<<< HEAD
 def get_meals_by_user_and_date(db: Session, user_id: int, date: datetime):
     meals = db.query(
         History.id.label("history_id"),
@@ -301,7 +271,6 @@ def get_meals_by_user_and_date(db: Session, user_id: int, date: datetime):
      .filter(History.user_id == user_id) \
      .all()
     return meals
-=======
 
 def update_total_today_condition(db: Session, total_today_id: int, new_condition: bool):
     total_today = db.query(models.Total_Today).filter(models.Total_Today.id == total_today_id).first()
@@ -332,4 +301,3 @@ def update_total_today_condition(db: Session, total_today_id: int, new_condition
         db.rollback()  
         print(f"An unexpected error occurred: {e}")
         return None
->>>>>>> 09710e7dc49ffc696602f6f8ac7d6ccb4efb4259

@@ -101,13 +101,13 @@ def get_or_update_recommendation(db: Session, current_user: models.User):
 def get_or_create_total_today(db: Session, current_user: models.User, date_obj: date):
     try:
         logger.info(f"Checking total_today for user: {current_user.id} on date: {date_obj}")
-
         # 사용자, 날짜 별 total_today 기록 조회
         total_today = db.query(Total_Today).filter_by(user_id=current_user.id, today=date_obj).first()
         
         # 없을 경우 새로 생성
         if total_today is None: 
             logger.info(f"Creating total_today for user: {current_user.id} on date: {date_obj}")
+
             total_today = Total_Today(
                 user_id=current_user.id, 
                 total_kcal=Decimal('0'), 

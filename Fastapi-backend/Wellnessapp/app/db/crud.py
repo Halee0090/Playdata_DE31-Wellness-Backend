@@ -98,14 +98,14 @@ def get_or_update_recommendation(db: Session, current_user: models.User):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     
 # 총 섭취량 조회 또는 생성
-def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
+def get_or_create_total_today(db: Session, current_user: models.User, date_obj: date):
     try:
         # 사용자, 날짜 별 total_today 기록 조회
-        total_today = db.query(models.Total_Today).filter_by(user_id=user_id, today=date_obj).first()
+        total_today = db.query(Total_Today).filter_by(user_id=current_user.id, today=date_obj).first()
         # 없을 경우 새로 생성
         if total_today is None: 
-            total_today = models.Total_Today(
-                user_id=user_id, 
+            total_today = Total_Today(
+                user_id=current_user.id, 
                 total_kcal=Decimal('0'), 
                 total_car=Decimal('0'),
                 total_prot=Decimal('0'), 

@@ -1,7 +1,7 @@
 # crud.py
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError, DataError
 from services import recommend_service
 from api.v1 import recommend
 from db.models import Food_List, Recommend, Total_Today, History, Meal_Type
@@ -93,28 +93,10 @@ def calculate_and_save_recommendation(db: Session, user: models.User):
         rec_fat=recommendation_result["rec_fat"]
     )
 # 총 섭취량 조회 또는 생성
-<<<<<<< HEAD
 def get_or_create_total_today(db: Session, current_user: models.User, date_obj: date):
     try:
         total_today = db.query(models.Total_Today).filter_by(user_id=current_user.id, today=date_obj).first()
-=======
-# def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
-#     def operation():
-#         total_today = db.query(models.Total_Today).filter_by(user_id=user_id, today=date_obj).first()
-#         if total_today is None:
-#             total_today = models.Total_Today(
-#                 user_id=user_id, total_kcal=Decimal('0'), total_car=Decimal('0'),
-#                 total_prot=Decimal('0'), total_fat=Decimal('0'), condition=False,
-#                 created_at=func.now(), updated_at=func.now(), today=date_obj, history_ids=[]
-#             )
-#             db.add(total_today)
-#             db.refresh(total_today)
-#         return total_today
-#     return execute_db_operation(db, operation)
-def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
-    try:
-        total_today = db.query(models.Total_Today).filter_by(user_id=user_id, today=date_obj).first()
-        if total_today is None:
+        if total_today is None: 
             total_today = models.Total_Today(
                 user_id=current_user.id, total_kcal=Decimal('0'), total_car=Decimal('0'),
                 total_prot=Decimal('0'), total_fat=Decimal('0'), condition=False,
@@ -160,7 +142,7 @@ def update_total_today(db: Session, total_today: models.Total_Today):
 #         else:
 #             raise HTTPException(status_code=500, detail="Failed to retrieve recommendations")
 #     return recommendation
-def get_or_update_recommendation(db: Session, user_id: int):
+def get_or_update_recommendation(db: Session, current_user: models.User):
     try:
         user = db.query(models.User).filter(models.User.id == user_id).first()
         if not user:

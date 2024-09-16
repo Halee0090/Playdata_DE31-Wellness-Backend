@@ -15,8 +15,9 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # 사용자 정보 저장
+
     try:
+        # 사용자 정보 저장
         new_user = crud.create_user(db=db, user=user)
         # 권장 영양소 계산 및 저장
         recommendation = crud.calculate_and_save_recommendation(db, new_user)
@@ -32,8 +33,10 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
         db.refresh(total_today)
     except HTTPException as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to create user: {str(e)}") from e
-        
+        raise HTTPException(status_code=500, detail=f"Failed to create user: {str(e)}") from e    
+    
+    # response에 user_info, recommen, total_today 값 확인할 수 있도록 추가함
+
     return {
         "status": "success",
         "status_code": 201,
@@ -52,6 +55,13 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
                 "rec_car": recommendation.rec_car,
                 "rec_prot": recommendation.rec_prot,
                 "rec_fat": recommendation.rec_fat
+            },
+            "total_today": {
+                "total_kcal": total_today.total_kcal,
+                "total_car": total_today.total_car,
+                "total_prot": total_today.total_prot,
+                "total_fat": total_today.total_fat,
+                "condition": total_today.condition
             }
         },
         "message": "User information and recommendations, and total_today saved successfully"

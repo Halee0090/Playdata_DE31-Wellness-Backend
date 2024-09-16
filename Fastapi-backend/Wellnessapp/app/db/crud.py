@@ -5,10 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError, DataError
 from services import recommend_service
 from api.v1 import recommend
 from db.models import Food_List, Recommend, Total_Today, History, Meal_Type
-from db import models
-from db.models import History, Food_List, Meal_Type
-from sqlalchemy.sql import func
-from decimal import Decimal, ROUND_HALF_UP
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError, DataError
+from db.models import Food_List, Recommend, Total_Today
 from datetime import date, datetime
 from api.v1 import recommend
 from db import models
@@ -29,6 +27,7 @@ def execute_db_operation(db: Session, operation):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail="Database operation failed: {str(e)}")
+
 
 # 사용자의 마지막 업데이트 시간 조회
 # def get_user_updated_at(db: Session, user_id: int):

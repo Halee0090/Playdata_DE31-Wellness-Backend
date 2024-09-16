@@ -63,7 +63,7 @@ async def classify_image(
         if not food:
             raise HTTPException(status_code=404, detail="Food not found")
         
-        recommend = get_recommend_by_user(db, current_user.id)
+        recommend = get_recommend_by_user(db, current_user)
         if not recommend:
             raise HTTPException(status_code=404, detail="User not found")
         

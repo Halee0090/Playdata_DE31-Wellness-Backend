@@ -1,20 +1,35 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, status
 from db import crud, models
-import deps, schemas
-from db.session import Session
+import schemas
 from db.session import get_db
-from schemas import UserCreate, UserResponse
+from sqlalchemy.orm import Session
+from api.v1.auth import validate_token  # 토큰 검증 함수 가져오기
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+# 사용자 정보 저장 API (토큰 필수)
 @router.post("/users_info", response_model=schemas.UserResponse)
-def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
+def save_user_info(
+    user: schemas.UserCreate, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(validate_token)  # 토큰 검증된 사용자 정보
+):
+    if not current_user:
+        # 토큰이 없는 경우 명확히 예외를 발생시킵니다.
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication credentials were not provided"
+        )
+    
     # 이메일 중복 체크
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # 사용자 정보 저장
+    # 사용자 정보 저장 (토큰 검증 통과 후 실행)
     try:
         new_user = crud.create_user(db=db, user=user)
         # 권장 영양소 계산 및 저장
@@ -22,8 +37,9 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
         db.add(recommendation)
         db.commit()
         db.refresh(recommendation)
-    except HTTPException as e:
-        raise HTTPException(status_code=500, detail="Failed to create user") from e
+    except Exception as e:
+        logger.error(f"Error saving user info: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to create user")
     
     return {
         "status": "success",

@@ -100,10 +100,14 @@ def get_or_update_recommendation(db: Session, current_user: models.User):
 # 총 섭취량 조회 또는 생성
 def get_or_create_total_today(db: Session, current_user: models.User, date_obj: date):
     try:
+        logger.info(f"Checking total_today for user: {current_user.id} on date: {date_obj}")
         # 사용자, 날짜 별 total_today 기록 조회
         total_today = db.query(Total_Today).filter_by(user_id=current_user.id, today=date_obj).first()
+        
         # 없을 경우 새로 생성
         if total_today is None: 
+            logger.info(f"Creating total_today for user: {current_user.id} on date: {date_obj}")
+
             total_today = Total_Today(
                 user_id=current_user.id, 
                 total_kcal=Decimal('0'), 
@@ -123,9 +127,11 @@ def get_or_create_total_today(db: Session, current_user: models.User, date_obj: 
     
     except IntegrityError:
         db.rollback()
+        logger.error("IntegrityError occurred while creating or fetching total_today")
         raise HTTPException(status_code=400, detail="Invalid data: Integrity constraint violated")
     except SQLAlchemyError as e:
         db.rollback()
+        logger.error(f"SQLAlchemyError occurred: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 # Total_Today 업데이트
@@ -137,6 +143,10 @@ def update_total_today(db: Session, total_today: models.Total_Today):
         total_today.total_car = min(total_today.total_car, max_value)
         total_today.total_prot = min(total_today.total_prot, max_value)
         total_today.total_fat = min(total_today.total_fat, max_value)
+        
+        # condition 값이 없을 경우 False로 설정
+        if total_today.condition is None:
+            total_today.condition = False
         
         db.refresh(total_today)
         db.commit()

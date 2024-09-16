@@ -57,9 +57,57 @@ def calculate_and_save_recommendation(db: Session, user: models.User):
         rec_prot=recommendation_result["rec_prot"],
         rec_fat=recommendation_result["rec_fat"]
     )
+# 총 섭취량 조회 또는 생성
+def get_or_create_total_today(db: Session, current_user: models.User, date_obj: date):
+    try:
+        total_today = db.query(models.Total_Today).filter_by(user_id=current_user.id, today=date_obj).first()
+        if total_today is None: 
+            total_today = models.Total_Today(
+                user_id=current_user.id, total_kcal=Decimal('0'), total_car=Decimal('0'),
+                total_prot=Decimal('0'), total_fat=Decimal('0'), condition=False,
+                created_at=func.now(), updated_at=func.now(), today=date_obj, history_ids=[]
+            )
+            db.add(total_today)
+            db.commit()
+            db.refresh(total_today)
+        return total_today
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Invalid data: Integrity constraint violated")
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-# 사용자 권장 영양소를 조회하거나 업데이트(recommend_eaten api에 사용)
-def get_or_update_recommendation(db: Session, user_id: int):
+# Total_Today 업데이트
+# def update_total_today(db: Session, total_today: models.Total_Today):
+#     return execute_db_operation(db, lambda: db.refresh(total_today))
+def update_total_today(db: Session, total_today: models.Total_Today):
+    try:
+        db.refresh(total_today)
+        db.commit()
+        return total_today
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to update Total_Today: {str(e)}")
+
+# 사용자 권장 영양소를 조회하거나 업데이트
+# def get_or_update_recommendation(db: Session, user_id: int):
+#     recommendation = get_recommend_by_user_id(db, user_id)
+#     if not recommendation:
+#         recommendation_result = recommend.recommend_nutrition(user_id, db)
+#         if recommendation_result["status"] == "success":
+#             return create_or_update_recommend(
+#                 db,
+#                 user_id,
+#                 Decimal(recommendation_result["rec_kcal"]),
+#                 Decimal(recommendation_result["rec_car"]),
+#                 Decimal(recommendation_result["rec_prot"]),
+#                 Decimal(recommendation_result["rec_fat"]),
+#             )
+#         else:
+#             raise HTTPException(status_code=500, detail="Failed to retrieve recommendations")
+#     return recommendation
+def get_or_update_recommendation(db: Session, current_user: models.User):
     try:
         # 사용자 조회
         user = db.query(models.User).filter(models.User.id == user_id).first()

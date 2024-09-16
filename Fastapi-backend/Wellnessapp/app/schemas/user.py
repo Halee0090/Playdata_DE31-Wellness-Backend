@@ -55,6 +55,7 @@ class WellnessInfo(BaseModel):
     user_weight: Decimal
     user_email: EmailStr
     user_nickname: str = Field(max_length=20)
+      
 # 기존 UserResponsDetail에  recomendations, total_today 추가
 class UserResponseDetail(BaseModel):
     wellness_info: WellnessInfo

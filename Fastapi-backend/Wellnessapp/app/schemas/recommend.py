@@ -8,7 +8,6 @@ from datetime import datetime
 
 
 class RecommendBase(BaseModel):
-    user_id: int
     rec_kcal: Decimal
     rec_car: Decimal
     rec_prot: Decimal

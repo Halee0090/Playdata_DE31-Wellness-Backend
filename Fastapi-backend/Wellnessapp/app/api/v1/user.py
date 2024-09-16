@@ -5,6 +5,10 @@ from db.session import Session
 from db.session import get_db
 from schemas import UserCreate, UserResponse
 from datetime import date
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 router = APIRouter()
 
@@ -19,20 +23,23 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
     try:
         # 사용자 정보 저장
         new_user = crud.create_user(db=db, user=user)
+        
         # 권장 영양소 계산 및 저장
         recommendation = crud.calculate_and_save_recommendation(db, new_user)
         db.add(recommendation)
         db.flush()  # 이 시점에서 recommendation에 id가 할당
+        
         # total_today 생성
         today = date.today()
         total_today = crud.get_or_create_total_today(db, new_user.id, today)
-
+    
         db.commit()
         db.refresh(recommendation)
         db.refresh(new_user)
         db.refresh(total_today)
     except HTTPException as e:
         db.rollback()
+        logger.info(f"Creating total_today for user: {new_user.id} on date: {today}")
         raise HTTPException(status_code=500, detail=f"Failed to create user: {str(e)}") from e    
     
     # response에 user_info, recommen, total_today 값 확인할 수 있도록 추가함
@@ -42,13 +49,13 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
         "status_code": 201,
         "detail": {
             "wellness_info": {
-                "user_birthday": new_user.birthday,
-                "user_age": new_user.age,
-                "user_gender": new_user.gender,
+                "user_email": new_user.email,
                 "user_nickname": new_user.nickname,
+                "user_birthday": new_user.birthday,
+                "user_gender": new_user.gender,
                 "user_height": new_user.height,
                 "user_weight": new_user.weight,
-                "user_email": new_user.email
+                "user_age": new_user.age,
             },
             "recommendations": {
                 "rec_kcal": recommendation.rec_kcal,

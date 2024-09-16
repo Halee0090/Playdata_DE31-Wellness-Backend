@@ -27,13 +27,7 @@ def execute_db_operation(db: Session, operation):
         db.rollback()
         raise HTTPException(status_code=500, detail="Database operation failed: {str(e)}")
 
-<<<<<<< HEAD
-# 사용자의 마지막 업데이트 시간 조회
-# def get_user_updated_at(db: Session, user_id: int):
-#     return execute_db_operation(db, lambda: db.query(models.User).filter(models.User.id == user_id).first())
-=======
 # 사용자의 마지막 업데이트 기록 조회
->>>>>>> 8a856658df1f9001e46abfe03bc728de1d449e1d
 def get_user_updated_at(db: Session, user_id: int):
     try:
         user = db.query(models.User).filter(models.User.id == user_id).first()
@@ -45,8 +39,6 @@ def get_user_updated_at(db: Session, user_id: int):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 # 사용자 ID로 권장 영양소 조회
-# def get_recommend_by_user_id(db: Session, user_id: int):
-#     return execute_db_operation(db, lambda: db.query(models.Recommend).filter(models.Recommend.user_id == user_id).first())
 def get_recommend_by_user_id(db: Session, user_id: int):
     try:
         recommend = db.query(models.Recommend).filter(models.Recommend.user_id == user_id).first()
@@ -55,40 +47,7 @@ def get_recommend_by_user_id(db: Session, user_id: int):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
               
-<<<<<<< HEAD
-
-# 권장 영양소 생성 및 업데이트
-# def create_or_update_recommend(db: Session, user_id: int, rec_kcal: Decimal, rec_car: Decimal, rec_prot: Decimal, rec_fat: Decimal):
-#     user_updated_at = get_user_updated_at(db, user_id)
-    
-#     # Decimal 값을 소수점 두 자리까지 반올림
-#     rec_kcal = rec_kcal.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-#     rec_car = rec_car.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-#     rec_prot = rec_prot.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-#     rec_fat = rec_fat.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-
-#     def operation():
-#         existing_recommend = get_recommend_by_user_id(db, user_id)
-#         if existing_recommend and existing_recommend.updated_at < user_updated_at:
-#             existing_recommend.rec_kcal, existing_recommend.rec_car, existing_recommend.rec_prot, existing_recommend.rec_fat = rec_kcal, rec_car, rec_prot, rec_fat
-#             existing_recommend.updated_at = func.now()
-#             db.refresh(existing_recommend)
-#             return existing_recommend
-#         else:
-#             new_recommend = models.Recommend(
-#                 user_id=user_id, rec_kcal=rec_kcal, rec_car=rec_car, rec_prot=rec_prot, rec_fat=rec_fat, updated_at=func.now()
-#             )
-    #         db.add(new_recommend)
-    #         return new_recommend
-    
-    # return execute_db_operation(db, operation)
-
-       
-    
-        
-=======
 # 권장 영양소 계산 및 저장(users_info api에 사용)
->>>>>>> 8a856658df1f9001e46abfe03bc728de1d449e1d
 def calculate_and_save_recommendation(db: Session, user: models.User):
     recommendation_result = recommend_service.recommend_nutrition(user.weight, user.height, user.age, user.gender)
     return models.Recommend(
@@ -98,8 +57,6 @@ def calculate_and_save_recommendation(db: Session, user: models.User):
         rec_prot=recommendation_result["rec_prot"],
         rec_fat=recommendation_result["rec_fat"]
     )
-<<<<<<< HEAD
-=======
 
 # 사용자 권장 영양소를 조회하거나 업데이트(recommend_eaten api에 사용)
 def get_or_update_recommendation(db: Session, user_id: int):
@@ -142,12 +99,11 @@ def get_or_update_recommendation(db: Session, user_id: int):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
->>>>>>> 8a856658df1f9001e46abfe03bc728de1d449e1d
 # 총 섭취량 조회 또는 생성
 def get_or_create_total_today(db: Session, current_user: models.User, date_obj: date):
     try:
         total_today = db.query(models.Total_Today).filter_by(user_id=current_user.id, today=date_obj).first()
-        if total_today is None: 
+        if total_today is None:
             total_today = models.Total_Today(
                 user_id=current_user.id, total_kcal=Decimal('0'), total_car=Decimal('0'),
                 total_prot=Decimal('0'), total_fat=Decimal('0'), condition=False,
@@ -157,12 +113,9 @@ def get_or_create_total_today(db: Session, current_user: models.User, date_obj: 
             db.commit()
             db.refresh(total_today)
         return total_today
-<<<<<<< HEAD
-=======
     except Exception as e:
         logger.error(f"Error fetching or creating total_today: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database operation failed: {str(e)}")
->>>>>>> 8a856658df1f9001e46abfe03bc728de1d449e1d
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Invalid data: Integrity constraint violated")
@@ -171,8 +124,6 @@ def get_or_create_total_today(db: Session, current_user: models.User, date_obj: 
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 # Total_Today 업데이트
-# def update_total_today(db: Session, total_today: models.Total_Today):
-#     return execute_db_operation(db, lambda: db.refresh(total_today))
 def update_total_today(db: Session, total_today: models.Total_Today):
     try:
         db.refresh(total_today)
@@ -182,68 +133,6 @@ def update_total_today(db: Session, total_today: models.Total_Today):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to update Total_Today: {str(e)}")
 
-<<<<<<< HEAD
-# 사용자 권장 영양소를 조회하거나 업데이트
-# def get_or_update_recommendation(db: Session, user_id: int):
-#     recommendation = get_recommend_by_user_id(db, user_id)
-#     if not recommendation:
-#         recommendation_result = recommend.recommend_nutrition(user_id, db)
-#         if recommendation_result["status"] == "success":
-#             return create_or_update_recommend(
-#                 db,
-#                 user_id,
-#                 Decimal(recommendation_result["rec_kcal"]),
-#                 Decimal(recommendation_result["rec_car"]),
-#                 Decimal(recommendation_result["rec_prot"]),
-#                 Decimal(recommendation_result["rec_fat"]),
-#             )
-#         else:
-#             raise HTTPException(status_code=500, detail="Failed to retrieve recommendations")
-#     return recommendation
-def get_or_update_recommendation(db: Session, current_user: models.User):
-    try:
-        user = db.query(models.User).filter(models.User.id == user_id).first()
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        recommendation = db.query(models.Recommend).filter(models.Recommend.user_id == user_id).first()
-        # 추천 정보가 없거나 사용자 정보가 최근에 업데이트된 경우
-        if not recommendation or recommendation.updated_at < user.updated_at:
-            # 새로운 추천 영양소 계산
-            new_values = recommend_service.recommend_nutrition(user.weight, user.height, user.age, user.gender)
-            
-            if not recommendation:
-                recommendation = models.Recommend(user_id=user_id)
-                db.add(recommendation)
-            
-            recommendation.rec_kcal = new_values["rec_kcal"]
-            recommendation.rec_car = new_values["rec_car"]
-            recommendation.rec_prot = new_values["rec_prot"]
-            recommendation.rec_fat = new_values["rec_fat"]
-            recommendation.updated_at = func.now()
-            
-            db.commit()
-            db.refresh(recommendation)
-        total_today = get_or_create_total_today(db, user_id, date.today())
-        new_condition = total_today.total_kcal > recommendation.rec_kcal
-        update_total_today_condition(db, total_today.id, new_condition)
-
-        return recommendation
-
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Invalid data: Integrity constraint violated")
-    except DataError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Invalid data: Data type mismatch")
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"Invalid input: {str(e)}")
-    except SQLAlchemyError as e:
-        db.rollback()
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
-=======
->>>>>>> 8a856658df1f9001e46abfe03bc728de1d449e1d
 
 def get_food_by_category(db: Session, category_id: int) -> Food_List:
      food_item = db.query(Food_List).filter(Food_List.category_id == category_id).first()
@@ -315,30 +204,12 @@ def get_meals_by_user_and_date(db: Session, user_id: int, date: datetime):
      .all()
     return meals
 
-<<<<<<< HEAD
-def update_total_today_condition(db: Session, total_today_id: int, new_condition: bool):
-    total_today = db.query(models.Total_Today).filter(models.Total_Today.id == total_today_id).first()
-    if total_today:
-        total_today.condition = new_condition
-        db.commit()
-        db.refresh(total_today)
-        return total_today
-    return None
-
-=======
 
 # total_today condition 업데이트
->>>>>>> 8a856658df1f9001e46abfe03bc728de1d449e1d
 def update_total_today_condition(db: Session, total_today_id: int, new_condition: bool):
     try:
         total_today = db.query(models.Total_Today).filter(models.Total_Today.id == total_today_id).first()
         if total_today:
-<<<<<<< HEAD
-            if total_today.condition != new_condition:
-                total_today.condition = new_condition
-                db.commit() 
-                db.refresh(total_today)  
-=======
             # 사용자 권장 영양소 가져오기
             recommendation = db.query(models.Recommend).filter(models.Recommend.user_id == total_today.user_id).first()
 
@@ -350,7 +221,6 @@ def update_total_today_condition(db: Session, total_today_id: int, new_condition
                     total_today.condition = new_condition
                     db.commit() 
                     db.refresh(total_today)  
->>>>>>> 8a856658df1f9001e46abfe03bc728de1d449e1d
         
         return total_today
 
@@ -363,8 +233,6 @@ def update_total_today_condition(db: Session, total_today_id: int, new_condition
         db.rollback()  
         print(f"An unexpected error occurred: {e}")
         return None
-<<<<<<< HEAD
-=======
     
 # 만 나이 계산 함수 추가(create_user에서 사용)
 def calculate_age(birth_date) -> int:
@@ -376,4 +244,3 @@ def calculate_age(birth_date) -> int:
         age -= 1
     
     return age
->>>>>>> 8a856658df1f9001e46abfe03bc728de1d449e1d

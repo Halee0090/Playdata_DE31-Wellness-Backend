@@ -271,3 +271,4 @@ def calculate_age(birth_date) -> int:
         age -= 1
     
     return age
+

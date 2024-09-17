@@ -45,6 +45,15 @@ async def classify_image(
             date = datetime.datetime.now().strftime("%Y:%m:%d %H:%M:%S")  # 현재 시간을 문자열로 설정
             
         meal_type = determine_meal_type(date) if date else "기타"
+        
+        # 식사 종류에 따른 ID를 수동으로 설정 (예시: 아침 -> 1, 점심 -> 2, 저녁 -> 3, 기타 -> 4)
+        meal_type_id_map = {
+            "아침": 0,
+            "점심": 1,
+            "저녁": 2,
+            "기타": 3
+        }
+        meal_type_id = meal_type_id_map.get(meal_type, 4)  # 기본값을 기타로 설정
 
         model_api_url = "http://Wellnessmodel:8001/predict_url/"
         # model_api_url = "http://127.0.0.1:8001/predict_url/"
@@ -80,6 +89,7 @@ async def classify_image(
                     "wellness_image_info": {
                         "date": date, 
                         "meal_type": meal_type_utf8,  # UTF-8 인코딩된 값 사용
+                        "meal_type_id": meal_type_id,
                         "category_id": category_id, 
                         "category_name": category_name_utf8,  # UTF-8 인코딩된 값 사용
                         "food_kcal": decimal_to_float(food.food_kcal),  # Decimal을 float으로 변환

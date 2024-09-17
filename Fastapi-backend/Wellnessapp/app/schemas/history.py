@@ -13,6 +13,7 @@ class HistoryCreateRequest(BaseModel):
 class MealResponse(BaseModel):
     history_id: int
     meal_type_name: str
+    meal_type_id: int
     category_name: str
     food_kcal: Decimal
     food_car: int

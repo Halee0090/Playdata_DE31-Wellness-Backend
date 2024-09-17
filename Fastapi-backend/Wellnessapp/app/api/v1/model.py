@@ -46,8 +46,8 @@ async def classify_image(
             
         meal_type = determine_meal_type(date) if date else "기타"
 
-        # model_api_url = "http://Wellnessmodel:8001/predict_url/"
-        model_api_url = "http://127.0.0.1:8001/predict_url/"
+        model_api_url = "http://Wellnessmodel:8001/predict_url/"
+        # model_api_url = "http://127.0.0.1:8001/predict_url/"
 
         try:
             response = requests.post(model_api_url, params={"image_url": image_url})
@@ -63,7 +63,7 @@ async def classify_image(
         if not food:
             raise HTTPException(status_code=404, detail="Food not found")
         
-        recommend = get_recommend_by_user(db, current_user.id)
+        recommend = get_recommend_by_user(db, current_user)
         if not recommend:
             raise HTTPException(status_code=404, detail="User not found")
         

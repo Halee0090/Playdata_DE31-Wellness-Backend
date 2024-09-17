@@ -8,7 +8,7 @@ from datetime import datetime
 class Auth(Base):
     __tablename__ = 'auth'
     
-    id= Column(Integer, primary_key=True,autoincrement=True )
+    id= Column(Integer, primary_key=True,autoincrement=True)
     user_id= Column(Integer, ForeignKey('user_info.id'), nullable=False)
     access_token= Column(String(255), nullable=False, unique=True)
     access_created_at= Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -19,7 +19,7 @@ class Auth(Base):
     
     user= relationship("User", back_populates="auth")
 
-class User(Base):
+class User(Base): 
     __tablename__ = 'user_info'
 
     id = Column(Integer, primary_key=True, autoincrement=True)

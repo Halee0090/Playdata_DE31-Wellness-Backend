@@ -5,7 +5,6 @@ from decimal import Decimal
 
 # 요청 본문으로 받을 데이터 모델 정의
 class HistoryCreateRequest(BaseModel):
-    user_id: int
     category_id: int
     meal_type_id: int
     image_url: str
@@ -23,7 +22,6 @@ class MealResponse(BaseModel):
 
 
 class HistoryBase(BaseModel):
-    user_id: int
     category_id: int
     meal_type_id: int
     image_url: str

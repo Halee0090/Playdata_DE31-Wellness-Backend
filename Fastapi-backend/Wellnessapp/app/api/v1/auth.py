@@ -51,5 +51,5 @@ async def validate_token(db: Session = Depends(get_db), token: str = Depends(oau
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    logger.info(f"Token is valid for user_id: {user.id}")
+    logger.info(f"Returning user object: {user} of type {type(user)}")
     return user

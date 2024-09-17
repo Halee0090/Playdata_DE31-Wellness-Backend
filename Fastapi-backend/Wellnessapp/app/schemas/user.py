@@ -25,7 +25,6 @@ class User(UserBase):
 
 class UserUpdate(BaseModel):
     birthday: date
-    age: int
     gender: int
     height: Decimal
     weight: Decimal

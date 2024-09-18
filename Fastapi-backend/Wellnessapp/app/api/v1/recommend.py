@@ -10,9 +10,11 @@ from datetime import datetime
 from db.models import User, Recommend
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
 
 @router.get("/eaten_nutrient")
 def get_recommend_eaten(
@@ -28,30 +30,65 @@ def get_recommend_eaten(
     try:
         date_obj = datetime.strptime(today, "%Y-%m-%d").date()
     except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid date format. Please use YYYY-MM-DD.")
+        # raise HTTPException(status_code=400, detail="Invalid date format. Please use YYYY-MM-DD.")
+        logger.error("Invalid date format. Please use YYYY-MM-DD.")# 에러 응답 형식 변경(09.17 17:41)
+        return {
+            "status": "Bad Request",
+            "status_code": 400,
+            "detail": "Invalid date format. Please use YYYY-MM-DD."
+        }
     
+
    # 사용자 정보 확인
     if current_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        # raise HTTPException(status_code=404, detail="User not found")
+        logger.error("User not found")# 에러 응답 형식 변경(09.17 17:41)
+        return {
+            "status": "Not Found",
+            "status_code": 404,
+            "detail": "User not found"
+        }
 
     try:
         # 권장 영양소 조회
-        recommendation = crud.get_or_update_recommendation(db, current_user)
+        recommendation = crud.get_or_update_recommendation(db, current_user.id)# ger_or_update_recommend함수 호출 수정(09.17 17:17)
     except HTTPException as e:
-        raise e
+        # raise e
+        logger.error(f"Error retrieving recommendations: {e.detail}")# 에러 응답 형식 변경(09.17 17:41)
+        return {
+            "status": "Error",
+            "status_code": e.status_code,
+            "detail": e.detail
+        }
 
     if recommendation is None:
-        raise HTTPException(status_code=404, detail="Failed to retrieve or create recommendations")
-
+        # raise HTTPException(status_code=404, detail="Failed to retrieve or create recommendations")
+        logger.error("Failed to retrieve or create recommendations")# 에러 응답 형식 변경(09.17 17:41)
+        return {
+            "status": "Not Found",
+            "status_code": 404,
+            "detail": "Failed to retrieve or create recommendations"
+        }
+    
     # 오늘의 총 섭취량 조회 또는 생성
-    try:
-        total_today = crud.get_or_create_total_today(db, current_user, date_obj)
+    try:# ger_or_create_toal_today 함수 호출 수정(09.17 17:11)
+        total_today = crud.get_or_create_total_today(db, current_user.id, date_obj)
     except HTTPException as e:
-        raise e
+        # raise e # 에러 응답 형식 변경(09.17 17:41)
+        logger.error(f"Error retrieving or creating total_today: {e.detail}")
+        return {
+            "status": "Error",
+            "status_code": e.status_code,
+            "detail": e.detail
+        }
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Unexpected server error")
-
+        # raise HTTPException(status_code=500, detail="Unexpected server error")
+        return { # 에러 응답 형식 변경(09.17 17:41)
+            "status": "Server Error",
+            "status_code": 500,
+            "detail": "Unexpected server error"
+        }
     total_today.condition = total_today.total_kcal > recommendation.rec_kcal  
     
     # total_today 업데이트
@@ -59,7 +96,13 @@ def get_recommend_eaten(
         crud.update_total_today(db, total_today)
     except Exception as e:
         logger.error(f"Failed to update total_today: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to update total_today")
+        # raise HTTPException(status_code=500, detail="Failed to update total_today")
+        return {
+            "status": "Server Error",# 에러 응답 형식 변경(09.17 17:41)
+            "status_code": 500,
+            "detail": "Failed to update total_today"
+        }
+    
 
     return {
         "status": "success",
@@ -77,5 +120,5 @@ def get_recommend_eaten(
                 "condition": total_today.condition
             }
         },
-        "message": "User recommend information saved successfully"
+        "message": "User recommend information retrieved successfully"
     }

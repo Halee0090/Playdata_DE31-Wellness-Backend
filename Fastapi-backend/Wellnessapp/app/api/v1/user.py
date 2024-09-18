@@ -39,11 +39,8 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
         db.refresh(total_today)
     except HTTPException as e:
         db.rollback()
-        logger.info(f"Creating total_today for user: {new_user.id} on date: {today}")
-        raise HTTPException(status_code=500, detail=f"Failed to create user: {str(e)}") from e    
-    
-    # response에 user_info, recommen, total_today 값 확인할 수 있도록 추가함
-
+        raise HTTPException(status_code=500, detail=f"Failed to create user: {str(e)}") from e
+        
     return {
         "status": "success",
         "status_code": 201,

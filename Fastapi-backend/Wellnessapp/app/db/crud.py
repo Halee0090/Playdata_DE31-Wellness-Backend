@@ -60,19 +60,59 @@ def calculate_and_save_recommendation(db: Session, current_user: models.User):
     )
     
 # 사용자 권장 영양소를 조회하거나 업데이트(recommend_eaten api에 사용)
-def get_or_update_recommendation(db: Session, current_user: models.User):
+# def get_or_update_recommendation(db: Session, current_user: models.User):# current_user.id 유지하도록 수정 (09.17 17:17)
+#     try:
+#         # recommend 테이블에 기록 조회
+#         recommendation = db.query(models.Recommend).filter(models.Recommend.user_id == current_user.id).first()
+        
+#         # 추천 정보가 없거나 사용자 정보가 최근에 업데이트된 경우
+#         if not recommendation or recommendation.updated_at < current_user.updated_at:
+#             # 새로운 추천 영양소 계산
+#             new_values = recommend_service.recommend_nutrition(current_user.weight, current_user.height, current_user.age, current_user.gender)
+            
+#             if not recommendation:
+#                 recommendation = models.Recommend(user_id=current_user.id)
+#                 db.add(recommendation)
+#             # 새 값으로 recommendation 업데이트     
+#             recommendation.rec_kcal = new_values["rec_kcal"]
+#             recommendation.rec_car = new_values["rec_car"]
+#             recommendation.rec_prot = new_values["rec_prot"]
+#             recommendation.rec_fat = new_values["rec_fat"]
+#             recommendation.updated_at = func.now()
+            
+#             db.commit()
+#             db.refresh(recommendation)
+
+#         return recommendation
+
+#     except IntegrityError:
+#         db.rollback()
+#         raise HTTPException(status_code=400, detail="Invalid data: Integrity constraint violated")
+#     except DataError:
+#         db.rollback()
+#         raise HTTPException(status_code=400, detail="Invalid data: Data type mismatch")
+#     except ValueError as e: 
+#         raise HTTPException(status_code=400, detail=f"Invalid input: {str(e)}")
+#     except SQLAlchemyError as e:
+#         db.rollback()
+#         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+def get_or_update_recommendation(db: Session, user_id: int):
     try:
         # recommend 테이블에 기록 조회
-        recommendation = db.query(models.Recommend).filter(models.Recommend.user_id == current_user.id).first()
+        recommendation = db.query(models.Recommend).filter(models.Recommend.user_id == user_id).first()
         
         # 추천 정보가 없거나 사용자 정보가 최근에 업데이트된 경우
-        if not recommendation or recommendation.updated_at < current_user.updated_at:
-            # 새로운 추천 영양소 계산
-            new_values = recommend_service.recommend_nutrition(current_user.weight, current_user.height, current_user.age, current_user.gender)
+        if not recommendation:
+            # 사용자 정보 조회
+            user = db.query(models.User).filter(models.User.id == user_id).first()
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
             
-            if not recommendation:
-                recommendation = models.Recommend(user_id=current_user.id)
-                db.add(recommendation)
+            # 새로운 추천 영양소 계산
+            new_values = recommend_service.recommend_nutrition(user.weight, user.height, user.age, user.gender)
+            
+            recommendation = models.Recommend(user_id=user_id)
+            db.add(recommendation)
             # 새 값으로 recommendation 업데이트     
             recommendation.rec_kcal = new_values["rec_kcal"]
             recommendation.rec_car = new_values["rec_car"]
@@ -96,20 +136,56 @@ def get_or_update_recommendation(db: Session, current_user: models.User):
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-    
+
+
 # 총 섭취량 조회 또는 생성
-def get_or_create_total_today(db: Session, current_user: models.User, date_obj: date):
+# def get_or_create_total_today(db: Session, current_user: models.User, date_obj: date):
+#     try:
+#         logger.info(f"Checking total_today for user: {current_user.id} on date: {date_obj}")
+
+#         # 사용자, 날짜 별 total_today 기록 조회
+#         total_today = db.query(Total_Today).filter_by(user_id=current_user.id, today=date_obj).first()
+        
+#         # 없을 경우 새로 생성
+#         if total_today is None: 
+#             logger.info(f"Creating total_today for user: {current_user.id} on date: {date_obj}")
+#             total_today = Total_Today(
+#                 user_id=current_user, 
+#                 total_kcal=Decimal('0'), 
+#                 total_car=Decimal('0'),
+#                 total_prot=Decimal('0'), 
+#                 total_fat=Decimal('0'), 
+#                 condition=False,
+#                 created_at=func.now(), 
+#                 updated_at=func.now(), 
+#                 today=date_obj, 
+#                 history_ids=[]
+#             )
+#             db.add(total_today)
+#             db.commit()
+#             db.refresh(total_today)
+#         return total_today
+    
+#     except IntegrityError:
+#         db.rollback()
+#         logger.error("IntegrityError occurred while creating or fetching total_today")
+#         raise HTTPException(status_code=400, detail="Invalid data: Integrity constraint violated")
+#     except SQLAlchemyError as e:
+#         db.rollback()
+#         logger.error(f"SQLAlchemyError occurred: {str(e)}")
+#         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+def get_or_create_total_today(db: Session, user_id: int, date_obj: date):
     try:
-        logger.info(f"Checking total_today for user: {current_user.id} on date: {date_obj}")
+        logger.info(f"Checking total_today for user_id: {user_id} on date: {date_obj}")
+
         # 사용자, 날짜 별 total_today 기록 조회
-        total_today = db.query(Total_Today).filter_by(user_id=current_user.id, today=date_obj).first()
+        total_today = db.query(Total_Today).filter_by(user_id=user_id, today=date_obj).first()
         
         # 없을 경우 새로 생성
         if total_today is None: 
-            logger.info(f"Creating total_today for user: {current_user.id} on date: {date_obj}")
-
+            logger.info(f"Creating total_today for user_id: {user_id} on date: {date_obj}")
             total_today = Total_Today(
-                user_id=current_user.id, 
+                user_id=user_id,  # user_id를 직접 사용
                 total_kcal=Decimal('0'), 
                 total_car=Decimal('0'),
                 total_prot=Decimal('0'), 
@@ -133,7 +209,7 @@ def get_or_create_total_today(db: Session, current_user: models.User, date_obj: 
         db.rollback()
         logger.error(f"SQLAlchemyError occurred: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
+    
 # Total_Today 업데이트
 def update_total_today(db: Session, total_today: models.Total_Today):
     try:

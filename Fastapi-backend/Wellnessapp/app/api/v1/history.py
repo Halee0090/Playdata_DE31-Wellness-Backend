@@ -85,8 +85,17 @@ def save_to_history_and_get_today_history(
         meals = get_meals_by_user_and_date(db, current_user, history_data.date)
         logger.info(f"Meals retrieved for user {current_user.id} on {history_data.date}: {meals}")
         
-
-
+        # 오늘 기록된 식사 내역이 10개 이상이면 에러 반환
+        if len(meals) >= 10:
+            return JSONResponse(
+                {
+                    "status": "Too Many Requests",
+                    "status_code": 429,
+                    "detail": "There are too many meal records for today."
+                },
+                status_code=429
+            )
+    
         # 응답 데이터 포맷팅
         meal_list = []
         for meal in meals:
@@ -117,7 +126,15 @@ def save_to_history_and_get_today_history(
     )
         
     except Exception as e:
+        # 저장 실패 시 에러 처리
         logger.error(f"Failed to save history: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to save history: {str(e)}")
+        return JSONResponse(
+            {
+                "status": "Internal Server Error",
+                "status_code": 500,
+                "detail": "An error occurred while saving the information. The information was not saved."
+            },
+            status_code=500
+        )
 
 

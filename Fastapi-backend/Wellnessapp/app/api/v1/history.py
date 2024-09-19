@@ -96,6 +96,7 @@ def save_to_history_and_get_today_history(
                 status_code=429
             )
     
+
         # 응답 데이터 포맷팅
         meal_list = []
         for meal in meals:

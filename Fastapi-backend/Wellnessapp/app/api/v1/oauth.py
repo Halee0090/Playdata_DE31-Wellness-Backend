@@ -71,6 +71,7 @@ async def get_kakao_token(request: Request):
             logger.error(f"엑세스 토큰을 가져오는 데 실패했습니다. 오류: {error_code}, 설명: {error_description}")
             raise HTTPException(status_code=response.status_code, detail=f"{error_description} (Error Code: {error_code})")
 
+
     except requests.exceptions.RequestException as e:
         logger.error(f"네트워크 오류: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Network error: {str(e)}")

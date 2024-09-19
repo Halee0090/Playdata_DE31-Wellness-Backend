@@ -71,12 +71,15 @@ async def classify_image(
         
         # meal_type 및 meal_type_id 설정
         meal_type = determine_meal_type(date) if date else "기타"
+        
+        # 식사 종류에 따른 ID를 수동으로 설정 (예시: 아침 -> 1, 점심 -> 2, 저녁 -> 3, 기타 -> 4)
         meal_type_id_map = {
             "아침": 0,
             "점심": 1,
             "저녁": 2,
             "기타": 3
         }
+        
         meal_type_id = meal_type_id_map.get(meal_type, 3)  # 기본값을 기타로 설정
 
         # Model API 호출

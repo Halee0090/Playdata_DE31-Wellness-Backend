@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)
 async def get_kakao_token(request: Request):
     try:
         # 요청에서 JSON 데이터를 받아오기
-        data = await request.json()
-        authorization_code = data.get("code")
+        data = await request.json()   
+        authorization_code = data.get("code").strip()   # 공백제거
 
         if not authorization_code:
             # 인가 코드가 없을 경우 로그 남기기
@@ -61,11 +61,16 @@ async def get_kakao_token(request: Request):
             if not access_token:
                 logger.error("엑세스 토큰을 가져오는 데 실패했습니다.")
                 raise HTTPException(status_code=500, detail="Failed to retrieve access token")
+            
             return {"access_token": access_token}
+        
         else:
             error_details = response.json()
-            logger.error(f"엑세스 토큰을 가져오는 데 실패했습니다. 오류: {error_details}")
-            raise HTTPException(status_code=response.status_code, detail=f"Failed to get access token: {error_details}")
+            error_code = error_details.get("error")
+            error_description = error_details.get("error_description")
+            logger.error(f"엑세스 토큰을 가져오는 데 실패했습니다. 오류: {error_code}, 설명: {error_description}")
+            raise HTTPException(status_code=response.status_code, detail=f"{error_description} (Error Code: {error_code})")
+
 
     except requests.exceptions.RequestException as e:
         logger.error(f"네트워크 오류: {str(e)}")

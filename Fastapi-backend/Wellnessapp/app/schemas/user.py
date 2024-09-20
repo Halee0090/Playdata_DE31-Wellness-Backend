@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 from datetime import date, datetime
 from decimal import Decimal
-from typing import ClassVar
+from typing import ClassVar, Optional
 from sqlalchemy import TIMESTAMP, Column
 from sqlalchemy.sql import func
 
@@ -14,7 +14,17 @@ class UserBase(BaseModel):
     nickname: str = Field(max_length=20)
 
 class UserCreate(UserBase):
-    pass
+    nickname: str = Field(max_length=20)
+    email: EmailStr
+    birthday: date
+    gender: int
+    height: Decimal
+    weight: Decimal
+    
+class UserLogin(BaseModel):
+    email: EmailStr
+    nickname: str
+
 
 class User(UserBase):
     id: int
@@ -54,6 +64,8 @@ class WellnessInfo(BaseModel):
     user_weight: Decimal
     user_email: EmailStr
     user_nickname: str = Field(max_length=20)
+    
+
       
 # 기존 UserResponsDetail에  recomendations, total_today 추가
 class UserResponseDetail(BaseModel):

@@ -65,7 +65,7 @@ def get_recommend_eaten(
 
     # 오늘의 총 섭취량 조회 또는 생성
     try:
-        total_today = crud.get_or_create_total_today(db, current_user, date_obj)
+        total_today = crud.get_total_today(db, current_user, date_obj)
     except HTTPException as e:
         logger.error(f"Error retrieving or creating total_today: {e.detail}")
         return {

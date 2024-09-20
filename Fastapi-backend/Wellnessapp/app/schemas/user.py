@@ -6,7 +6,7 @@ from sqlalchemy import TIMESTAMP, Column
 from sqlalchemy.sql import func
 
 class UserBase(BaseModel):
-    gender: str
+    gender: int
     height: Decimal
     weight: Decimal
     birthday: date
@@ -17,7 +17,7 @@ class UserCreate(UserBase):
     nickname: str = Field(max_length=20)
     email: EmailStr
     birthday: date
-    gender: int
+    gender: str
     height: Decimal
     weight: Decimal
     

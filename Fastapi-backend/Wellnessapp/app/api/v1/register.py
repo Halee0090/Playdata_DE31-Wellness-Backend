@@ -12,7 +12,6 @@ from schemas.user import UserCreate
 import logging
 import pytz
 
-
 # .env 파일 로드
 load_dotenv()
 
@@ -88,7 +87,6 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     
     try:        
         new_user = crud.create_user(db=db, user=user, age=user_age, gender=gender_value)
-
         
         # 권장 영양소 계산 및 저장
         recommendation = crud.calculate_and_save_recommendation(db, new_user)
@@ -116,7 +114,6 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
             "detail": f"Failed to create user: {str(e.detail)}"
         }
 
-
     # JWT 발행
     access_token = create_access_token(
                     data={"user_id": new_user.id, "user_email": new_user.email},
@@ -132,13 +129,13 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
                         user_id=new_user.id,
                         access_token=access_token,
                         refresh_token=refresh_token,
-                        access_created_at=format_datetime(datetime.utcnow()),
+                        access_created_at=format_datetime(get_kst_time()),
                         access_expired_at=format_datetime(
-                        datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+                        get_kst_time() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
                         ),
-                        refresh_created_at=format_datetime(datetime.utcnow()),
+                        refresh_created_at=format_datetime(get_kst_time()),
                         refresh_expired_at=format_datetime(
-                        datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+                        get_kst_time() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
                             ),
                      )
     db.add(new_user_auth_entry)
@@ -150,11 +147,11 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         "detail": {
             "wellness_info": {
                 "access_token": access_token,
+                "refresh_token": refresh_token,
                 "token_type": "bearer",
                 "user_email": new_user.email,
-                "user_nickname": new_user.nickname,
+                "user_nickname": new_user.nickname
             }
          },
         "message": "Registration is complete."
     }
-

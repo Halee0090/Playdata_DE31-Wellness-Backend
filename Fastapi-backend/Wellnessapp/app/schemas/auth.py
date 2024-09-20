@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 
-# 클라이언트에게 반환될 토큰 스키마
+# 토큰 발급을 위한 Pydantic 모델
 class Token(BaseModel):
     access_token: str
     token_type: str
+    refresh_token: str
 
-# 토큰에서 추출된 데이터 (user_id 필수)
+# 사용자 정보를 담은 Pydantic 모델
 class TokenData(BaseModel):
-    user_id: int  # 필수 필드로 설정
+    user_id: int = None

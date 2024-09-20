@@ -5,8 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.security import OAuth2PasswordBearer
 from requests import session
-from api.v1 import oauth
-from api.v1 import recommend, model, user
+from api.v1 import recommend, model, user, oauth
 from api.v1.auth import validate_token
 from db import models
 from db.session import get_db
@@ -15,7 +14,6 @@ from api.v1.history import router as history_router
 import logging
 import os
 import time
-from api.v1.login import router as login_router  # login 라우터 임포트
 
 # 로그 설정
 log_file_path = os.path.join(os.getcwd(), "app.log")
@@ -78,8 +76,6 @@ app.include_router(user.router, prefix="/api/v1/user", tags=["User"])
 app.include_router(recommend.router, prefix="/api/v1/recommend", tags=["Recommend"], dependencies=[Depends(validate_token)])
 app.include_router(model.router, prefix="/api/v1/model", tags=["Model"], dependencies=[Depends(validate_token)])
 app.include_router(history_router, prefix="/api/v1/history", tags=["History"], dependencies=[Depends(validate_token)])
-# api 라우터 설정
-app.include_router(login_router, prefix="/api/v1/login", tags=["Login"])
 
 # 서버 시작 시 로그 출력
 logger.info("FastAPI application has started.")

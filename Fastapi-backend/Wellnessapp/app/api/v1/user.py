@@ -17,12 +17,11 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
     # 이메일 중복 체크
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
-        # raise HTTPException(status_code=400, detail="Email already registered")
         return {
             "status": "Bad Request",
             "status_code": 400,
             "detail": "Email already registered"
-        }# 에러 응답 형식 변경 (09.17 18:00)
+        }
 
     try:
         # 사용자 정보 저장
@@ -43,12 +42,13 @@ def save_user_info(user: UserCreate, db: Session = Depends(get_db)):
         db.refresh(total_today)
     except HTTPException as e:
         db.rollback()
-        # raise HTTPException(status_code=500, detail=f"Failed to create user: {str(e)}") from e
+        logger.info(f"Creating total_today for user: {new_user.id} on date: {today}")
         return {
             "status": "Error",
             "status_code": e.status_code,
-            "detail": f"Failed to create user: {str(e.detail)}" #에러 응답 형식 변경 (09.17 18:00)
-        }
+            "detail": f"Failed to create user: {str(e.detail)}" 
+        }    
+
     return {
         "status": "success",
         "status_code": 201,

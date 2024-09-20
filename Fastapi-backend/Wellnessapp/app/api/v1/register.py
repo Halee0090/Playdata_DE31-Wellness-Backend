@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 from datetime import date, datetime, timedelta
 from schemas.user import UserCreate
 import logging
+import pytz
+
 
 # .env 파일 로드
 load_dotenv()
@@ -25,6 +27,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+# 한국 표준시 (KST) 타임존 설정
+KST = pytz.timezone('Asia/Seoul')
+
+# UTC 시간을 KST로 변환
+def get_kst_time():
+    utc_time = datetime.utcnow()
+    kst_time = utc_time.astimezone(KST)
+    return kst_time
 
 # 날짜 및 시간 형식을 'YYYY-MM-DD HH:MM:SS'로 포맷
 def format_datetime(dt: datetime):
@@ -64,19 +75,27 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         logger.error("키와 몸무게가 잘못된 값입니다.")
         raise HTTPException(status_code=400, detail="키와 몸무게는 0보다 커야 합니다.") 
     
+    # 성별을 "남성" -> 0, "여성" -> 1로 변환
+    if user.gender == "남성":
+        gender_value = 0
+    elif user.gender == "여성":
+        gender_value = 1
+    else:
+        raise HTTPException(status_code=400, detail="잘못된 성별 정보입니다.")
+    
     # 생년월일로 나이를 계산
     user_age = calculate_age(user.birthday)
     
-    try:
-               
-        new_user = crud.create_user(db=db, user=user, age=user_age)
+    try:        
+        new_user = crud.create_user(db=db, user=user, age=user_age, gender=gender_value)
+
         
         # 권장 영양소 계산 및 저장
         recommendation = crud.calculate_and_save_recommendation(db, new_user)
         db.add(recommendation)
         db.flush()  # 이 시점에서 recommendation에 id가 할당
         
-        logger.info(f"User weight: {user.weight}, height: {user.height}, age: {user_age}, gender: {user.gender}")
+        logger.info(f"User weight: {user.weight}, height: {user.height}, age: {user_age}, gender: {gender_value}")
         
         # total_today 생성
         today = date.today()
@@ -89,13 +108,15 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         
     except HTTPException as e:
         db.rollback()
-        logger.info(f"Creating total_today for user: {new_user.id} on date: {today}")
+        if new_user:
+            logger.info(f"Creating total_today for user: {new_user.id} on date: {today}")
         return {
             "status": "Error",
             "status_code": e.status_code,
-            "detail": f"Failed to create user: {str(e.detail)}" 
-        } 
-    
+            "detail": f"Failed to create user: {str(e.detail)}"
+        }
+
+
     # JWT 발행
     access_token = create_access_token(
                     data={"user_id": new_user.id, "user_email": new_user.email},
@@ -129,15 +150,9 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         "detail": {
             "wellness_info": {
                 "access_token": access_token,
-                "refresh_token": refresh_token,
                 "token_type": "bearer",
                 "user_email": new_user.email,
                 "user_nickname": new_user.nickname,
-                "user_birthday": new_user.birthday,
-                "user_gender": new_user.gender,
-                "user_height": new_user.height,
-                "user_weight": new_user.weight,
-                "user_age": user_age,
             }
          },
         "message": "Registration is complete."

@@ -71,7 +71,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 # api 라우터 설정
-app.include_router(oauth.router, prefix="/api/v1/oauth", tags=["Oauth_kakaotoken"])
+# app.include_router(oauth.router, prefix="/api/v1/oauth", tags=["Oauth_kakaotoken"])
 app.include_router(login.router, prefix="/api/v1/user", tags=["user_Login"])
 app.include_router(register.router, prefix="/api/v1/user", tags=["user_Register"])
 app.include_router(recommend.router, prefix="/api/v1/recommend", tags=["Recommend"], dependencies=[Depends(validate_token)])
@@ -84,3 +84,5 @@ logger.info("FastAPI application has started.")
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+    
+    

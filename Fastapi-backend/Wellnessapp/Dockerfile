@@ -9,6 +9,7 @@ COPY requirements.txt /Fastapi-backend/
 
 # Install app
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install python-jose
 
 # Copy the rest of the application code
 COPY ./Wellnessapp/app /Fastapi-backend

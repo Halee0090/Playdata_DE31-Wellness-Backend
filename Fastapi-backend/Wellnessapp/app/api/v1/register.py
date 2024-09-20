@@ -12,6 +12,7 @@ from schemas.user import UserCreate
 import logging
 import pytz
 
+
 # .env 파일 로드
 load_dotenv()
 
@@ -87,6 +88,7 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     
     try:        
         new_user = crud.create_user(db=db, user=user, age=user_age, gender=gender_value)
+
         
         # 권장 영양소 계산 및 저장
         recommendation = crud.calculate_and_save_recommendation(db, new_user)
@@ -113,6 +115,7 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
             "status_code": e.status_code,
             "detail": f"Failed to create user: {str(e.detail)}"
         }
+
 
     # JWT 발행
     access_token = create_access_token(
@@ -154,3 +157,4 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
          },
         "message": "Registration is complete."
     }
+

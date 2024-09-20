@@ -5,7 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.security import OAuth2PasswordBearer
 from requests import session
-from api.v1 import recommend, model, user, oauth
+from api.v1 import recommend, model, register, oauth, login
 from api.v1.auth import validate_token
 from db import models
 from db.session import get_db
@@ -72,7 +72,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 # api 라우터 설정
 app.include_router(oauth.router, prefix="/api/v1/oauth", tags=["Oauth_kakaotoken"])
-app.include_router(user.router, prefix="/api/v1/user", tags=["User"])
+app.include_router(login.router, prefix="/api/v1/user", tags=["user_Login"])
+app.include_router(register.router, prefix="/api/v1/user", tags=["user_Register"])
 app.include_router(recommend.router, prefix="/api/v1/recommend", tags=["Recommend"], dependencies=[Depends(validate_token)])
 app.include_router(model.router, prefix="/api/v1/model", tags=["Model"], dependencies=[Depends(validate_token)])
 app.include_router(history_router, prefix="/api/v1/history", tags=["History"], dependencies=[Depends(validate_token)])

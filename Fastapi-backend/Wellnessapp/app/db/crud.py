@@ -48,11 +48,11 @@ def get_recommend_by_user_id(db: Session, user_id: int):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
               
-# 권장 영양소 계산 및 저장(users_info api에 사용)
-def calculate_and_save_recommendation(db: Session, current_user: models.User):
-    recommendation_result = recommend_service.recommend_nutrition(current_user.weight, current_user.height, current_user.age, current_user.gender)
+# 권장 영양소 계산 및 저장(register api에 사용)
+def calculate_and_save_recommendation(db: Session, user: models.User):
+    recommendation_result = recommend_service.recommend_nutrition(user.weight, user.height, user.age, user.gender)
     return models.Recommend(
-        user_id=current_user.id,
+        user_id=user.id,
         rec_kcal=recommendation_result["rec_kcal"],
         rec_car=recommendation_result["rec_car"],
         rec_prot=recommendation_result["rec_prot"],
@@ -97,42 +97,48 @@ def get_or_update_recommendation(db: Session, current_user: models.User):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     
-# 총 섭취량 조회 또는 생성
-def get_or_create_total_today(db: Session, current_user: models.User, date_obj: date):
+# 총 섭취량 조회
+def get_total_today(db: Session, current_user: models.User, date_obj: date):
     try:
         logger.info(f"Checking total_today for user: {current_user.id} on date: {date_obj}")
-        # 사용자, 날짜 별 total_today 기록 조회
         total_today = db.query(Total_Today).filter_by(user_id=current_user.id, today=date_obj).first()
-        
-        # 없을 경우 새로 생성
-        if total_today is None: 
-            logger.info(f"Creating total_today for user: {current_user.id} on date: {date_obj}")
+        return total_today
+    
+    except SQLAlchemyError as e:
+        logger.error(f"SQLAlchemyError occurred while fetching total_today: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
+# 총 섭취량 생성
+def create_total_today(db: Session, user_id: int, date_obj: date):
+    try:
+        logger.info(f"Creating total_today for user: {user_id} on date: {date_obj}")
 
-            total_today = Total_Today(
-                user_id=current_user.id, 
-                total_kcal=Decimal('0'), 
-                total_car=Decimal('0'),
-                total_prot=Decimal('0'), 
-                total_fat=Decimal('0'), 
-                condition=False,
-                created_at=func.now(), 
-                updated_at=func.now(), 
-                today=date_obj, 
-                history_ids=[]
-            )
-            db.add(total_today)
-            db.commit()
-            db.refresh(total_today)
+        total_today = Total_Today(
+            user_id=user_id, 
+            total_kcal=Decimal('0'), 
+            total_car=Decimal('0'),
+            total_prot=Decimal('0'), 
+            total_fat=Decimal('0'), 
+            condition=False,
+            created_at=func.now(), 
+            updated_at=func.now(), 
+            today=date_obj, 
+            history_ids=[]
+        )
+        db.add(total_today)
+        db.commit()
+        db.refresh(total_today)
         return total_today
     
     except IntegrityError:
         db.rollback()
-        logger.error("IntegrityError occurred while creating or fetching total_today")
+        logger.error("IntegrityError occurred while creating total_today")
         raise HTTPException(status_code=400, detail="Invalid data: Integrity constraint violated")
     except SQLAlchemyError as e:
         db.rollback()
         logger.error(f"SQLAlchemyError occurred: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
 
 # Total_Today 업데이트
 def update_total_today(db: Session, total_today: models.Total_Today):
@@ -215,8 +221,7 @@ def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 # 사용자 생성
-def create_user(db: Session, user: schemas.UserCreate):
-    age = calculate_age(user.birthday)
+def create_user(db: Session, user: schemas.UserCreate, age: int):
     db_user = models.User(
         birthday=user.birthday,
         age=age,

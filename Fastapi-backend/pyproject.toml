@@ -29,6 +29,7 @@ psycopg2 = "^2.9.9"
 pyjwt = "^2.9.0"
 passlib = "^1.7.4"
 python-jose = "^3.3.0"
+pytz = "^2024.2"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -46,9 +46,9 @@ def get_recommend_eaten(
 
     try:
         # 권장 영양소 조회
-        recommendation = crud.get_or_update_recommendation(db, current_user.id)# ger_or_update_recommend함수 호출 수정(09.17 17:17)
+        recommendation = crud.get_or_update_recommendation(db, current_user)
     except HTTPException as e:
-        logger.error(f"Error retrieving recommendations: {e.detail}")# 에러 응답 형식 변경(09.17 17:41)
+        logger.error(f"Error retrieving recommendations: {e.detail}")
         return {
             "status": "Error",
             "status_code": e.status_code,
@@ -56,7 +56,7 @@ def get_recommend_eaten(
         }
 
     if recommendation is None:
-        logger.error("Failed to retrieve or create recommendations")# 에러 응답 형식 변경(09.17 17:41)
+        logger.error("Failed to retrieve or create recommendations")
         return {
             "status": "Not Found",
             "status_code": 404,
@@ -81,7 +81,12 @@ def get_recommend_eaten(
             "status_code": 500,
             "detail": "Unexpected server error"
         }
-    total_today.condition = total_today.total_kcal > recommendation.rec_kcal  
+        
+    if total_today is not None:
+        total_today.condition = total_today.total_kcal > recommendation.rec_kcal
+    else:
+    # total_today가 None일 경우 처리 로직 추가
+        raise HTTPException(status_code=404, detail="total_today not found")
     
     # total_today 업데이트
     try:

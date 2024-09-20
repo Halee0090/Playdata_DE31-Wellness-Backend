@@ -221,11 +221,11 @@ def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 # 사용자 생성
-def create_user(db: Session, user: schemas.UserCreate, age: int):
+def create_user(db: Session, user: schemas.UserCreate, age: int, gender: int):
     db_user = models.User(
         birthday=user.birthday,
         age=age,
-        gender=user.gender,
+        gender=gender,
         nickname=user.nickname,
         height=user.height,
         weight=user.weight,

@@ -82,9 +82,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
 
     # 사용자 확인
     db_user = db.query(User).filter(User.email == user.email).first()
-    if db_user:
-        logger.info(f"DB User found: {db_user.email}, ID: {db_user.id}")
-    else:
+    if not db_user:
         logger.error(f"DB User not found: {user.email}")
         raise HTTPException(status_code=400, detail="User not found")
 
@@ -94,9 +92,11 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
     if auth_entry:
         # 엑세스 토큰 만료 확인
         if is_access_token_expired(auth_entry.access_expired_at):
+            logger.info("Access token has expired. Checking refresh token.")
             try:
                 # refresh 토큰 검증
                 verify_refresh_token(auth_entry.refresh_token, auth_entry.refresh_expired_at)
+                logger.info("Refresh token is valid. Issuing new access token.")
 
                 # refresh 토큰이 유효하므로 access 토큰만 재발급
                 access_token = create_access_token(
@@ -108,16 +108,14 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                 auth_entry.access_expired_at = format_datetime(
                     (datetime.now(KST) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)).replace(tzinfo=pytz.UTC)
                 )
-                logger.info(f"access_created_at: {auth_entry.access_created_at}, access_expired_at: {auth_entry.access_expired_at}")
-                
+
                 try:
                     db.commit()
-                    
                 except SQLAlchemyError as e:
                     db.rollback()
                     logger.error(f"failed to commit to DB: {e}")
                     raise HTTPException(status_code=500, detail="Failed to issue new token")
-                    
+
                 return {
                     "status": "success",
                     "status_code": 200,
@@ -133,7 +131,8 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                     "message": "Access token renewed."
                 }
 
-            except HTTPException:
+            except HTTPException as e:
+                logger.info("Refresh token has expired. Issuing new tokens.")
                 # 엑세스 토큰과 리프레시 토큰이 모두 만료된 경우 새로 발급
                 access_token = create_access_token(
                     data={"user_id": db_user.id, "user_email": db_user.email},
@@ -144,31 +143,33 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                     expires_delta=REFRESH_TOKEN_EXPIRE_DAYS
                 )
 
-                # auth 테이블에 새 토큰 저장
-                new_auth_entry = Auth(
-                    user_id=db_user.id,
-                    access_token=access_token,
-                    refresh_token=refresh_token,
-                    access_created_at=format_datetime(datetime.now(KST)),  # KST 시간으로 변환
-                    access_expired_at=format_datetime(
-                        (datetime.now(KST) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)).replace(tzinfo=pytz.UTC)
-                    ),
-                    refresh_created_at=format_datetime(datetime.now(KST)),  # KST 시간으로 변환
-                    refresh_expired_at=format_datetime(
-                        (datetime.now(KST) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)).replace(tzinfo=pytz.UTC)
-                    ),
+                # 기존 auth_entry를 업데이트 (새로 생성하지 않음)
+                auth_entry.access_token = access_token
+                auth_entry.refresh_token = refresh_token
+                auth_entry.access_created_at = format_datetime(datetime.now(KST))  # KST 시간으로 변환
+                auth_entry.access_expired_at = format_datetime(
+                    (datetime.now(KST) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)).replace(tzinfo=pytz.UTC)
                 )
-                db.add(new_auth_entry)
-                db.commit()
+                auth_entry.refresh_created_at = format_datetime(datetime.now(KST))  # KST 시간으로 변환
+                auth_entry.refresh_expired_at = format_datetime(
+                    (datetime.now(KST) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)).replace(tzinfo=pytz.UTC)
+                )
 
-                logger.info(f"Committing new auth entry for user_id {db_user.id}")
+                try:
+                    db.commit()
+                except SQLAlchemyError as e:
+                    db.rollback()
+                    logger.error(f"failed to commit to DB: {e}")
+                    raise HTTPException(status_code=500, detail="Failed to issue new token")
+
+                logger.info(f"Updated auth entry for user_id {db_user.id}")
                 return {
                     "status": "success",
                     "status_code": 201,
                     "detail": {
                         "wellness_info": {
-                            "access_token": new_auth_entry.access_token,
-                            "refresh_token": new_auth_entry.refresh_token,
+                            "access_token": auth_entry.access_token,
+                            "refresh_token": auth_entry.refresh_token,
                             "token_type": "bearer",
                             "user_email": db_user.email,
                             "user_nickname": db_user.nickname.encode('utf-8').decode('utf-8')

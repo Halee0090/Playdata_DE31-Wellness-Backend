@@ -26,6 +26,7 @@ router = APIRouter()
 
 # KST timezone 설정
 KST = timezone('Asia/Seoul')
+
 # 토큰 검증 및 재발급 API
 @router.post("/verify")
 async def verify_token(token_data: TokenRequest, db: Session = Depends(get_db)):
@@ -35,22 +36,21 @@ async def verify_token(token_data: TokenRequest, db: Session = Depends(get_db)):
     logger.info(f"검증을 위해 받은 Access Token: {access_token}")
     
     try:
-        # 엑세스 토큰 검증 (만료되지 않은 경우 실행되지 않음)
+        # 엑세스 토큰 검증
         payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")  # 엑세스 토큰에서 user_id 가져오기
+        user_id = payload.get("sub")
         logger.info(f"엑세스 토큰 유효, 유저 ID: {user_id}")
-        return JSONResponse(status_code=200, content={"status": "access_token_valid", "detail": "login again please"})
-    
+  
     except ExpiredSignatureError:
         logger.warning(f"엑세스 토큰 만료. 리프레시 토큰 확인 중: {refresh_token}")
 
         try:
-            # DB에서 리프레시 토큰과 일치하는 유저 조회 (user_id는 access_token 기반으로 찾음)
+            # 리프레시 토큰 검증 및 DB에서 유저 조회
             auth_entry = db.query(Auth).filter(Auth.refresh_token == refresh_token, Auth.access_token == access_token).first()
 
             if not auth_entry:
-                logger.warning(f"유효하지 않은 리프레시 토큰: {refresh_token}")
-                return JSONResponse(status_code=401, content={"status": "error", "detail": "Invalid refresh token"})
+                logger.warning(f"expired refresh_token: {refresh_token}")
+                return JSONResponse(status_code=200, content={"status": "expired_refresh_token", "detail": "Refresh token expired. Please log in again."})
             
             user_id = auth_entry.user_id
 
@@ -71,12 +71,12 @@ async def verify_token(token_data: TokenRequest, db: Session = Depends(get_db)):
             db.commit()
             
             logger.info(f"새로운 엑세스 토큰 발급 완료, 유저 ID: {user_id}")
-            return JSONResponse(status_code=200, content={"status": "valid_refresh_token", "access_token": new_access_token, "detail": "acess_token renewed"})
+            return JSONResponse(status_code=200, content={"status": "valid_refresh_token", "access_token": new_access_token, "detail": "Access token renewed."})
            
         except ExpiredSignatureError:
             logger.error("리프레시 토큰 만료됨.")
-            return JSONResponse(status_code=401, content={"status": "error", "detail": "Refresh token expired, please log in again"})
+            return JSONResponse(status_code=200, content={"status": "expired_refresh_token", "detail": "Refresh token expired. Please log in again."})
 
         except JWTError:
             logger.error("유효하지 않은 리프레시 토큰.")
-            return JSONResponse(status_code=401, content={"status": "error", "detail": "Invalid refresh token"})
+            return JSONResponse(status_code=200, content={"status": "expired_refresh_token", "detail": "Invalid refresh token."})

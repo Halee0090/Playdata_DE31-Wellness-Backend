@@ -9,6 +9,8 @@ import os
 import botocore
 from urllib.parse import urlparse
 import logging  
+import torchvision.models as models
+
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
@@ -20,8 +22,21 @@ logger = logging.getLogger(__name__)
 # s3 클라이언트 설정
 s3_client = boto3.client('s3')
 
-# 학습된 모델 로드
-model = torch.load('best_model_epoch_19', map_location=torch.device('cpu'))
+# 1. 모델 정의 및 클래스 수 맞추기 (8개의 클래스로 설정)
+model = models.mobilenet_v3_large(weights=None)  # Pretrained 가중치를 사용하지 않음
+model.classifier[3] = torch.nn.Linear(in_features=1280, out_features=8)  # 분류기의 출력 크기 조정
+
+# 2. device 설정 (CUDA 사용 가능 여부 확인)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# 3. 모델을 장치에 할당
+model = model.to(device)
+
+# 4. 저장된 가중치 로드
+best_model_path = 'KJmodelTest_0921.pth'
+model.load_state_dict(torch.load(best_model_path, map_location=device))
+
+# 5. 평가 모드로 전환
 model.eval()
 
 # 이미지 전처리 정의

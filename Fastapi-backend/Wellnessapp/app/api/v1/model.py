@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, status
 import requests
 from sqlalchemy.orm import Session
-from api.v1.auth import validate_token
+from services.auth_service import validate_token
 from db.session import get_db
 from db.crud import get_food_by_category, get_recommend_by_user
 from utils.image_processing import extract_exif_data, determine_meal_type

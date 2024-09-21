@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from api.v1 import model
-from api.v1.auth import validate_token
+from services.auth_service import validate_token
 from db import crud, models
 from db.session import get_db
 from decimal import Decimal, ROUND_HALF_UP

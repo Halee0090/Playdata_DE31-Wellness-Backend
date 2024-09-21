@@ -8,7 +8,7 @@ from db.crud import create_history, get_meals_by_user_and_date
 from db.models import History, Food_List, Meal_Type
 from schemas.history import HistoryCreateRequest
 from datetime import datetime
-from api.v1.auth import validate_token
+from services.auth_service import validate_token
 from db.models import User
 import logging
 

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError, DataError
 from services import recommend_service
 from api.v1 import recommend
-from api.v1.auth import validate_token
+from services.auth_service import validate_token
 from db.models import Food_List, Recommend, Total_Today, History, Meal_Type, User, Auth
 from db import models
 from sqlalchemy.sql import func

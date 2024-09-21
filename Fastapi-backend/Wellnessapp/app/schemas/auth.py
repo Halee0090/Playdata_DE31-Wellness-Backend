@@ -9,3 +9,8 @@ class Token(BaseModel):
 # 사용자 정보를 담은 Pydantic 모델
 class TokenData(BaseModel):
     user_id: int = None
+    
+# 요청 바디 스키마 정의
+class TokenRequest(BaseModel):
+    access_token: str
+    refresh_token: str

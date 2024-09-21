@@ -9,6 +9,8 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import logging
+import pytz  
+from pytz import UTC
 
 # .env 파일 로드
 load_dotenv()
@@ -25,6 +27,9 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+# KST 타임존 설정
+KST = pytz.timezone('Asia/Seoul')
+
 # 날짜 및 시간 형식을 'YYYY-MM-DD HH:MM:SS'로 포맷
 def format_datetime(dt: datetime):
     return dt.strftime("%Y-%m-%d %H:%M:%S")
@@ -32,7 +37,7 @@ def format_datetime(dt: datetime):
 # Access 토큰 생성
 def create_access_token(data: dict, expires_delta: int):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=expires_delta)
+    expire = datetime.utcnow() + timedelta(minutes=expires_delta)  # UTC 시간 사용
     to_encode.update({"exp": expire})
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     logger.info(f"Access Token 생성 완료: {token}")
@@ -41,7 +46,7 @@ def create_access_token(data: dict, expires_delta: int):
 # 리프레시 토큰 생성
 def create_refresh_token(data: dict, expires_delta: int):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(days=expires_delta)
+    expire = datetime.utcnow() + timedelta(days=expires_delta)  # UTC 시간 사용
     to_encode.update({"exp": expire})
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     logger.info(f"Refresh Token 생성 완료: {token}")
@@ -49,11 +54,16 @@ def create_refresh_token(data: dict, expires_delta: int):
 
 # 엑세스 토큰 만료 확인 함수
 def is_access_token_expired(expiry_time: datetime):
-    return datetime.utcnow() > expiry_time
+    return datetime.utcnow() > expiry_time  # UTC 시간 기준
 
 # 토큰 검증 함수
 def verify_refresh_token(token: str, expiry_time: datetime):
-    if datetime.utcnow() > expiry_time:
+    current_time_utc = datetime.now(pytz.UTC).replace(tzinfo=UTC)  # UTC 시간으로 변환
+    
+    if expiry_time.tzinfo is None:  
+        expiry_time = expiry_time.replace(tzinfo=UTC)
+        
+    if current_time_utc > expiry_time:
         logger.error("Refresh token expired based on expiry_time in DB")
         raise HTTPException(status_code=401, detail="Refresh token expired")
     
@@ -94,9 +104,9 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                     expires_delta=ACCESS_TOKEN_EXPIRE_MINUTES
                 )
                 auth_entry.access_token = access_token
-                auth_entry.access_created_at = format_datetime(datetime.utcnow())
+                auth_entry.access_created_at = format_datetime(datetime.now(KST))  # KST 시간으로 변환
                 auth_entry.access_expired_at = format_datetime(
-                    datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+                    (datetime.now(KST) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)).replace(tzinfo=pytz.UTC)
                 )
                 logger.info(f"access_created_at: {auth_entry.access_created_at}, access_expired_at: {auth_entry.access_expired_at}")
                 
@@ -117,12 +127,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                             "refresh_token": auth_entry.refresh_token,  # refresh 토큰은 유지
                             "token_type": "bearer",
                             "user_email": db_user.email,
-                            "user_nickname": db_user.nickname,
-                            "user_birthday": db_user.birthday,
-                            "user_gender": db_user.gender,
-                            "user_height": db_user.height,
-                            "user_weight": db_user.weight,
-                            "user_age": db_user.age,
+                            "user_nickname": db_user.nickname.encode('utf-8').decode('utf-8')
                         }
                     },
                     "message": "Access token renewed."
@@ -144,13 +149,13 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                     user_id=db_user.id,
                     access_token=access_token,
                     refresh_token=refresh_token,
-                    access_created_at=format_datetime(datetime.utcnow()),
+                    access_created_at=format_datetime(datetime.now(KST)),  # KST 시간으로 변환
                     access_expired_at=format_datetime(
-                        datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+                        (datetime.now(KST) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)).replace(tzinfo=pytz.UTC)
                     ),
-                    refresh_created_at=format_datetime(datetime.utcnow()),
+                    refresh_created_at=format_datetime(datetime.now(KST)),  # KST 시간으로 변환
                     refresh_expired_at=format_datetime(
-                        datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+                        (datetime.now(KST) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)).replace(tzinfo=pytz.UTC)
                     ),
                 )
                 db.add(new_auth_entry)
@@ -166,12 +171,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                             "refresh_token": new_auth_entry.refresh_token,
                             "token_type": "bearer",
                             "user_email": db_user.email,
-                            "user_nickname": db_user.nickname,
-                            "user_birthday": db_user.birthday,
-                            "user_gender": db_user.gender,
-                            "user_height": db_user.height,
-                            "user_weight": db_user.weight,
-                            "user_age": db_user.age,
+                            "user_nickname": db_user.nickname.encode('utf-8').decode('utf-8')
                         }
                     },
                     "message": "New access and refresh tokens issued."
@@ -189,12 +189,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                         "refresh_token": auth_entry.refresh_token,
                         "token_type": "bearer",
                         "user_email": db_user.email,
-                        "user_nickname": db_user.nickname,
-                        "user_birthday": db_user.birthday,
-                        "user_gender": db_user.gender,
-                        "user_height": db_user.height,
-                        "user_weight": db_user.weight,
-                        "user_age": db_user.age,
+                        "user_nickname": db_user.nickname.encode('utf-8').decode('utf-8')
                     }
                 },
                 "message": "Existing token provided."

@@ -30,6 +30,7 @@ pyjwt = "^2.9.0"
 passlib = "^1.7.4"
 python-jose = "^3.3.0"
 pytz = "^2024.2"
+asyncpg = "^0.29.0"
 
 
 

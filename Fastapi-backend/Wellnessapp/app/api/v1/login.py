@@ -153,6 +153,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                 auth_entry.refresh_created_at = format_datetime(datetime.now(KST))  # KST 시간으로 변환
                 auth_entry.refresh_expired_at = format_datetime(
                     (datetime.now(KST) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)).replace(tzinfo=pytz.UTC)
+
                 )
 
                 try:

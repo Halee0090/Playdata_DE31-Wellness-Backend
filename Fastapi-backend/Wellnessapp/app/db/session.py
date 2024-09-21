@@ -3,9 +3,21 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 from typing import AsyncGenerator
 from core.config import DATABASE_URL, TEST_DATABASE_URL
+import os
+from sqlalchemy import event
+from sqlalchemy.sql import text
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+TIMEZONE = os.getenv("TIMEZONE", "UTC")
 
 # SQLAlchemy 엔진 생성
 engine = create_async_engine(DATABASE_URL, echo=True)
+
+@event.listens_for(engine.sync_engine, "connect")
+def set_timezone(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute(f"SET timezone TO '{TIMEZONE}'")
+    cursor.close()
 test_engine = create_async_engine(TEST_DATABASE_URL)
 
 # 비동기 세션 생성

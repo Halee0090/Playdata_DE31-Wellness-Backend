@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import OperationalError
+from sqlalchemy import select 
 from db.session import get_db
 from db.models import Auth, User
 from schemas.auth import Token, TokenData
@@ -35,7 +36,9 @@ async def validate_token(db: Session = Depends(get_db), token: str = Depends(oau
     )
 
     # 데이터베이스에서 토큰 조회
-    auth_entry = db.query(Auth).filter(Auth.access_token == token).first()
+    stmt = select(Auth).where(Auth.access_token == token)
+    result = await db.execute(stmt)
+    auth_entry = result.scalar_one_or_none()
     
     if auth_entry is None:
         # 토큰 조회 실패 시 로그 기록

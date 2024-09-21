@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError, DataError
 from services import recommend_service
 from api.v1 import recommend
 from api.v1.auth import validate_token
-from db.models import Food_List, Recommend, Total_Today, History, Meal_Type, User, Auth, Log
+from db.models import Food_List, Recommend, Total_Today, History, Meal_Type, User, Auth
 from db import models
 from sqlalchemy.sql import func
 from decimal import Decimal, ROUND_HALF_UP
@@ -221,11 +221,11 @@ def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 # 사용자 생성
-def create_user(db: Session, user: schemas.UserCreate, age: int):
+def create_user(db: Session, user: schemas.UserCreate, age: int, gender: int):
     db_user = models.User(
         birthday=user.birthday,
         age=age,
-        gender=user.gender,
+        gender=gender,
         nickname=user.nickname,
         height=user.height,
         weight=user.weight,
@@ -278,6 +278,7 @@ def calculate_age(birth_date) -> int:
     return age
 
 
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from db.models import Log
@@ -286,6 +287,7 @@ from sqlalchemy import delete
 import pytz
 from datetime import datetime, timezone
 from schemas.log import LogCreate
+
 
 async def create_log(db: AsyncSession, log: LogCreate):
     now_utc = datetime.now(timezone.utc)  # 현재 UTC 시간 가져오기

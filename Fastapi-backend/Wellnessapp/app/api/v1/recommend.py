@@ -16,10 +16,14 @@ router = APIRouter()
 
 @router.get("/eaten_nutrient")
 def get_recommend_eaten(
-    today: str = Query(...),
+    today: str = Query(None),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(validate_token)     #토큰으로 인증된 사용자 정보
 ):
+    
+    # 만약 today 값이 전달되지 않았다면, 현재 서버 날짜로 설정
+    if today is None:
+        today = datetime.now().strftime("%Y-%m-%d")
     
     # 로그 추가: current_user 확인
     logger.info(f"current_user: {current_user}, type: {type(current_user)}")
@@ -46,9 +50,9 @@ def get_recommend_eaten(
 
     try:
         # 권장 영양소 조회
-        recommendation = crud.get_or_update_recommendation(db, current_user.id)# ger_or_update_recommend함수 호출 수정(09.17 17:17)
+        recommendation = crud.get_or_update_recommendation(db, current_user)
     except HTTPException as e:
-        logger.error(f"Error retrieving recommendations: {e.detail}")# 에러 응답 형식 변경(09.17 17:41)
+        logger.error(f"Error retrieving recommendations: {e.detail}")
         return {
             "status": "Error",
             "status_code": e.status_code,
@@ -56,7 +60,7 @@ def get_recommend_eaten(
         }
 
     if recommendation is None:
-        logger.error("Failed to retrieve or create recommendations")# 에러 응답 형식 변경(09.17 17:41)
+        logger.error("Failed to retrieve or create recommendations")
         return {
             "status": "Not Found",
             "status_code": 404,
@@ -81,7 +85,12 @@ def get_recommend_eaten(
             "status_code": 500,
             "detail": "Unexpected server error"
         }
-    total_today.condition = total_today.total_kcal > recommendation.rec_kcal  
+        
+    if total_today is not None:
+        total_today.condition = total_today.total_kcal > recommendation.rec_kcal
+    else:
+    # total_today가 None일 경우 처리 로직 추가
+        raise HTTPException(status_code=404, detail="total_today not found")
     
     # total_today 업데이트
     try:
@@ -110,5 +119,5 @@ def get_recommend_eaten(
                 "condition": total_today.condition
             }
         },
-        "message": "User recommend information saved successfully"
+        "message": "Wellness user's total intake and recommended values have been successfully retrieved."
     }

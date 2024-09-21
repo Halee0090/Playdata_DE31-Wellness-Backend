@@ -15,7 +15,6 @@ import logging
 logging.basicConfig(level=logging.INFO)  # DEBUG, INFO, WARNING, ERROR, CRITICAL 설정 가능
 logger = logging.getLogger(__name__)
 
-
 router = APIRouter()
 
 # Decimal 타입을 float으로 변환하는 함수

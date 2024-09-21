@@ -127,12 +127,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                             "refresh_token": auth_entry.refresh_token,  # refresh 토큰은 유지
                             "token_type": "bearer",
                             "user_email": db_user.email,
-                            "user_nickname": db_user.nickname,
-                            "user_birthday": db_user.birthday,
-                            "user_gender": db_user.gender,
-                            "user_height": db_user.height,
-                            "user_weight": db_user.weight,
-                            "user_age": db_user.age,
+                            "user_nickname": db_user.nickname.encode('utf-8').decode('utf-8')
                         }
                     },
                     "message": "Access token renewed."
@@ -176,12 +171,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                             "refresh_token": new_auth_entry.refresh_token,
                             "token_type": "bearer",
                             "user_email": db_user.email,
-                            "user_nickname": db_user.nickname,
-                            "user_birthday": db_user.birthday,
-                            "user_gender": db_user.gender,
-                            "user_height": db_user.height,
-                            "user_weight": db_user.weight,
-                            "user_age": db_user.age,
+                            "user_nickname": db_user.nickname.encode('utf-8').decode('utf-8')
                         }
                     },
                     "message": "New access and refresh tokens issued."

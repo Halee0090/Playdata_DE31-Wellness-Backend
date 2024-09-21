@@ -16,10 +16,14 @@ router = APIRouter()
 
 @router.get("/eaten_nutrient")
 def get_recommend_eaten(
-    today: str = Query(...),
+    today: str = Query(None),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(validate_token)     #토큰으로 인증된 사용자 정보
 ):
+    
+    # 만약 today 값이 전달되지 않았다면, 현재 서버 날짜로 설정
+    if today is None:
+        today = datetime.now().strftime("%Y-%m-%d")
     
     # 로그 추가: current_user 확인
     logger.info(f"current_user: {current_user}, type: {type(current_user)}")
@@ -115,5 +119,5 @@ def get_recommend_eaten(
                 "condition": total_today.condition
             }
         },
-        "message": "User recommend information saved successfully"
+        "message": "Wellness user's total intake and recommended values have been successfully retrieved."
     }

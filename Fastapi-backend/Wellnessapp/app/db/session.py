@@ -3,9 +3,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
 from typing import Generator
 from core.config import DATABASE_URL, TEST_DATABASE_URL  # config.py에서 환경 변수 가져오기
+from pytz import timezone
 
 # SQLAlchemy 엔진 생성
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, connect_args={'options': '-c timezone=Asia/Seoul'})
 test_engine = create_engine(TEST_DATABASE_URL)
 
 # 세션 생성

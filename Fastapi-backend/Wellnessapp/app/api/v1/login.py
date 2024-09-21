@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 import logging
 import pytz  
 from pytz import UTC
+from services.auth_service import create_access_token, create_refresh_token, is_access_token_expired, verify_refresh_token
 
 # .env 파일 로드
 load_dotenv()
@@ -33,48 +34,6 @@ KST = pytz.timezone('Asia/Seoul')
 # 날짜 및 시간 형식을 'YYYY-MM-DD HH:MM:SS'로 포맷
 def format_datetime(dt: datetime):
     return dt.strftime("%Y-%m-%d %H:%M:%S")
-
-# Access 토큰 생성
-def create_access_token(data: dict, expires_delta: int):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=expires_delta)  # UTC 시간 사용
-    to_encode.update({"exp": expire})
-    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    logger.info(f"Access Token 생성 완료: {token}")
-    return token
-
-# 리프레시 토큰 생성
-def create_refresh_token(data: dict, expires_delta: int):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(days=expires_delta)  # UTC 시간 사용
-    to_encode.update({"exp": expire})
-    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    logger.info(f"Refresh Token 생성 완료: {token}")
-    return token
-
-# 엑세스 토큰 만료 확인 함수
-def is_access_token_expired(expiry_time: datetime):
-    return datetime.utcnow() > expiry_time  # UTC 시간 기준
-
-# 토큰 검증 함수
-def verify_refresh_token(token: str, expiry_time: datetime):
-    current_time_utc = datetime.now(pytz.UTC).replace(tzinfo=UTC)  # UTC 시간으로 변환
-    
-    if expiry_time.tzinfo is None:  
-        expiry_time = expiry_time.replace(tzinfo=UTC)
-        
-    if current_time_utc > expiry_time:
-        logger.error("Refresh token expired based on expiry_time in DB")
-        raise HTTPException(status_code=401, detail="Refresh token expired")
-    
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        logger.info(f"Refresh Token validated successfully: {payload}")
-        return payload
-    except JWTError as e:   
-        logger.error(f"Refresh token validation failed: {e}")
-        raise HTTPException(
-            status_code=401, detail="Refresh token invalid or expired")
 
 @router.post("/login")
 async def login(user: UserLogin, db: Session = Depends(get_db)):
@@ -139,7 +98,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                     expires_delta=ACCESS_TOKEN_EXPIRE_MINUTES
                 )
                 refresh_token = create_refresh_token(
-                    data={"user_id": db_user.id, "user_email": db_user.email},
+                    data={"user_id": db_user.id},  # Add only the necessary payload for refresh token
                     expires_delta=REFRESH_TOKEN_EXPIRE_DAYS
                 )
 
@@ -153,6 +112,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                 auth_entry.refresh_created_at = format_datetime(datetime.now(KST))  # KST 시간으로 변환
                 auth_entry.refresh_expired_at = format_datetime(
                     (datetime.now(KST) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)).replace(tzinfo=pytz.UTC)
+
                 )
 
                 try:

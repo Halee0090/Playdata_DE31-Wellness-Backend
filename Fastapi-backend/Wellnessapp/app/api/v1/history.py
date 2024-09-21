@@ -138,4 +138,3 @@ def save_to_history_and_get_today_history(
             status_code=500
         )
 
-

@@ -1,0 +1,2244 @@
+[33mcommit 0fbfca14f2616c16ac1f6783010f869198f9936f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev[m[33m)[m
+Merge: 6bc6bb1 1d564dc
+Author: tmdwnabc <tmdwnabc@gmail.com>
+Date:   Fri Sep 20 15:05:25 2024 +0900
+
+    Merge branch 'dev' of https://github.com/WellnessTeam/Playdata_DE31-Wellness-Backend into dev
+
+[33mcommit 1d564dc818d0744c571fa7301b85bfb62256c70e[m[33m ([m[1;31morigin/dev[m[33m)[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Fri Sep 20 14:46:38 2024 +0900
+
+    dockerfile updated  (#49)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+    
+    * token authorization added, kakaologin log added
+    
+    * updated before pull dev
+    
+    * updated before pull dev
+    
+    * seunju project merge
+    
+    * token authorization checked, crud.py updated
+    
+    * model.py path modified
+    
+    * crud.py get_or_create function updated
+    
+    * history save api modified
+    
+    * frontend api mapping test
+    
+    * model, history error message edded
+    
+    * user, recommend error code added- seungju
+    
+    * login&register feature completed
+    
+    * git merge ready
+    
+    * login and register feature completed
+    
+    * Dockerfile updated python-jose installed
+
+[33mcommit 618b1f012eb0f333ceb4c978be86a01e661ae913[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Fri Sep 20 14:05:37 2024 +0900
+
+    로그인, 회원가입 기능 구현 완료 (#48)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+    
+    * token authorization added, kakaologin log added
+    
+    * updated before pull dev
+    
+    * updated before pull dev
+    
+    * seunju project merge
+    
+    * token authorization checked, crud.py updated
+    
+    * model.py path modified
+    
+    * crud.py get_or_create function updated
+    
+    * history save api modified
+    
+    * frontend api mapping test
+    
+    * model, history error message edded
+    
+    * user, recommend error code added- seungju
+    
+    * login&register feature completed
+    
+    * git merge ready
+    
+    * login and register feature completed
+
+[33mcommit 6bc6bb19f80e409fd3017dd9761b112ac604d0c0[m
+Merge: 502d89a 40f5231
+Author: tmdwnabc <tmdwnabc@gmail.com>
+Date:   Fri Sep 20 11:59:17 2024 +0900
+
+    Merge branch 'dev' of https://github.com/WellnessTeam/Playdata_DE31-Wellness-Backend into dev
+
+[33mcommit 40f5231a9b67d5fc5f185e2571bf062ebf843858[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Thu Sep 19 11:18:58 2024 +0900
+
+    user, recommend error code added - seungju. (#47)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+    
+    * token authorization added, kakaologin log added
+    
+    * updated before pull dev
+    
+    * updated before pull dev
+    
+    * seunju project merge
+    
+    * token authorization checked, crud.py updated
+    
+    * model.py path modified
+    
+    * crud.py get_or_create function updated
+    
+    * history save api modified
+    
+    * frontend api mapping test
+    
+    * model, history error message edded
+    
+    * user, recommend error code added- seungju
+
+[33mcommit 16fc65ae6850a91defcad426cad8b19964e2d85d[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Thu Sep 19 11:05:16 2024 +0900
+
+    model, history error message added (#46)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+    
+    * token authorization added, kakaologin log added
+    
+    * updated before pull dev
+    
+    * updated before pull dev
+    
+    * seunju project merge
+    
+    * token authorization checked, crud.py updated
+    
+    * model.py path modified
+    
+    * crud.py get_or_create function updated
+    
+    * history save api modified
+    
+    * frontend api mapping test
+    
+    * model, history error message edded
+
+[33mcommit 5d68fad6e5d2b3fa78522d7f46bfbb3ff7532304[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 17 17:57:09 2024 +0900
+
+    frontend api mapping test ready (#44)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+    
+    * token authorization added, kakaologin log added
+    
+    * updated before pull dev
+    
+    * updated before pull dev
+    
+    * seunju project merge
+    
+    * token authorization checked, crud.py updated
+    
+    * model.py path modified
+    
+    * crud.py get_or_create function updated
+    
+    * history save api modified
+    
+    * frontend api mapping test
+
+[33mcommit a364aa7cec540f068073869791987d83a54079f6[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Sep 16 20:50:11 2024 +0900
+
+    history save api modified condition error  (#43)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+    
+    * token authorization added, kakaologin log added
+    
+    * updated before pull dev
+    
+    * updated before pull dev
+    
+    * seunju project merge
+    
+    * token authorization checked, crud.py updated
+    
+    * model.py path modified
+    
+    * crud.py get_or_create function updated
+    
+    * history save api modified
+
+[33mcommit 9a6d51b5bad14e21fce0e3e7d76f2c8309a1311c[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Sep 16 20:19:55 2024 +0900
+
+    crud.py get_or_create_total_today 함수 수정 (#42)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+    
+    * token authorization added, kakaologin log added
+    
+    * updated before pull dev
+    
+    * updated before pull dev
+    
+    * seunju project merge
+    
+    * token authorization checked, crud.py updated
+    
+    * model.py path modified
+    
+    * crud.py get_or_create function updated
+
+[33mcommit 24e2b311b97ce68ec6fff6856a2a60c1b484eecf[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Sep 16 20:02:19 2024 +0900
+
+    token authorization checked and crud.py updated and model.py path modified (#41)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+    
+    * token authorization added, kakaologin log added
+    
+    * updated before pull dev
+    
+    * updated before pull dev
+    
+    * seunju project merge
+    
+    * token authorization checked, crud.py updated
+    
+    * model.py path modified
+
+[33mcommit cb5771668a377b9d4c93df9778732f279ed38f02[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Sep 16 19:59:44 2024 +0900
+
+    토큰 검증 확인, crud.py 수정 재차 확인 (#40)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+    
+    * token authorization added, kakaologin log added
+    
+    * updated before pull dev
+    
+    * updated before pull dev
+    
+    * seunju project merge
+    
+    * token authorization checked, crud.py updated
+
+[33mcommit 9ca5f01163a781aa21bb5f92b647cf6094225252[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Sep 16 14:53:08 2024 +0900
+
+    docker compose ready included token, database connect (#39)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+    
+    * token authorization added, kakaologin log added
+    
+    * updated before pull dev
+    
+    * updated before pull dev
+    
+    * seunju project merge
+
+[33mcommit 8a856658df1f9001e46abfe03bc728de1d449e1d[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Sep 16 14:27:54 2024 +0900
+
+    user api  나이 계산, 일일 섭취 영양소 및 권장량 api 보완 (#38)
+    
+    * 일일 권장 영양소 및 섭취량 API 구현\
+    'auth' 제외한 모든 테이블 모델 정의database 연결
+    
+    * 일일 권장 영양소 및 섭취량 API구현 'auth' 제외한 모든 테이블 정의database 연결
+    
+    * Update database.py
+    
+    개인정보 가림
+    
+    * Dokerfile.txt 추가, requirement.txt 추가
+    
+    * models.user 모델 컬럼 수정, fastapi response에 소수점 둘째 자리까지 표기되도록 코드 구현, test파일 생성
+    
+    * poetry.lock
+            pyproject.toml
+    
+    * main.py에 round 함수 재 적용
+    
+    * models.py 수정
+    
+    * food_list 테이블 제외 FLOAT > DECIMAL 타입 변경 및 코드 수정 -> db에 소수점 둘째 자리까지 저장 확인
+    
+    * condition update 기능 추가
+    
+    * food_list 타입 수정
+    
+    * food_list 타입 float > DECIMAL(6, 2)수정
+    
+    * test_crud.py 1차 pass
+    
+    * test_database 추가
+    
+    * 3번과정만 남기고 나머지 주석처리
+    
+    * Remove fastapiproject directory and related files
+    
+    * Update poetry.lock, pyproject.toml and remove requirements.txt
+    
+    * Add wellness directory and files
+    
+    * users_info api 테스트 완료
+    
+    * users_info와 동시에 recommend 저장 구현
+    
+    * users_info API 테스트, timezone 설정 완료
+    
+    * recommend.py 수정
+    
+    * Merge changes and timezone 설정
+    
+    * Remove Wellness directory and restructure project
+    
+    * Remove unnecessary files
+    
+    * import 경로 수정
+    
+    * Describe the changes made
+    
+    * crud 중복 코드 수정 및 v1 하위 파일 코드 수정 recommend_eaten api 실행 시 total_today, recommend 레코드 생성
+    
+    * Fix duplicate code in CRUD and update v1 files. Created total_today and recommend records for recommend_eaten API.
+    
+    * users_info api 작동 시 user_info, recommend, total_today 저장기능 구현완료
+    
+    * condition 기능 구현완료
+    
+    * history 저장 시 total_today 업데이트 확인
+    
+    * users_info api 실행 시 age 계산 및 저장 확인(만 나이), 변경 코드 주석 추가
+    
+    ---------
+    
+    Co-authored-by: tmdwnabc <tmdwnabc@gmail.com>
+
+[33mcommit abe46ddcad6ed9397a4f404cf73ab8433eb40a4e[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Sep 16 13:21:23 2024 +0900
+
+    token authorization added & kakaologin log added for error processing (#37)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+    
+    * token authorization added, kakaologin log added
+
+[33mcommit 9ec68ef109092b81b646348625a9839b82243035[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Sun Sep 15 13:41:45 2024 +0900
+
+    Update crud.py
+
+[33mcommit 068821fe57c00dae9c4391912abcf0f5b273ce73[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Sun Sep 15 13:32:28 2024 +0900
+
+    Update crud.py
+
+[33mcommit e24b21cf61567b2aef8b14e3da60d29fbf4109bb[m
+Author: tmdwnabc <165234952+tmdwnabc@users.noreply.github.com>
+Date:   Sun Sep 15 13:18:13 2024 +0900
+
+    Seungju > dev (#34)
+    
+    * 일일 권장 영양소 및 섭취량 API 구현\
+    'auth' 제외한 모든 테이블 모델 정의database 연결
+    
+    * 일일 권장 영양소 및 섭취량 API구현 'auth' 제외한 모든 테이블 정의database 연결
+    
+    * Update database.py
+    
+    개인정보 가림
+    
+    * Dokerfile.txt 추가, requirement.txt 추가
+    
+    * models.user 모델 컬럼 수정, fastapi response에 소수점 둘째 자리까지 표기되도록 코드 구현, test파일 생성
+    
+    * poetry.lock
+            pyproject.toml
+    
+    * main.py에 round 함수 재 적용
+    
+    * models.py 수정
+    
+    * food_list 테이블 제외 FLOAT > DECIMAL 타입 변경 및 코드 수정 -> db에 소수점 둘째 자리까지 저장 확인
+    
+    * condition update 기능 추가
+    
+    * food_list 타입 수정
+    
+    * food_list 타입 float > DECIMAL(6, 2)수정
+    
+    * test_crud.py 1차 pass
+    
+    * test_database 추가
+    
+    * 3번과정만 남기고 나머지 주석처리
+    
+    * Remove fastapiproject directory and related files
+    
+    * Update poetry.lock, pyproject.toml and remove requirements.txt
+    
+    * Add wellness directory and files
+    
+    * users_info api 테스트 완료
+    
+    * users_info와 동시에 recommend 저장 구현
+    
+    * users_info API 테스트, timezone 설정 완료
+    
+    * recommend.py 수정
+    
+    * Merge changes and timezone 설정
+    
+    * Remove Wellness directory and restructure project
+    
+    * Remove unnecessary files
+    
+    * import 경로 수정
+    
+    * Describe the changes made
+    
+    * crud 중복 코드 수정 및 v1 하위 파일 코드 수정 recommend_eaten api 실행 시 total_today, recommend 레코드 생성
+    
+    * Fix duplicate code in CRUD and update v1 files. Created total_today and recommend records for recommend_eaten API.
+    
+    * users_info api 작동 시 user_info, recommend, total_today 저장기능 구현완료
+    
+    * condition 기능 구현완료
+    
+    * history 저장 시 total_today 업데이트 확인
+    
+    ---------
+    
+    Co-authored-by: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+    Co-authored-by: haeunlee <gkdmsgkdms22@gmail.com>
+
+[33mcommit 5925b62ff47e596bafe93ca6c3e3e5e22d48056e[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Sun Sep 15 13:03:50 2024 +0900
+
+    token authorization added/ new docker-compose (#35)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+    
+    * token validation added
+    
+    * new docker compose token authorization added
+
+[33mcommit f245689dfde9d0c4ed3181b418d555f7d1555d8f[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Sat Sep 14 10:10:07 2024 +0900
+
+    kakao access token 발급 오류를 확인하기 위해 logging 추가 (#33)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+    
+    * auth logging added
+
+[33mcommit c8ade165a7e6e960fe817b3cb7553e7ddcec4806[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Fri Sep 13 22:38:50 2024 +0900
+
+    schemas 폴더 user.py 파일에 datetime 모듈 추가 (#32)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+    
+    * schemas 폴더 user.py datetime 모듈 추가
+
+[33mcommit f526c08b20bd8415490c550d016834e86cccf0de[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Fri Sep 13 22:18:36 2024 +0900
+
+    Update model.py
+    
+    model url changed for docker compose
+
+[33mcommit e4becfaf6a374fd61172ac4b8d8c2a9eb944d391[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Fri Sep 13 22:15:46 2024 +0900
+
+    new docker compose ready included kakao auth (#31)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+    
+    * new docker compose ready included auth
+
+[33mcommit fe6fd2cd934a91775bb17a179059e854d515cbd1[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Fri Sep 13 17:48:10 2024 +0900
+
+    전역 예외 처리 로깅 추가/ kakao 토큰 발급 api 개발 진행중 (#30)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+    
+    * history save_and_get api response updated
+    
+    * kakao token created progressing, exception processing logging added
+
+[33mcommit cc10a896dc9e8c044d6d8789ebf5cb5bd8845880[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Thu Sep 12 20:04:33 2024 +0900
+
+    history save_and_get api updated (#29)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+
+[33mcommit 5ad355747735489c8110264cfb8efbc4aed472a4[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Thu Sep 12 15:37:15 2024 +0900
+
+    userinfo 저장 시 권장량 정보 recommend 테이블에 자동 저장 (#28)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+    
+    * db recommend update feature completed
+    
+    * db recommend update feature completed
+
+[33mcommit 502d89a3457b237c5a05aa1c12d90ca954e2385b[m
+Author: tmdwnabc <tmdwnabc@gmail.com>
+Date:   Wed Sep 11 16:59:59 2024 +0900
+
+    Describe the changes made
+
+[33mcommit 412feadc1bf35a8f8178420c2723ab1520a7c7d1[m
+Merge: 4da6a73 267faaa
+Author: tmdwnabc <tmdwnabc@gmail.com>
+Date:   Wed Sep 11 16:55:23 2024 +0900
+
+    Merge branch 'dev' of https://github.com/WellnessTeam/Playdata_DE31-Wellness-Backend into dev
+
+[33mcommit 267faaa7f7c1025c15867973c48cf80cb3c55cf4[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Wed Sep 11 16:31:01 2024 +0900
+
+    Update README.md
+    
+    readme 프로젝트 구조 업데이트
+
+[33mcommit e9f2e8863a4bcb2a744217fa5c1d7c34f29f9854[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Wed Sep 11 16:30:23 2024 +0900
+
+    Update README.md
+
+[33mcommit e4669814306c86d0be5169fec90781b966fb672e[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Wed Sep 11 16:29:07 2024 +0900
+
+    docker-compose 성공하여 flutter 팀에 api 전달 완료 (#27)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+    
+    * docker-compose success
+    
+    * README updated
+
+[33mcommit 4da6a73b6cfa508d93dd1e8c11dd91d7808d8012[m
+Author: tmdwnabc <tmdwnabc@gmail.com>
+Date:   Wed Sep 11 15:30:06 2024 +0900
+
+    Remove unnecessary files
+
+[33mcommit ff257bd12bd25102050b3d1624b4ef8f06f904f1[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Wed Sep 11 13:13:04 2024 +0900
+
+    Haeun (#26)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+    
+    * dockerfile updated
+
+[33mcommit 4a02ecbd32bf3d39bf0db6ba66557d768edf7626[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Wed Sep 11 12:59:21 2024 +0900
+
+    Haeun (#25)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+    
+    * rout folder dockerfile deleted
+
+[33mcommit d56a4c13087301547e103f51b335b91ce4291699[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Wed Sep 11 12:57:34 2024 +0900
+
+    Haeun (#24)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+    
+    * all ficture api completed
+    
+    * wellness updated
+
+[33mcommit d680b9789759adb1017d8fa47a7075b69a71c99a[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 10 16:20:27 2024 +0900
+
+    docker compose ready (#23)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+    
+    * docker compose ready
+
+[33mcommit 30aaceb33df1a87af0713e2d5ce876d60cb508b2[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 10 15:08:57 2024 +0900
+
+    Haeun (#22)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+    
+    * dockerfile, dockerfile-model revised, model folder created, docker-compose.yml revised (2)
+
+[33mcommit 3c032835d40c53c8c7c448587ee47c6085992fbb[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 10 15:04:43 2024 +0900
+
+    Haeun (#21)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+
+[33mcommit 4cd2fb347b3ba4617b4236166aa3a6274c3e5ced[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 10 12:46:16 2024 +0900
+
+    Haeun (#20)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+    
+    * dockerfile model_api revised
+
+[33mcommit a9cc71080ae7c7818366269ff04bb43465aae39f[m
+Author: tmdwnabc <165234952+tmdwnabc@users.noreply.github.com>
+Date:   Tue Sep 10 12:44:36 2024 +0900
+
+    Seungju >deb (#19)
+    
+    * 일일 권장 영양소 및 섭취량 API 구현\
+    'auth' 제외한 모든 테이블 모델 정의database 연결
+    
+    * 일일 권장 영양소 및 섭취량 API구현 'auth' 제외한 모든 테이블 정의database 연결
+    
+    * Update database.py
+    
+    개인정보 가림
+    
+    * Dokerfile.txt 추가, requirement.txt 추가
+    
+    * models.user 모델 컬럼 수정, fastapi response에 소수점 둘째 자리까지 표기되도록 코드 구현, test파일 생성
+    
+    * poetry.lock
+            pyproject.toml
+    
+    * main.py에 round 함수 재 적용
+    
+    * models.py 수정
+    
+    * food_list 테이블 제외 FLOAT > DECIMAL 타입 변경 및 코드 수정 -> db에 소수점 둘째 자리까지 저장 확인
+    
+    * condition update 기능 추가
+    
+    * food_list 타입 수정
+    
+    * food_list 타입 float > DECIMAL(6, 2)수정
+    
+    * test_crud.py 1차 pass
+    
+    * test_database 추가
+    
+    * 3번과정만 남기고 나머지 주석처리
+    
+    * Remove fastapiproject directory and related files
+    
+    * Update poetry.lock, pyproject.toml and remove requirements.txt
+    
+    * Add wellness directory and files
+    
+    * users_info api 테스트 완료
+    
+    ---------
+    
+    Co-authored-by: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+
+[33mcommit 10a6686c62878c1e510409b383c8f97bace7e073[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 10 12:08:19 2024 +0900
+
+    Haeun (#18)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+    
+    * dockerfile, dockerfile-model added, docker-compose.yml revised
+
+[33mcommit d0c8c380b33734295cfa7b254742d6702dfd5caf[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 10 11:52:15 2024 +0900
+
+    Haeun (#17)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+    
+    * s3.py aws key updated
+
+[33mcommit 9d59e854dd9a6a7acdb6f2d25197237429f7425b[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 10 11:38:41 2024 +0900
+
+    Haeun (#16)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+    
+    * added env_file to docker-compose.yml
+
+[33mcommit 387e79ef6eb24e9050637c8250cdac6c154dfc15[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 10 11:29:46 2024 +0900
+
+    Haeun (#15)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+    
+    * Add .env to .gitignore
+    
+    * Remove .env file from Git history
+
+[33mcommit 41fd0ab4230f9bb309304818ccff3d8d2fdbf052[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 10 11:21:25 2024 +0900
+
+    Haeun (#14)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+    
+    * updated
+    
+    * dokerfile deleted
+    
+    * docker-compose file added, docker file deleted
+
+[33mcommit a0f67084e558192eb545c296ac18f6e4439274e3[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 10 01:48:25 2024 +0900
+
+    Haeun (#13)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+    
+    * app/api/v1/recommend.py updated
+
+[33mcommit af39d6b1e24370d6f6b470f99cae5512be6ab00a[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Sep 9 18:10:33 2024 +0900
+
+    Haeun (#12)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+    
+    * update Dockerfile
+
+[33mcommit e3cb7f9e8b634f3317bd804750b5bc67a4e7579b[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Sep 9 17:25:58 2024 +0900
+
+    Haeun (#11)
+    
+    * merge main screen check & image classify completed
+    
+    * wellness main screen check & image classify feature developed
+
+[33mcommit 4349c2e24af6e4677fde8a8f236307156c7628f0[m
+Author: tmdwnabc <165234952+tmdwnabc@users.noreply.github.com>
+Date:   Mon Sep 9 14:35:59 2024 +0900
+
+    Seungju > dev  pull request (#10)
+    
+    * 일일 권장 영양소 및 섭취량 API 구현\
+    'auth' 제외한 모든 테이블 모델 정의database 연결
+    
+    * 일일 권장 영양소 및 섭취량 API구현 'auth' 제외한 모든 테이블 정의database 연결
+    
+    * Update database.py
+    
+    개인정보 가림
+    
+    * Dokerfile.txt 추가, requirement.txt 추가
+    
+    * models.user 모델 컬럼 수정, fastapi response에 소수점 둘째 자리까지 표기되도록 코드 구현, test파일 생성
+    
+    * poetry.lock
+            pyproject.toml
+    
+    * main.py에 round 함수 재 적용
+    
+    * models.py 수정
+    
+    * food_list 테이블 제외 FLOAT > DECIMAL 타입 변경 및 코드 수정 -> db에 소수점 둘째 자리까지 저장 확인
+    
+    * condition update 기능 추가
+    
+    * food_list 타입 수정
+    
+    * food_list 타입 float > DECIMAL(6, 2)수정
+    
+    * test_crud.py 1차 pass
+    
+    * test_database 추가
+    
+    * 3번과정만 남기고 나머지 주석처리
+    
+    * Remove fastapiproject directory and related files
+    
+    * Update poetry.lock, pyproject.toml and remove requirements.txt
+    
+    * Add wellness directory and files
+    
+    ---------
+    
+    Co-authored-by: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+
+[33mcommit 3c234da429a4acc41fc2ce3ae065060f79193de3[m
+Author: haeunlee <gkdmsgkdms22@gmail.com>
+Date:   Sun Sep 8 15:14:47 2024 +0900
+
+    test 파일 수정
+
+[33mcommit 1ef0196b0ac408b00a669dd67d6339d72ab96a60[m
+Author: haeunlee <gkdmsgkdms22@gmail.com>
+Date:   Sun Sep 8 14:55:51 2024 +0900
+
+    image upload, model classify, model result return not completed history save
+
+[33mcommit 7318d4f3a6d6253d8d59520c9b84ab0a3f05a92c[m
+Author: haeunlee <gkdmsgkdms22@gmail.com>
+Date:   Thu Sep 5 17:53:49 2024 +0900
+
+    delete wellness files
+
+[33mcommit 7391cc1cda2541ba1d496ee92b2f1c4262891dbd[m
+Merge: 2fcc3f0 c001544
+Author: haeunlee <gkdmsgkdms22@gmail.com>
+Date:   Thu Sep 5 17:52:55 2024 +0900
+
+    Merge branch 'haeun' of https://github.com/WellnessTeam/Playdata_DE31-Wellness-Backend into haeun
+
+[33mcommit 2fcc3f02e14dc6ee8360ce43f40a9f410425facc[m
+Author: haeunlee <gkdmsgkdms22@gmail.com>
+Date:   Thu Sep 5 17:49:17 2024 +0900
+
+    delete all files
+
+[33mcommit 1c327388514c90a223d08be8e9f9e9130467a198[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 3 02:32:54 2024 +0900
+
+    Haeun (#8)
+    
+    * Dockerfile_fastapi
+    
+    * docker_test
+    
+    * docker_Test
+    
+    * Delete wellness_login directory
+
+[33mcommit c001544a819991e4a937005169b50a93573e9576[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 3 02:08:05 2024 +0900
+
+    Delete wellness_login directory
+
+[33mcommit d543d6590e6bb0af57ee05e17c19a88eb381c63a[m
+Author: haeunlee <gkdmsgkdms22@gmail.com>
+Date:   Tue Sep 3 02:02:24 2024 +0900
+
+    docker_Test
+
+[33mcommit 8c501ebb7b0c28f53839ecdee05c5232dccfc54f[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 3 01:56:09 2024 +0900
+
+    Revert "docker_Test (#4)" (#7)
+    
+    This reverts commit bf6cb6c23e91dd8d2647848d71c774f5db2d5c04.
+
+[33mcommit 90e66d4901fef9e99d815ea95e792fa2f55939b3[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 3 01:54:30 2024 +0900
+
+    Revert "docker_Test (#4)" (#6)
+    
+    This reverts commit bf6cb6c23e91dd8d2647848d71c774f5db2d5c04.
+
+[33mcommit c303a884259905c2a26c8e633dadade7a4a5cf8f[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 3 01:53:24 2024 +0900
+
+    Revert "docker_Test (#4)" (#5)
+    
+    This reverts commit bf6cb6c23e91dd8d2647848d71c774f5db2d5c04.
+
+[33mcommit cb714f824416b1241a3448c728cb372bcf05ab82[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 3 01:47:20 2024 +0900
+
+    Delete Wellness directory
+
+[33mcommit 137372abee56cdbd3cbcecac19c5c415d8279d72[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 3 01:39:26 2024 +0900
+
+    Delete wellness_login directory
+
+[33mcommit bf6cb6c23e91dd8d2647848d71c774f5db2d5c04[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Tue Sep 3 01:38:55 2024 +0900
+
+    docker_Test (#4)
+    
+    * Dockerfile_fastapi
+    
+    * docker_test
+
+[33mcommit 8294f5ef05089c8e8fa905533d734e971a10f339[m
+Author: haeunlee <gkdmsgkdms22@gmail.com>
+Date:   Tue Sep 3 01:37:10 2024 +0900
+
+    docker_test
+
+[33mcommit 6133d366606071bbaa22bf3d539c8e1d4ac5258d[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Sep 2 20:26:55 2024 +0900
+
+    Delete Wellness directory
+
+[33mcommit c70279fc3037cf9de4549fc4dbe4d58511fa330f[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Sep 2 18:05:45 2024 +0900
+
+    Dockerfile_fastapi (#3)
+
+[33mcommit adaca6313940bd8f28e314190868c7ad288713a1[m
+Author: haeunlee <gkdmsgkdms22@gmail.com>
+Date:   Mon Sep 2 18:02:30 2024 +0900
+
+    Dockerfile_fastapi
+
+[33mcommit 99b343913145a6a129ea2f10364e259754b8bdff[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/feature/sso_login[m[33m, [m[1;32mmain[m[33m)[m
+Author: Halee0090 <165649741+Halee0090@users.noreply.github.com>
+Date:   Mon Aug 26 11:27:55 2024 +0900
+
+    Initial commit

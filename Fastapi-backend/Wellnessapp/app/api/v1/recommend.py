@@ -10,11 +10,9 @@ from datetime import datetime
 from db.models import User, Recommend
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
 
 @router.get("/eaten_nutrient")
 def get_recommend_eaten(
@@ -37,7 +35,6 @@ def get_recommend_eaten(
             "detail": "Invalid date format. Please use YYYY-MM-DD."
         }
     
-
    # 사용자 정보 확인
     if current_user is None:
         logger.error("User not found")# 에러 응답 형식 변경(09.17 17:41)
@@ -65,9 +62,10 @@ def get_recommend_eaten(
             "status_code": 404,
             "detail": "Failed to retrieve or create recommendations"
         }
+
     # 오늘의 총 섭취량 조회 또는 생성
-    try:# ger_or_create_toal_today 함수 호출 수정(09.17 17:11)
-        total_today = crud.get_or_create_total_today(db, current_user.id, date_obj)
+    try:
+        total_today = crud.get_total_today(db, current_user, date_obj)
     except HTTPException as e:
         logger.error(f"Error retrieving or creating total_today: {e.detail}")
         return {
@@ -112,5 +110,5 @@ def get_recommend_eaten(
                 "condition": total_today.condition
             }
         },
-        "message": "User recommend information retrieved successfully"
+        "message": "User recommend information saved successfully"
     }

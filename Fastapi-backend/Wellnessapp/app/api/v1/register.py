@@ -13,7 +13,7 @@ from datetime import date, datetime, timedelta
 import logging
 import pytz  
 from fastapi.responses import JSONResponse
-from services.auth_service import create_refresh_token
+from services.auth_service import create_access_token, create_refresh_token
 
 # .env 파일 로드
 load_dotenv()
@@ -91,7 +91,7 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
             expires_delta=ACCESS_TOKEN_EXPIRE_MINUTES
         )
         refresh_token = create_refresh_token(
-            data={"user_id": new_user.id, "user_email": new_user.email},
+            data={"dummy": "dummy_value"}, 
             expires_delta=REFRESH_TOKEN_EXPIRE_DAYS
         )
 

@@ -4,6 +4,7 @@ from pytz import timezone
 from sqlalchemy.orm import Session
 from jose import jwt, ExpiredSignatureError, JWTError
 from fastapi import APIRouter, Depends, Header, HTTPException
+
 from db.models import Auth
 from db.session import get_db
 from dotenv import load_dotenv
@@ -138,3 +139,4 @@ async def verify_token(token_data: TokenRequest, authorization: str = Header(...
                 "detail": "Invalid access token."
             }
         )
+

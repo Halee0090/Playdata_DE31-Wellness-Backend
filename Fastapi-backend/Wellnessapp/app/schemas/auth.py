@@ -14,4 +14,5 @@ class TokenData(BaseModel):
     
 # 요청 바디 스키마 정의
 class TokenRequest(BaseModel):
-    refresh_token: str
+    access_token: str
+

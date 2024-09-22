@@ -14,12 +14,18 @@ from api.v1.history import router as history_router
 import logging
 import os
 import time
-from db.crud import create_log
+from db.crud import create_log, get_daily_logs, delete_old_logs
 from schemas.log import LogCreate
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.session import engine
+from db.session import AsyncSessionLocal, get_db
 import pytz
+import asyncio
+import boto3 
+# S3 설정
+S3_BUCKET = os.getenv('S3_BUCKET', 'finalteambucket')
+s3_client = boto3.client('s3')
 
 KST = pytz.timezone('Asia/Seoul')
 
@@ -41,6 +47,37 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # fastapi 앱 생성
 app = FastAPI()
+
+# 일일 로그 파일 생성 및 S3 업로드
+async def generate_daily_log():
+    while True:
+        now = datetime.utcnow()
+        next_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        await asyncio.sleep((next_day - now).total_seconds())
+        
+        async with AsyncSessionLocal() as session:
+            result = await session.execute("SELECT * FROM logs WHERE time_stamp >= :date", {"date": now.date()})
+            logs = result.fetchall()
+            
+            log_file = fr"C:\Users\Playdata\backend\Fastapi-backend\Wellnessapp\app\daily_logs_txt\{now.strftime('%Y-%m-%d')}-errors.txt"
+            with open(log_file, 'w', encoding='utf-8') as f:
+                for log in logs:
+                    f.write(f"{log.time_stamp}: {log.method} {log.req_url} - {log.code}\n")
+            
+            # # S3에 업로드 >>>허용 확인해야함
+            # s3_client.upload_file(log_file, S3_BUCKET, f"logs/{log_file}")
+            # os.remove(log_file)
+            
+            # 30일 이상 된 로그 삭제
+            thirty_days_ago = now - timedelta(days=30)
+            await session.execute("DELETE FROM logs WHERE time_stamp < :date", {"date": thirty_days_ago})
+            await session.commit()
+
+# 앱 시작 시 일일 로그 생성 태스크 시작
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(generate_daily_log())
+
 
 # 요청 및 응답을 기록하는 미들웨어 추가
 @app.middleware("http")
@@ -79,7 +116,7 @@ async def log_requests(request: Request, call_next):
 
     async with AsyncSession(engine) as db:
         await create_log(db, log_entry)
-        
+
     return Response(content=response_body, status_code=response.status_code, 
                     headers=dict(response.headers), media_type=response.media_type)
     

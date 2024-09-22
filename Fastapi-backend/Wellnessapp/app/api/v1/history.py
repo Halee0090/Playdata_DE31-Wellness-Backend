@@ -107,7 +107,6 @@ def save_to_history_and_get_today_history(
                 "food_car": round(decimal_to_float(meal.food_car)),
                 "food_prot": round(decimal_to_float(meal.food_prot)),
                 "food_fat": round(decimal_to_float(meal.food_fat)),
-
                 "date": datetime_to_string(meal.date)   # datetime을 문자열로 변환
             })
         logger.info(f"Formatted meal list for response: {meal_list}")

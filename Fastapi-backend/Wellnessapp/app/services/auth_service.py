@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 # Access 토큰 생성
 def create_access_token(data: dict, expires_delta: int):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=expires_delta)  # UTC 시간 사용
+    expire = datetime.utcnow() + timedelta(minutes=expires_delta)  
     to_encode.update({"exp": expire})
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     logger.info(f"Access Token 생성 완료: {token}")
@@ -42,7 +42,7 @@ def create_access_token(data: dict, expires_delta: int):
 # 리프레시 토큰 생성
 def create_refresh_token(data: dict, expires_delta: int):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(days=expires_delta)  # UTC 시간 사용
+    expire = datetime.utcnow() + timedelta(days=expires_delta)  
     to_encode.update({"exp": expire})
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     logger.info(f"Refresh Token 생성 완료: {token}")

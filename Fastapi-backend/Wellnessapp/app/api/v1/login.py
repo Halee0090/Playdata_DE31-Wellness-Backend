@@ -98,7 +98,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                     expires_delta=ACCESS_TOKEN_EXPIRE_MINUTES
                 )
                 refresh_token = create_refresh_token(
-                    data={"user_id": db_user.id},  # Add only the necessary payload for refresh token
+                    data={"dummy": "dummy_value"},  # 무의미한 데이터를 추가
                     expires_delta=REFRESH_TOKEN_EXPIRE_DAYS
                 )
 

@@ -1,6 +1,6 @@
 # /app/main.py
 from fastapi import Depends, FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.security import OAuth2PasswordBearer
@@ -48,22 +48,30 @@ async def log_requests(request: Request, call_next):
     # 요청 정보 기록
     logger.info(f"Incoming request: {request.method} {request.url}")
     
+    # 요청 파라미터 캡처
+    req_param = str(request.query_params)
+    
     # 요청 처리 시간 측정
     start_time = time.time()
     
     # 요청을 처리하여 응답 생성
     response = await call_next(request)
+
+    # 응답 바디 캡처
+    response_body = b""
+    async for chunk in response.body_iterator:
+        response_body += chunk
     
     # 처리 완료 후, 응답 시간 기록
     duration = time.time() - start_time
     logger.info(f"Completed request in {duration:.2f}s - Status Code: {response.status_code}")
     
-    # 로그 데이터베이스에 저장
+    # 로그 엔트리 생성
     log_entry = LogCreate(
         req_url=str(request.url),
         method=request.method,
-        req_param=str(request.query_params),
-        res_params=str(response.status_code),
+        req_param=req_param,
+        res_param=response_body.decode(),
         msg="Request completed",
         code=response.status_code,
         time_stamp=datetime.now(KST)
@@ -71,8 +79,10 @@ async def log_requests(request: Request, call_next):
 
     async with AsyncSession(engine) as db:
         await create_log(db, log_entry)
-
-    return response
+        
+    return Response(content=response_body, status_code=response.status_code, 
+                    headers=dict(response.headers), media_type=response.media_type)
+    
 
 # 전역 예외 처리: HTTP 예외 처리
 @app.exception_handler(StarletteHTTPException)

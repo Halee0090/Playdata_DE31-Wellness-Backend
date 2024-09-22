@@ -13,7 +13,7 @@ from datetime import date, datetime, timedelta
 import logging
 import pytz  
 from fastapi.responses import JSONResponse
-
+from services.auth_service import create_refresh_token
 
 # .env 파일 로드
 load_dotenv()
@@ -36,24 +36,6 @@ KST = pytz.timezone('Asia/Seoul')
 # 날짜 및 시간 형식을 'YYYY-MM-DD HH:MM:SS'로 포맷
 def format_datetime(dt: datetime):
     return dt.strftime("%Y-%m-%d %H:%M:%S")
-
-# Access 토큰 생성 (UTC 기준)
-def create_access_token(data: dict, expires_delta: int):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=expires_delta)  # UTC 시간
-    to_encode.update({"exp": expire})
-    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    logger.info(f"Access Token 생성 완료: {token}")
-    return token
-
-# 리프레시 토큰 생성 (UTC 기준)
-def create_refresh_token(data: dict, expires_delta: int):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(days=expires_delta)  # UTC 시간
-    to_encode.update({"exp": expire})
-    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    logger.info(f"Refresh Token 생성 완료: {token}")
-    return token
 
 @router.post("/register")
 async def register(user: UserCreate, db: Session = Depends(get_db)):
@@ -130,7 +112,7 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
             "status": "success",
             "status_code": 201,
             "detail": {
-                "Wellness_user_info": {
+                "wellness_info": {
                     "access_token": access_token,
                     "refresh_token": refresh_token,
                     "token_type": "bearer",

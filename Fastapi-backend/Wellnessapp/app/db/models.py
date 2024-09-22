@@ -112,3 +112,24 @@ class Total_Today(Base):
     history_ids = Column(ARRAY(Integer), nullable=False)
 
     user = relationship("User", back_populates="total_today")
+
+
+
+
+    ##############log#####################
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class Log(Base):
+    __tablename__ = "logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    req_url = Column(String)
+    method = Column(String)
+    req_param = Column(String)
+    res_param = Column(String)
+    msg = Column(String)
+    code = Column(Integer)
+    time_stamp = Column(DateTime(timezone=True), server_default=func.now())

@@ -14,6 +14,14 @@ from api.v1.history import router as history_router
 import logging
 import os
 import time
+from db.crud import create_log
+from schemas.log import LogCreate
+from datetime import datetime, timezone
+from sqlalchemy.ext.asyncio import AsyncSession
+from db.session import engine
+import pytz
+
+KST = pytz.timezone('Asia/Seoul')
 
 # 로그 설정
 log_file_path = os.path.join(os.getcwd(), "app.log")
@@ -50,6 +58,20 @@ async def log_requests(request: Request, call_next):
     duration = time.time() - start_time
     logger.info(f"Completed request in {duration:.2f}s - Status Code: {response.status_code}")
     
+    # 로그 데이터베이스에 저장
+    log_entry = LogCreate(
+        req_url=str(request.url),
+        method=request.method,
+        req_param=str(request.query_params),
+        res_params=str(response.status_code),
+        msg="Request completed",
+        code=response.status_code,
+        time_stamp=datetime.now(KST)
+    )
+
+    async with AsyncSession(engine) as db:
+        await create_log(db, log_entry)
+
     return response
 
 # 전역 예외 처리: HTTP 예외 처리

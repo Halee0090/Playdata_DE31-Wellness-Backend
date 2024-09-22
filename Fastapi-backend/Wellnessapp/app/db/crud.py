@@ -301,35 +301,35 @@ async def calculate_age(birth_date) -> int:
 
 
 #log db########################################
-# from sqlalchemy.ext.asyncio import AsyncSession
-# from sqlalchemy.future import select
-# from db.models import Log
-# from datetime import datetime, timedelta
-# from sqlalchemy import delete
-# import pytz
-# from datetime import datetime, timezone
-# from schemas.log import LogCreate
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from db.models import Log
+from datetime import datetime, timedelta
+from sqlalchemy import delete
+import pytz
+from datetime import datetime, timezone
+from schemas.log import LogCreate
 
 
-# async def create_log(db: AsyncSession, log: LogCreate):
-#     now_utc = datetime.now(timezone.utc)  # 현재 UTC 시간 가져오기
-#     db_log = Log(**log.dict())
-#     await db.add(db_log)
-#     await db.commit()
-#     await db.refresh(db_log)
-#     return db_log
+async def create_log(db: AsyncSession, log: LogCreate):
+    now_utc = datetime.now(timezone.utc)  # 현재 UTC 시간 가져오기
+    db_log = Log(**log.dict())
+    db.add(db_log)
+    await db.commit()# SQLAlchemy의 비동기 세션에서는 add() 메서드를 await로 호출하지 않음
+    await db.refresh(db_log)
+    return db_log
 
-# async def get_daily_logs(session: AsyncSession, timestamp: datetime):
-#     # 여기서는 timestamp를 그대로 사용하세요. UTC 형식입니다.
-#     statement = select(Log).where(Log.time_stamp >= timestamp)
-#     result = await session.execute(statement)
-#     return result.scalars().all()
+async def get_daily_logs(session: AsyncSession, timestamp: datetime):
+    # 여기서는 timestamp를 그대로 사용하세요. UTC 형식입니다.
+    statement = select(Log).where(Log.time_stamp >= timestamp)
+    result = await session.execute(statement)
+    return result.scalars().all()
 
 
-# async def delete_old_logs(session: AsyncSession, days: int):
-#     cutoff_time = datetime.now(pytz.utc) - timedelta(days=days)
-#     statement = delete(Log).where(Log.time_stamp < cutoff_time)
-#     await session.execute(statement)
+async def delete_old_logs(session: AsyncSession, days: int):
+    cutoff_time = datetime.now(pytz.utc) - timedelta(days=days)
+    statement = delete(Log).where(Log.time_stamp < cutoff_time)
+    await session.execute(statement)
 
 
 

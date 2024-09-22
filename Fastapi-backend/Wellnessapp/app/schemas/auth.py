@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+
+
 # 토큰 발급을 위한 Pydantic 모델
 class Token(BaseModel):
     access_token: str
@@ -12,5 +14,4 @@ class TokenData(BaseModel):
     
 # 요청 바디 스키마 정의
 class TokenRequest(BaseModel):
-    access_token: str
     refresh_token: str

@@ -83,7 +83,7 @@ async def classify_image(
         meal_type_id = meal_type_id_map.get(meal_type, 3)  # 기본값을 기타로 설정
 
         # Model API 호출
-        model_api_url = "http://127.0.0.1:8001/predict_url/"
+        model_api_url = "http://Wellnessmodel:8001/predict_url/"
         try:
             response = requests.post(model_api_url, params={"image_url": image_url})
             response.raise_for_status()

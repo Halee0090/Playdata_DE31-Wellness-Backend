@@ -146,6 +146,7 @@ app.include_router(register.router, prefix="/api/v1/user", tags=["user_Register"
 app.include_router(recommend.router, prefix="/api/v1/recommend", tags=["Recommend"], dependencies=[Depends(validate_token)])
 app.include_router(model.router, prefix="/api/v1/model", tags=["Model"], dependencies=[Depends(validate_token)])
 app.include_router(history_router, prefix="/api/v1/history", tags=["History"], dependencies=[Depends(validate_token)])
+app.include_router(meal_records.router, prefix="/api/v1", tags=["meal_records"])
 
 # 서버 시작 시 로그 출력
 logger.info("FastAPI application has started.")

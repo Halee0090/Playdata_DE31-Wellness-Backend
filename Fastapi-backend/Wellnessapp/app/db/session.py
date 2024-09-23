@@ -8,6 +8,9 @@ from sqlalchemy import event
 from sqlalchemy.sql import text
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL is None:
+    raise ValueError("DATABASE_URL 환경 변수가 설정되어야 합니다.")
+
 TIMEZONE = os.getenv("TIMEZONE", "UTC")
 
 # SQLAlchemy 엔진 생성

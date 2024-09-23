@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from sqlalchemy.exc import SQLAlchemyError
 from jose import jwt, JWTError
 from schemas.user import UserLogin
@@ -11,7 +12,6 @@ from datetime import datetime, timedelta
 import logging
 import pytz  
 from pytz import UTC
-from services.auth_service import create_access_token, create_refresh_token, is_access_token_expired, verify_refresh_token
 
 # .env 파일 로드
 load_dotenv()
@@ -35,18 +35,65 @@ KST = pytz.timezone('Asia/Seoul')
 def format_datetime(dt: datetime):
     return dt.strftime("%Y-%m-%d %H:%M:%S")
 
+# Access 토큰 생성
+def create_access_token(data: dict, expires_delta: int):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=expires_delta)  # UTC 시간 사용
+    to_encode.update({"exp": expire})
+    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    logger.info(f"Access Token 생성 완료: {token}")
+    return token
+
+# 리프레시 토큰 생성
+def create_refresh_token(data: dict, expires_delta: int):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(days=expires_delta)  # UTC 시간 사용
+    to_encode.update({"exp": expire})
+    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    logger.info(f"Refresh Token 생성 완료: {token}")
+    return token
+
+# 엑세스 토큰 만료 확인 함수
+def is_access_token_expired(expiry_time: datetime):
+    return datetime.utcnow() > expiry_time  # UTC 시간 기준
+
+# 토큰 검증 함수
+def verify_refresh_token(token: str, expiry_time: datetime):
+    current_time_utc = datetime.now(pytz.UTC).replace(tzinfo=UTC)  # UTC 시간으로 변환
+    
+    if expiry_time.tzinfo is None:  
+        expiry_time = expiry_time.replace(tzinfo=UTC)
+        
+    if current_time_utc > expiry_time:
+        logger.error("Refresh token expired based on expiry_time in DB")
+        raise HTTPException(status_code=401, detail="Refresh token expired")
+    
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        logger.info(f"Refresh Token validated successfully: {payload}")
+        return payload
+    except JWTError as e:   
+        logger.error(f"Refresh token validation failed: {e}")
+        raise HTTPException(
+            status_code=401, detail="Refresh token invalid or expired")
+
 @router.post("/login")
-async def login(user: UserLogin, db: Session = Depends(get_db)):
+async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
     logger.info(f"로그인 시도: {user.email}, {user.nickname}")
 
     # 사용자 확인
-    db_user = db.query(User).filter(User.email == user.email).first()
+    stmt = select(User).where(User.email == user.email)
+    result = await db.execute(stmt)
+    db_user = result.scalars().first()
+    
     if not db_user:
         logger.error(f"DB User not found: {user.email}")
         raise HTTPException(status_code=400, detail="User not found")
 
     # auth 테이블에서 사용자 토큰 확인
-    auth_entry = db.query(Auth).filter(Auth.user_id == db_user.id).first()
+    stmt_auth = select(Auth).where(Auth.user_id == db_user.id)
+    result_auth = await db.execute(stmt_auth)
+    auth_entry = result_auth.scalars().first()
 
     if auth_entry:
         # 엑세스 토큰 만료 확인
@@ -69,7 +116,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                 )
 
                 try:
-                    db.commit()
+                    await db.commit()
                 except SQLAlchemyError as e:
                     db.rollback()
                     logger.error(f"failed to commit to DB: {e}")
@@ -98,7 +145,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                     expires_delta=ACCESS_TOKEN_EXPIRE_MINUTES
                 )
                 refresh_token = create_refresh_token(
-                    data={"dummy": "dummy_value"},  # 무의미한 데이터를 추가
+                    data={"user_id": db_user.id, "user_email": db_user.email},
                     expires_delta=REFRESH_TOKEN_EXPIRE_DAYS
                 )
 
@@ -112,11 +159,10 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                 auth_entry.refresh_created_at = format_datetime(datetime.now(KST))  # KST 시간으로 변환
                 auth_entry.refresh_expired_at = format_datetime(
                     (datetime.now(KST) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)).replace(tzinfo=pytz.UTC)
-
                 )
 
                 try:
-                    db.commit()
+                    await db.commit()
                 except SQLAlchemyError as e:
                     db.rollback()
                     logger.error(f"failed to commit to DB: {e}")
@@ -156,6 +202,4 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
                 "message": "Existing token provided."
             }
 
-    else:
-        logger.error(f"No auth entry found for user_id: {db_user.id}")
-        raise HTTPException(status_code=400, detail="No auth entry found.")
+ 

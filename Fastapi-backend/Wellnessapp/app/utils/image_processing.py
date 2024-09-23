@@ -15,7 +15,7 @@ def extract_exif_data(file_bytes: bytes):
         for tag, value in exif_data.items():
             decoded_tag = ExifTags.TAGS.get(tag, tag)
             if decoded_tag == "DateTimeOriginal":
-                return value  # 예: '2022:03:15 10:20:35'
+                return value  
         return None 
     
     except UnidentifiedImageError:
@@ -37,6 +37,17 @@ def extract_exif_data(file_bytes: bytes):
                 "detail": f"Error: {str(e)}"
             }
         )
+        
+def format_date(date_str: str) -> str:
+    """받은 날짜 문자열을 YYYY-MM-DD HH:MM:SS 형식으로 변환합니다."""
+    try:
+        # EXIF 데이터에서 가져온 형식은 "YYYY:MM:DD HH:MM:SS"이므로 변환합니다.
+        if isinstance(date_str, str):
+            date_str = date_str.replace(':', '-')  # ':'를 '-'로 변경
+            date_obj = datetime.datetime.strptime(date_str, "%Y-%m-%d %H-%M-%S")
+            return date_obj.strftime("%Y-%m-%d %H:%M:%S")  # 원하는 형식으로 반환
+    except Exception as e:
+        raise ValueError(f"Invalid date format: {str(e)}")
 
 def determine_meal_type(taken_time: str) -> str:
     try:

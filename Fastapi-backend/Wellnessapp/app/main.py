@@ -5,29 +5,16 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.security import OAuth2PasswordBearer
 from requests import session
-from api.v1 import recommend, model, register, oauth, login, auth
+from api.v1 import recommend, model, register, login, auth, mealrecords
 from services.auth_service import validate_token
 from db import models
 from db.session import get_db
 from db.models import Auth
 from api.v1.history import router as history_router
-import logging
 import os
 import time
+from core.logging import logger
 
-# 로그 설정
-log_file_path = os.path.join(os.getcwd(), "app.log")
-
-logging.basicConfig(
-    level=logging.INFO,  # 로그 레벨 설정
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(log_file_path),
-        logging.StreamHandler()
-    ]
-)
-
-logger = logging.getLogger(__name__)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -75,6 +62,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth_Verify"])
 app.include_router(login.router, prefix="/api/v1/user", tags=["user_Login"])
 app.include_router(register.router, prefix="/api/v1/user", tags=["user_Register"])
+app.include_router(mealrecords.router, prefix="/api/v1/record", tags=["Meal_Record"], dependencies=[Depends(validate_token)])
 app.include_router(recommend.router, prefix="/api/v1/recommend", tags=["Recommend"], dependencies=[Depends(validate_token)])
 app.include_router(model.router, prefix="/api/v1/model", tags=["Model"], dependencies=[Depends(validate_token)])
 app.include_router(history_router, prefix="/api/v1/history", tags=["History"], dependencies=[Depends(validate_token)])

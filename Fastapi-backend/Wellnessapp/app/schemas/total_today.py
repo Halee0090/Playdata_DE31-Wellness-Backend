@@ -3,7 +3,6 @@ from typing import List
 from datetime import datetime, date
 
 class TotalTodayBase(BaseModel):
-    user_id: int
     total_kcal: float
     total_car: float
     total_prot: float

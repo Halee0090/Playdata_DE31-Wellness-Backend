@@ -8,18 +8,18 @@ from datetime import datetime
 class Auth(Base):
     __tablename__ = 'auth'
     
-    id= Column(Integer, primary_key=True,autoincrement=True )
+    id= Column(Integer, primary_key=True,autoincrement=True)
     user_id= Column(Integer, ForeignKey('user_info.id'), nullable=False)
     access_token= Column(String(255), nullable=False, unique=True)
-    access_created_at= Column(DateTime, default=datetime.utcnow, nullable=False)
-    access_expired_at= Column(DateTime, nullable=False)
+    access_created_at= Column(DateTime(timezone=True), nullable=False)
+    access_expired_at= Column(DateTime(timezone=True), nullable=False)
     refresh_token= Column(String(255), nullable=False, unique=True)
-    refresh_created_at= Column(DateTime, default=datetime.utcnow, nullable=False)
-    refresh_expired_at= Column(DateTime, nullable=False)
+    refresh_created_at= Column(DateTime(timezone=True), nullable=False)
+    refresh_expired_at= Column(DateTime(timezone=True), nullable=False)
     
     user= relationship("User", back_populates="auth")
 
-class User(Base):
+class User(Base): 
     __tablename__ = 'user_info'
 
     id = Column(Integer, primary_key=True, autoincrement=True)

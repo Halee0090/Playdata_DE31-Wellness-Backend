@@ -1,56 +1,142 @@
-from datetime import datetime
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from datetime import datetime, timedelta
+from fastapi.responses import JSONResponse
+from pytz import timezone
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import OperationalError
+from jose import jwt, ExpiredSignatureError, JWTError
+from fastapi import APIRouter, Depends, Header, HTTPException
+
+from db.models import Auth
 from db.session import get_db
-from db.models import Auth, User
+from dotenv import load_dotenv
+import os
 import logging
+from services.auth_service import create_access_token
+from schemas.auth import TokenRequest  # Refresh Token을 받기 위한 스키마
 
-# 토큰을 Bearer 방식으로 받아오는 OAuth2 스키마
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+# .env 파일 로드
+load_dotenv()
 
-# 로깅 설정
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-async def validate_token(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    # 토큰을 확인하는 로그 추가
-    logger.info(f"Received token: {token}")
+router = APIRouter()
 
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid token",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+# KST timezone 설정
+KST = timezone('Asia/Seoul')
 
-    # 데이터베이스에서 토큰 조회
-    auth_entry = db.query(Auth).filter(Auth.access_token == token).first()
+# 토큰 검증 및 재발급 API
+@router.post("/verify")
+async def verify_token(token_data: TokenRequest, authorization: str = Header(...), db: Session = Depends(get_db)):
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=400, detail="Invalid authorization format")
+
+    access_token = authorization.split(" ")[1]  
+    refresh_token = token_data.refresh_token  
     
-    if auth_entry is None:
-        # 토큰 조회 실패 시 로그 기록
-        logger.error(f"Token not found in the database: {token}")
-        raise credentials_exception
-
-    # 토큰 만료 여부 확인
-    if auth_entry.access_expired_at < datetime.utcnow():
-        # 만료된 토큰일 경우 로그 기록
-        logger.error(f"Token expired: {token}")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    logger.info(f"검증을 위해 받은 Access Token: {access_token}")
     
-    # 여기서 User 객체 반환
-    user = db.query(User).filter(User.id == auth_entry.user_id).first()
-    if user is None:
-        logger.error(f"User not found for token: {token}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
-            headers={"WWW-Authenticate": "Bearer"},
+    try:
+        # 엑세스 토큰 검증
+        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+        logger.info(f"엑세스 토큰 유효, 유저 ID: {user_id}")
+        return JSONResponse(
+            status_code=200, 
+            content={
+                "status": "VALID_ACCESS_TOKEN",
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+                "detail":"Access token is still valid."
+                }
+            )
+
+    except ExpiredSignatureError:
+        logger.warning("엑세스 토큰 만료. 리프레시 토큰 확인 필요.")
+
+        # 리프레시 토큰 검증 및 DB에서 유저 조회
+        auth_entry = db.query(Auth).filter(Auth.refresh_token == refresh_token).first()
+
+        # 리프레시 토큰 검증 (디코딩하지 않고, 바로 DB에서 조회)
+        if not auth_entry:
+            logger.warning("유효하지 않은 리프레시 토큰.")
+            return JSONResponse(
+                status_code=200, 
+                content={
+                    "status": "EXPIRED_REFRESH_TOKEN",
+                    "access_token": None,
+                    "refresh_token": None,
+                    "detail": "Refresh token expired. Please log in again."
+                }
+            )
+    
+        # DB에서 사용자 정보 가져오기
+        user_id = auth_entry.user_id  # DB에서 user_id 가져오기
+        user_email = auth_entry.user.email  # DB에서 email 가져오기
+    
+        # 새 엑세스 토큰 발급
+        new_access_token = create_access_token(
+            data={"sub": user_id, "user_email": user_email},
+            expires_delta=ACCESS_TOKEN_EXPIRE_MINUTES
+        )
+        
+        # UTC -> KST 변환 후 DB 업데이트
+        access_created_at_utc = datetime.utcnow()
+        access_created_at_kst = access_created_at_utc.astimezone(KST)
+        access_expired_at_kst = access_created_at_kst + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        
+        auth_entry.access_token = new_access_token
+        auth_entry.access_created_at = access_created_at_kst
+        auth_entry.access_expired_at = access_expired_at_kst
+        db.commit()
+        
+        logger.info(f"새로운 엑세스 토큰 발급 완료, 유저 ID: {user_id}")
+        return JSONResponse(
+            status_code=200, 
+            content={
+                "status": "VALID_REFRESH_TOKEN", 
+                "access_token": new_access_token, 
+                "refresh_token": refresh_token, 
+                "detail": "Access token renewed."
+            }
         )
 
-    logger.info(f"Token is valid for user_id: {user.id}")
-    return user
+    except ExpiredSignatureError:
+        logger.error("리프레시 토큰 만료됨.")
+        return JSONResponse(
+            status_code=200, 
+            content={
+                "status": "EXPIRED_REFRESH_TOKEN", 
+                "access_token": None, 
+                "refresh_token": None, 
+                "detail": "Refresh token expired. Please log in again."
+            }
+        )
+
+    except JWTError:
+        logger.error("유효하지 않은 리프레시 토큰.")
+        return JSONResponse(
+            status_code=401, 
+            content={
+                "status": "INVALID_REFRESH_TOKEN", 
+                "access_token": None, 
+                "refresh_token": None, 
+                "detail": "Invalid refresh token."
+            }
+        )
+
+    except JWTError:
+        logger.error("유효하지 않은 엑세스 토큰.")
+        return JSONResponse(
+            status_code=401, 
+            content={
+                "status": "INVALID_ACCESS_TOKEN", 
+                "access_token": None, 
+                "refresh_token": refresh_token, 
+                "detail": "Invalid access token."
+            }
+        )
 

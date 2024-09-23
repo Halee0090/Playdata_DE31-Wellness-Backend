@@ -309,13 +309,60 @@ from sqlalchemy import delete
 import pytz
 from datetime import datetime, timezone
 from schemas.log import LogCreate
+from sqlalchemy.orm import Session
+import json
 
+def mask_token(token: str) -> str:
+    return token[:10] + '*' * (len(token) - 10) if token else token
 
-async def create_log(db: AsyncSession, log: LogCreate):
-    now_utc = datetime.now(timezone.utc)  # 현재 UTC 시간 가져오기
-    db_log = Log(**log.dict())
+def mask_email(email:str) -> str:
+    parts = email.split('@')
+    return f"{parts[0][:3]}{'*' * (len(parts[0]) - 3)}@{parts[1]}" if email else email
+def mask_nickname(nicknaem: str) -> str:
+    return nicknaem[:1] + '*' * (len(nicknaem) - 1) if nicknaem else nicknaem
+
+# async def create_log(db: AsyncSession, log: LogCreate): # mask 처리 안되는 버전
+#     now_utc = datetime.now(timezone.utc)  # 현재 UTC 시간 가져오기
+#     db_log = Log(**log.dict())
+#     db.add(db_log)
+#     await db.commit()# SQLAlchemy의 비동기 세션에서는 add() 메서드를 await로 호출하지 않음
+#     await db.refresh(db_log)
+#     return db_log
+
+async def create_log(db: Session, log: LogCreate):# 토큰, 이메일, 닉네임 masked 처리 
+    try:
+        # JSON 데이터를 파싱
+        res_param = json.loads(log.res_param)
+        
+        # 민감한 정보 마스킹
+        if 'detail' in res_param and 'wellness_info' in res_param['detail']:
+            wellness_info = res_param['detail']['wellness_info']
+            wellness_info['access_token'] = mask_token(wellness_info.get('access_token'))
+            wellness_info['refresh_token'] = mask_token(wellness_info.get('refresh_token'))
+            wellness_info['user_email'] = mask_email(wellness_info.get('user_email'))
+            wellness_info['user_nickname'] = mask_nickname(wellness_info.get('user_nickname'))
+        
+        # 마스킹된 데이터를 다시 JSON 문자열로 변환
+        masked_res_param = json.dumps(res_param)
+    except json.JSONDecodeError:
+        # JSON 파싱에 실패한 경우, 원본 데이터를 그대로 사용
+        masked_res_param = log.res_param
+    except Exception as e:
+        # 기타 예외 처리
+        print(f"Error during log masking: {str(e)}")
+        masked_res_param = log.res_param
+
+    db_log = Log(
+        req_url=log.req_url,
+        method=log.method,
+        req_param=log.req_param,
+        res_param=masked_res_param,  # 마스킹된 데이터 사용
+        msg=log.msg,
+        code=log.code,
+        time_stamp=log.time_stamp
+    )
     db.add(db_log)
-    await db.commit()# SQLAlchemy의 비동기 세션에서는 add() 메서드를 await로 호출하지 않음
+    await db.commit()
     await db.refresh(db_log)
     return db_log
 

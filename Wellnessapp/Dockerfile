@@ -9,13 +9,15 @@ COPY requirements.txt /Fastapi-backend/
 
 # Install app
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install python-jose
+RUN pip install PyJWT
+RUN pip install pytz
+RUN pip install asyncpg
 # RUN pip install python-jose
 # RUN pip install PyJWT
 # RUN pip install pytz
 <<<<<<< HEAD:Fastapi-backend/Wellnessapp/Dockerfile
 
-=======
->>>>>>> feature/deploy:Wellnessapp/Dockerfile
 
 # Copy the rest of the application code
 COPY ./Wellnessapp/app /Fastapi-backend

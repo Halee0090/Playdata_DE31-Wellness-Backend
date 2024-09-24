@@ -100,10 +100,3 @@ async def verify_token(token_data: TokenRequest, authorization: str = Header(...
                 "detail": "Invalid token."
             }
         )
-        
-        
-        
-        
-        
-        
-        

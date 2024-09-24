@@ -17,6 +17,7 @@ from decimal import Decimal
 from core.logging import logger
 from utils.format import decimal_to_float
 from db import models
+from core.config import BUCKET_NAME
 
 
 router = APIRouter()
@@ -35,7 +36,6 @@ async def classify_image(
         file_bytes = await file.read()
         file_extension = file.filename.split(".")[-1]
         unique_file_name = f"{uuid.uuid4()}.{file_extension}"
-        bucket_name = os.getenv("BUCKET_NAME", "default_bucket_name")
         
         # MIME 타입 확인
         mime_type, _ = mimetypes.guess_type(file.filename)
@@ -51,7 +51,7 @@ async def classify_image(
 
         # 이미지 S3 업로드 처리
         try:
-            image_url = upload_image_to_s3(BytesIO(file_bytes), bucket_name, unique_file_name)
+            image_url = upload_image_to_s3(BytesIO(file_bytes), BUCKET_NAME, unique_file_name)
         except Exception as e:
             return JSONResponse(
                 {

@@ -12,19 +12,11 @@ from core.logging import logger
 import os
 from dotenv import load_dotenv
 from sqlalchemy import text
+from core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
 
-# .env 파일 로드
-load_dotenv()
-
-# 환경 변수 로드
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
-REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS"))
 
 # 토큰을 Bearer 방식으로 받아오는 OAuth2 스키마
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
 
 # Access 토큰 생성
 def create_access_token(data: dict, expires_delta: int):

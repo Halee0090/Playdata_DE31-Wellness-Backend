@@ -9,7 +9,7 @@ from services.auth_service import validate_token
 from datetime import datetime, date, timedelta
 import logging
 from core.logging import logger
-from utils.format import decimal_to_float, datetime_to_string
+from utils.format import decimal_to_float, datetime_to_string, KST
 
 router = APIRouter()
 
@@ -23,8 +23,8 @@ async def get_meal_records(
 
     # 오늘 날짜로 설정
     if today is None:
-        today = datetime.now().date()
-        logger.info(f"No date provided; using today's date: {today}")
+        today = datetime.now(KST).date().strftime("%Y-%m-%d %H:%M:%S")
+        logger.info(f"No date provided; usi ng today's date in KST: {today}")
 
     try:
         logger.info(f"Querying meals for date: {today}")

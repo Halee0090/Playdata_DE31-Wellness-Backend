@@ -9,8 +9,8 @@ from services.auth_service import validate_token
 from datetime import datetime, date, timedelta
 import logging
 from core.logging import logger
-from utils.format import decimal_to_float, datetime_to_string
-from db.crud import get_meals_by_user_and_date  
+from utils.format import decimal_to_float, datetime_to_string, KST
+
 
 router = APIRouter()
 
@@ -24,8 +24,8 @@ async def get_meal_records(
 
     # 오늘 날짜로 설정
     if today is None:
-        today = datetime.now().date()
-        logger.info(f"No date provided; using today's date: {today}")
+        today = datetime.now(KST).date().strftime("%Y-%m-%d %H:%M:%S")
+        logger.info(f"No date provided; usi ng today's date in KST: {today}")
 
     try:
         logger.info(f"Querying meals for date: {today}")
@@ -46,9 +46,10 @@ async def get_meal_records(
          .join(Meal_Type, History.meal_type_id == Meal_Type.id) \
          .filter(History.date >= today) \
          .filter(History.date < today + timedelta(days=1)) \
-         .filter(History.user_id == current_user.id) 
-         
-         
+         .filter(History.user_id == current_user.id) \
+         .order_by(History.id)
+
+
         result = await db.execute(stmt)
         meals = result.fetchall()
 

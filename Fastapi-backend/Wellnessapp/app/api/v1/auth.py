@@ -33,8 +33,8 @@ async def verify_token(token_data: TokenRequest, authorization: str = Header(...
     try:
         # 엑세스 토큰 검증
         payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        logger.info(f"엑세스 토큰 유효, 유저 ID: {user_id}")
+        user_email = payload.get("user_email")  # user_email을 추출
+        logger.info(f"엑세스 토큰 유효, 유저 이메일: {user_email}")
         return JSONResponse(
             status_code=200,
             content={
@@ -67,27 +67,16 @@ async def verify_token(token_data: TokenRequest, authorization: str = Header(...
 
         # 사용자 정보 추출
         auth, user = auth_entry  # auth_entry는 Auth와 User 객체를 포함하는 튜플
-        user_id = auth.user_id
-        user_email = user.email
-        logger.info(f"User ID: {user_id}, Email: {user_email}로 새로운 엑세스 토큰 발급")
+        logger.info(f"User ID: {auth.user_id}, Email: {user.email}로 새로운 엑세스 토큰 발급")
 
-        # 새 엑세스 토큰 발급
+        # 새 엑세스 토큰 발급 (user_email 포함)
         new_access_token = create_access_token(
-            data={"sub": user_id, "user_email": user_email},
+            data={"user_email": user.email},
             expires_delta=ACCESS_TOKEN_EXPIRE_MINUTES
         )
 
-        # KST 타임존으로 시간 변환
-        KST = pytz.timezone('Asia/Seoul')
-        access_created_at_utc = datetime.utcnow().replace(tzinfo=pytz.UTC)
-        access_expired_at_utc = access_created_at_utc + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_created_at_kst = access_created_at_utc.astimezone(KST)
-        access_expired_at_kst = access_expired_at_utc.astimezone(KST)
-
         # DB에 새로운 엑세스 토큰 정보 업데이트 (ORM 방식)
         auth.access_token = new_access_token
-        auth.access_created_at = access_created_at_kst
-        auth.access_expired_at = access_expired_at_kst
         await db.commit()
 
         return JSONResponse(
@@ -111,3 +100,10 @@ async def verify_token(token_data: TokenRequest, authorization: str = Header(...
                 "detail": "Invalid token."
             }
         )
+        
+        
+        
+        
+        
+        
+        

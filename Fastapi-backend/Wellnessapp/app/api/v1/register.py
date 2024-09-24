@@ -66,7 +66,7 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
 
         # JWT 토큰 생성
         access_token = create_access_token(
-            data={"user_id": new_user.id, "user_email": new_user.email},
+            data={"user_email": new_user.email},
             expires_delta=ACCESS_TOKEN_EXPIRE_MINUTES
         )
         refresh_token = create_refresh_token(
@@ -131,3 +131,4 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Unexpected error: {str(e)}"
         )
+

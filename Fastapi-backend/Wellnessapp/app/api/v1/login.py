@@ -46,7 +46,7 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
 
                 # Refresh token is valid, issue new access token
                 access_token = create_access_token(
-                    data={"user_id": db_user.id, "user_email": db_user.email},
+                    data={"user_email": db_user.email},
                     expires_delta=ACCESS_TOKEN_EXPIRE_MINUTES
                 )
                 auth_entry.access_token = access_token
@@ -74,11 +74,11 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
                 logger.info("Refresh token expired. Issuing new tokens.")
                 # Both access and refresh tokens expired; issue new ones
                 access_token = create_access_token(
-                    data={"user_id": db_user.id, "user_email": db_user.email},
+                    data={"user_email": db_user.email},
                     expires_delta=ACCESS_TOKEN_EXPIRE_MINUTES
                 )
                 refresh_token = create_refresh_token(
-                    data={"user_id": db_user.id, "user_email": db_user.email},
+                    data={"dummy_data": "dummy_value"},
                     expires_delta=REFRESH_TOKEN_EXPIRE_DAYS
                 )
 

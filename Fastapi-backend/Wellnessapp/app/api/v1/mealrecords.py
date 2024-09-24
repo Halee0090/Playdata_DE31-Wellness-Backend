@@ -8,22 +8,11 @@ from services.auth_service import validate_token
 from datetime import datetime, date, timedelta
 import logging
 from decimal import Decimal
+from core.logging import logger
+from utils.format import decimal_to_float, datetime_to_string
 
-# 로깅 설정
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
-def decimal_to_float(obj):
-    if isinstance(obj, Decimal):
-        return float(obj)
-    return obj
-
-def datetime_to_string(dt):
-    if isinstance(dt, datetime):
-        return dt.isoformat()
-    return dt
 
 @router.get("/meal_records")
 async def get_meal_records(
@@ -32,7 +21,7 @@ async def get_meal_records(
     current_user: User = Depends(validate_token)
 ):
     # 현재 사용자의 ID 로그 출력
-    logger.info(f"Request received from user ID: {current_user.id}")
+    logger.info(f"Request received from user ID:s {current_user.id}")
 
     # 오늘 날짜로 설정
     if today is None:
@@ -62,6 +51,19 @@ async def get_meal_records(
         meals = result.fetchall()  # fetchall() 사용
 
         logger.info(f"Number of meals retrieved: {len(meals)}")
+        
+        if not meals:
+            return JSONResponse(
+                content={
+                    "status": "success",
+                    "status_code": 200,
+                    "detail": {
+                        "Wellness_meal_list": []
+                    },
+                    "messsage": "No meals recorded today",
+                },
+                media_type= "application/json: charset=utf-8"
+            )
 
         # 응답 데이터 포맷팅
         meal_list = [{

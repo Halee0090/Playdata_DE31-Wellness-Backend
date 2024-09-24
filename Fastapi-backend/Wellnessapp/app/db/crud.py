@@ -12,7 +12,6 @@ from datetime import date, datetime
 from schemas import UserCreate
 import schemas
 import logging
-from db import models
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +39,7 @@ async def get_user_updated_at(db: AsyncSession, current_user: User):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 # 사용자 ID로 권장 영양소 조회
-async def get_recommend_by_user_id(db: AsyncSession, user: models.User):
+async def get_recommend_by_user_id(db: AsyncSession, user_id: int):
     try:
         stmt = select(Recommend).where(Recommend.user_id == user_id)
         result = await db.execute(stmt)

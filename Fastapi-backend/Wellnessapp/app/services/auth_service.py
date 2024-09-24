@@ -29,25 +29,24 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # Access 토큰 생성
 def create_access_token(data: dict, expires_delta: int):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=expires_delta)
+    expire = datetime.utcnow() + timedelta(minutes=expires_delta)  # UTC 시간 사용
     to_encode.update({"exp": expire})
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     logger.info(f"Access Token 생성 완료: {token}")
     return token
 
-# 리프레시 토큰 생성
+# Refresh 토큰 생성
 def create_refresh_token(data: dict, expires_delta: int):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(days=expires_delta)
+    expire = datetime.utcnow() + timedelta(days=expires_delta)  # UTC 시간 사용
     to_encode.update({"exp": expire})
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     logger.info(f"Refresh Token 생성 완료: {token}")
     return token
 
 # 엑세스 토큰 만료 확인 함수
-def is_access_token_expired(expiry_time: datetime) -> bool:
-    current_time_utc = datetime.utcnow()  # 현재 UTC 시간
-    return current_time_utc > expiry_time  # 만료 시간이 현재 시간보다 이전인지 확인
+def is_access_token_expired(expiry_time: datetime):
+    return datetime.utcnow() > expiry_time  # UTC 시간 기준
 
 
 # 토큰 검증 함수

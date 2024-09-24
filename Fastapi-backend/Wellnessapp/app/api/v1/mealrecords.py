@@ -11,6 +11,7 @@ import logging
 from core.logging import logger
 from utils.format import decimal_to_float, datetime_to_string, KST
 
+
 router = APIRouter()
 
 @router.get("/meal_records")
@@ -47,6 +48,7 @@ async def get_meal_records(
          .filter(History.date < today + timedelta(days=1)) \
          .filter(History.user_id == current_user.id) \
          .order_by(History.id)
+
 
         result = await db.execute(stmt)
         meals = result.fetchall()
@@ -96,3 +98,4 @@ async def get_meal_records(
     except Exception as e:
         logger.error(f"Failed to retrieve meal records: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while retrieving meal records")
+

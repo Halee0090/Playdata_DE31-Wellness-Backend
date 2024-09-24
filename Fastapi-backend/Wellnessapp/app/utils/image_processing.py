@@ -59,9 +59,10 @@ def determine_meal_type(taken_time: str) -> str:
         else:
             taken_time_obj = datetime.datetime.now()  # Exif 데이터가 없을 경우 현재 서버 시간을 사용
         
-        # datetime 모듈을 명확하게 호출
-        taken_time_obj = datetime.datetime.strptime(taken_time, time_format)  # datetime의 datetime 모듈 사용
+        # 여기에서 더 이상 datetime 변환을 하지 않음
         hour = taken_time_obj.hour
+        
+        # 시간대에 따라 아침, 점심, 저녁, 기타를 반환
         if 6 <= hour <= 8:
             return "아침"
         elif 11 <= hour <= 13:
@@ -70,6 +71,7 @@ def determine_meal_type(taken_time: str) -> str:
             return "저녁"
         else:
             return "기타"
+
         
     except ValueError as e:
         return HTTPException(

@@ -18,7 +18,6 @@ from core.logging import logger
 from utils.format import decimal_to_float
 from db import models
 
-
 router = APIRouter()
 
 # 허용된 이미지 파일 형식 (MIME 타입)
@@ -57,7 +56,7 @@ async def classify_image(
                 {
                     "status": "Bad Request",
                     "status_code": 403,
-                    "detail": f"failed to upload image to s3: {str(e)}"
+                    "detail": f"Failed to upload image to s3: {str(e)}"
                 },
                 status_code=status.HTTP_403_FORBIDDEN
             )
@@ -67,10 +66,13 @@ async def classify_image(
         if date:
             formatted_date = format_date(date)
         else:
-            formatted_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+            current_time = datetime.datetime.now()
+            formatted_date = current_time.strftime("%Y-%m-%d %H:%M:%S")
+            date = current_time  # datetime 객체를 date로 설정
+
         # meal_type 및 meal_type_id 설정
         meal_type = determine_meal_type(date) if date else "기타"
+        logger.info(f"Determined meal_type: {meal_type}, from date: {date}")
         meal_type_id_map = {
             "아침": 0,
             "점심": 1,
@@ -80,12 +82,12 @@ async def classify_image(
         meal_type_id = meal_type_id_map.get(meal_type, 3)
 
         # Model API 호출
-        model_api_url = "http://Wellnessmodel:8001/predict_url/"
+        model_api_url = "http://127.0.0.1:8001/predict_url/"
         try:
             response = requests.post(model_api_url, params={"image_url": image_url})
             response.raise_for_status()
         except requests.RequestException as e:
-            logger.error("Model API request failed: %s", str(e))
+            logger.error(f"Model API request failed: {str(e)}")
             return JSONResponse(
                 {
                     "status": "Internal Server Error",
@@ -166,7 +168,7 @@ async def classify_image(
         )
 
     except Exception as e:
-        logger.error("Internal server error: %s", str(e))
+        logger.error(f"Internal server error: {str(e)}")
         return JSONResponse(
             {
                 "status": "Internal Server Error",

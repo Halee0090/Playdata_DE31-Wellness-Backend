@@ -15,24 +15,10 @@ import pytz
 from fastapi.responses import JSONResponse
 from services.auth_service import create_access_token, create_refresh_token
 from core.logging import logger
-
-# .env 파일 로드
-load_dotenv()
-
-# 환경 변수 설정
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
-REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS"))
+from core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
+from utils.format import KST,  format_datetime
 
 router = APIRouter()
-
-# KST 타임존 설정
-KST = pytz.timezone('Asia/Seoul')
-
-# 날짜 및 시간 형식을 'YYYY-MM-DD HH:MM:SS'로 포맷
-def format_datetime(dt: datetime):
-    return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 @router.post("/register")
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):

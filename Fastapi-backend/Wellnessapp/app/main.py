@@ -58,7 +58,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 # api 라우터 설정
-# app.include_router(oauth.router, prefix="/api/v1/oauth", tags=["Oauth_kakaotoken"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth_Verify"])
 app.include_router(login.router, prefix="/api/v1/user", tags=["user_Login"])
 app.include_router(register.router, prefix="/api/v1/user", tags=["user_Register"])

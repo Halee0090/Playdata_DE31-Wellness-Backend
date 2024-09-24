@@ -9,17 +9,10 @@ from datetime import datetime
 from fastapi.responses import JSONResponse
 import logging
 from datetime import date
+from core.logging import logger
+from utils.format import decimal_to_float
 
 router = APIRouter()
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Decimal 타입을 float으로 변환하는 함수
-def decimal_to_float(obj):
-    if isinstance(obj, Decimal):
-        return float(obj)
-    raise obj
 
 @router.get("/eaten_nutrient")
 async def get_recommend_eaten(

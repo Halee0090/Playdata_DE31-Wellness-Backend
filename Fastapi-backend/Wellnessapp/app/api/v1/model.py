@@ -14,22 +14,15 @@ import uuid
 import datetime
 from fastapi.responses import JSONResponse
 from decimal import Decimal
-import logging
+from core.logging import logger
+from utils.format import decimal_to_float
 from db import models
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 # 허용된 이미지 파일 형식 (MIME 타입)
 ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/jpg"]
-
-# Decimal 타입을 float으로 변환하는 함수
-def decimal_to_float(obj):
-    if isinstance(obj, Decimal):
-        return float(obj)
-    raise TypeError
 
 
 @router.post("/predict")
@@ -87,7 +80,7 @@ async def classify_image(
         meal_type_id = meal_type_id_map.get(meal_type, 3)
 
         # Model API 호출
-        model_api_url = "http://127.0.0.1:8001/predict_url/"
+        model_api_url = "http://Wellnessmodel:8001/predict_url/"
         try:
             response = requests.post(model_api_url, params={"image_url": image_url})
             response.raise_for_status()

@@ -5,21 +5,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from jose import jwt, ExpiredSignatureError, JWTError
 from fastapi import APIRouter, Depends, Header, HTTPException
-from db.models import Auth, User  # ORM 모델을 직접 사용
+from db.models import Auth, User  
 from db.session import get_db
 from dotenv import load_dotenv
 import os
 from services.auth_service import create_access_token
 from schemas.auth import TokenRequest  
 from core.logging import logger
+from core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 import pytz
-
-# .env 파일 로드
-load_dotenv()
-
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 router = APIRouter()
 

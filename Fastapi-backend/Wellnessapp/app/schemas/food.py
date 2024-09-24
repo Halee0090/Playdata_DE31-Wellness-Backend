@@ -1,23 +1,15 @@
-from decimal import Decimal
 from pydantic import BaseModel
 
-class FoodListBase(BaseModel):
-    category_id: int
-    food_name: str
-    category_name: str
-    food_kcal: Decimal
-    food_car: Decimal
-    food_prot: Decimal
-    food_fat: Decimal
+# 토큰 발급을 위한 Pydantic 모델
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    refresh_token: str
 
-class FoodListCreate(FoodListBase):
-    pass
-
-class FoodListUpdate(FoodListBase):
-    pass
-
-class FoodListInDB(FoodListBase):
-    id: int
-
-    class Config:
-        orm_mode = True
+# 사용자 정보를 담은 Pydantic 모델
+class TokenData(BaseModel):
+    user_id: int = None
+    
+# 요청 바디 스키마 정의
+class TokenRequest(BaseModel):
+    refresh_token: str

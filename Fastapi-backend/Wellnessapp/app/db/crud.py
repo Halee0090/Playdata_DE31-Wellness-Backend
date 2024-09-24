@@ -9,7 +9,7 @@ from db.models import Food_List, Recommend, Total_Today, History, Meal_Type, Use
 from sqlalchemy import func
 from decimal import Decimal
 from datetime import date, datetime
-from schemas import UserCreate
+from schemas.user import UserCreate
 import schemas
 import logging
 

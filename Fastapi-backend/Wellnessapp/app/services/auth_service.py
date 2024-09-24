@@ -10,17 +10,9 @@ from db.models import Auth, User
 from schemas.auth import Token, TokenData
 from core.logging import logger
 import os
-from dotenv import load_dotenv
 from sqlalchemy import text
+from core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
 
-# .env 파일 로드
-load_dotenv()
-
-# 환경 변수 로드
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
-REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS"))
 
 # 토큰을 Bearer 방식으로 받아오는 OAuth2 스키마
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -71,9 +63,7 @@ def verify_refresh_token(token: str, expiry_time: datetime):
 
 
 # 비동기 토큰 검증 및 유저 반환 함수
-# 비동기 토큰 검증 및 유저 반환 함수
 async def validate_token(db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    # 토큰을 확인하는 로그 추가
     logger.info(f"Received token: {token}")
 
     credentials_exception = HTTPException(

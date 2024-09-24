@@ -59,7 +59,7 @@ async def save_to_history_and_get_today_history(
             Food_List.food_prot,
             Food_List.food_fat,
             History.date
-        ).join(Food_List, History.category_id == Food_List.id) \
+        ).join(Food_List, History.category_id == Food_List.category_id) \
          .join(Meal_Type, History.meal_type_id == Meal_Type.id) \
          .filter(History.date == history_data.date) \
          .filter(History.user_id == current_user.id)
@@ -68,6 +68,7 @@ async def save_to_history_and_get_today_history(
         meals = result.fetchall()
 
         # 기록된 식사 내역이 10개 이상이면 에러 반환
+        logger.info(f"Number of meals: {len(meals)}")
         if len(meals) >= 10:
             return JSONResponse(
                 {

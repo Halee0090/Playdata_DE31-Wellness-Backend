@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from sqlalchemy.exc import SQLAlchemyError
 from jose import jwt
 from schemas.user import UserCreate
@@ -10,39 +11,20 @@ from db.models import Auth, User
 import os
 from dotenv import load_dotenv
 from datetime import date, datetime, timedelta
-import logging
 import pytz  
 from fastapi.responses import JSONResponse
 from services.auth_service import create_access_token, create_refresh_token
-
-
-# .env 파일 로드
-load_dotenv()
-
-# 환경 변수 설정
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
-REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS"))
-
-# 로깅 설정
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from core.logging import logger
+from core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
+from utils.format import KST,  format_datetime
 
 router = APIRouter()
 
-# KST 타임존 설정
-KST = pytz.timezone('Asia/Seoul')
-
-# 날짜 및 시간 형식을 'YYYY-MM-DD HH:MM:SS'로 포맷
-def format_datetime(dt: datetime):
-    return dt.strftime("%Y-%m-%d %H:%M:%S")
-
 @router.post("/register")
-async def register(user: UserCreate, db: Session = Depends(get_db)):
+async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     try:
         # 이메일 중복 확인
-        existing_user = crud.get_user_by_email(db, email=user.email)
+        existing_user = await get_user_by_email(db, email=user.email)
         if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -52,21 +34,14 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         # 생년월일이 현재 연도와 같은지 확인
         current_year = datetime.now().year
         if user.birthday.year == current_year:
-            return JSONResponse(
-                content={
-                    "status": "Bad Request",
-                    "status_code": 400,
-                    "detail": "Birthday cannot be the current year."
-                },
+            raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Birthday cannot be the current year."
             )
-            
+
         # 성별 변환
-        if user.gender == "남성":
-            gender_value = 0
-        elif user.gender == "여성":
-            gender_value = 1
-        else:
+        gender_value = 0 if user.gender == "남성" else 1 if user.gender == "여성" else None
+        if gender_value is None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid gender information."
@@ -76,15 +51,18 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         user_age = calculate_age(user.birthday)
         
         # 사용자 생성
-        new_user = crud.create_user(db=db, user=user, age=user_age, gender=gender_value)
+        new_user = await crud.create_user(db=db, user=user, age=user_age, gender=gender_value)
 
         # 권장 영양소 계산 및 저장
-        recommendation = crud.calculate_and_save_recommendation(db, new_user)
-        db.add(recommendation)
-        
+        recommendation = await crud.calculate_and_save_recommendation(db, new_user)
+        if recommendation is None:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to save recommendation")
+
         # total_today 생성
         today = date.today()
-        total_today = crud.create_total_today(db, new_user.id, today)
+        total_today = await crud.create_total_today(db, new_user.id, today)
+        if total_today is None:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create total_today")
 
         # JWT 토큰 생성
         access_token = create_access_token(
@@ -95,19 +73,28 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
             data={"dummy": "dummy_value"}, 
             expires_delta=REFRESH_TOKEN_EXPIRE_DAYS
         )
+        
+        # KST 시간으로 변환하여 데이터베이스에 저장
+        now_kst = datetime.now(KST)
+        access_created_at = now_kst
+        access_expired_at = now_kst + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        refresh_created_at = now_kst
+        refresh_expired_at = now_kst + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
 
         # 토큰 정보 저장
         new_user_auth_entry = Auth(
             user_id=new_user.id,
             access_token=access_token,
+            access_created_at=access_created_at,
+            access_expired_at=access_expired_at,
             refresh_token=refresh_token,
-            access_created_at=format_datetime(datetime.now(KST)),
-            access_expired_at=format_datetime(datetime.now(KST) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)),
-            refresh_created_at=format_datetime(datetime.now(KST)),
-            refresh_expired_at=format_datetime(datetime.now(KST) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS))
-            )
+            refresh_created_at=refresh_created_at,
+            refresh_expired_at=refresh_expired_at
+        )
+        
+        # 모든 작업을 완료한 후에 커밋
         db.add(new_user_auth_entry)
-        db.commit()
+        await db.commit()
 
         return {
             "status": "success",
@@ -130,25 +117,17 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         }
 
     except (SQLAlchemyError, HTTPException) as e:
-        db.rollback()  # 오류 발생 시 롤백
+        await db.rollback()  # 오류 발생 시 롤백
         logger.error(f"Failed to create user: {str(e)}")
-        return JSONResponse(
-            content={
-                "status": "Error",
-                "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                "detail": f"Failed to create user: {str(e)}"
-            },
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create user: {str(e)}"
         )
         
     except Exception as e:
-        db.rollback()  # 예상치 못한 오류에도 롤백 수행
+        await db.rollback()  # 예상치 못한 오류에도 롤백 수행
         logger.error(f"Unexpected error: {str(e)}")
-        return JSONResponse(
-            content={
-                "status": "Error",
-                "status_code": 500,
-                "detail": f"Unexpected error: {str(e)}"
-            },
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error: {str(e)}"
         )

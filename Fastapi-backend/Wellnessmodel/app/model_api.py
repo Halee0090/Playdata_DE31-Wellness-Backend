@@ -11,7 +11,6 @@ from urllib.parse import urlparse
 import logging  
 import torchvision.models as models
 
-
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 app = FastAPI()

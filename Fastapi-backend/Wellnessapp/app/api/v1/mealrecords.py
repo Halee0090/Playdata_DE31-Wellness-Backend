@@ -10,6 +10,7 @@ from datetime import datetime, date, timedelta
 import logging
 from core.logging import logger
 from utils.format import decimal_to_float, datetime_to_string
+from db.crud import get_meals_by_user_and_date  
 
 router = APIRouter()
 
@@ -45,9 +46,9 @@ async def get_meal_records(
          .join(Meal_Type, History.meal_type_id == Meal_Type.id) \
          .filter(History.date >= today) \
          .filter(History.date < today + timedelta(days=1)) \
-         .filter(History.user_id == current_user.id) \
-         .order_by(History.id)
-
+         .filter(History.user_id == current_user.id) 
+         
+         
         result = await db.execute(stmt)
         meals = result.fetchall()
 

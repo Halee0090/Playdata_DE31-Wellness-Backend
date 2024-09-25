@@ -8,13 +8,17 @@ from services.auth_service import validate_token
 from db.models import Food_List, Recommend, Total_Today, History, Meal_Type, User, Auth, Log
 from sqlalchemy import func
 from decimal import Decimal
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from schemas.user import UserCreate
 import schemas
 from core.logging import logger
 from schemas.log import LogCreate
 import json
 import jwt
+import pytz
+import hashlib
+from sqlalchemy import delete
+
 
 # 공통 예외 처리 헬퍼 함수
 async def execute_db_operation(db: AsyncSession, operation):
@@ -70,7 +74,7 @@ def process_token_for_logging(token: str, secret_key: str) -> dict:
         "decoded_info": decoded_info
     }
 
-async def create_log(db: Session, log: LogCreate, jwt_secret_key: str):
+async def create_log(db: AsyncSession, log: LogCreate, jwt_secret_key: str):
     try:
         res_param = json.loads(log.res_param)
 

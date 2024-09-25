@@ -54,9 +54,8 @@ async def generate_daily_log():
             except Exception as e:
                 logger.error(f"Error deleting old logs: {e}")
 
-            # 다음 날 대기
-            tomorrow = (now + timedelta(hours=12)).replace(hour=0, minute=0, second=0, microsecond=0)
-            wait_time = (tomorrow - now).total_seconds()
+            # 10분 대기 (600초)
+            wait_time = 600
             logger.info(f"Waiting for {wait_time} seconds until next execution.")
             await asyncio.sleep(wait_time)
 

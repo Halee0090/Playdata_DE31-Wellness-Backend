@@ -18,7 +18,7 @@ RUN pip install asyncpg
 COPY ./Wellnessapp/app /Fastapi-backend
 
 # Create a directory for storing log files
-RUN mkdir -p /Fastapi-backend/Wellnessapp/app/dailylogtxt
+RUN chmod -R 755 /Fastapi-backend/Wellnessapp/app/dailylogtxt
 
 # Run the FastAPI app
 CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]

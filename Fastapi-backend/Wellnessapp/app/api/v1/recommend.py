@@ -80,13 +80,13 @@ async def get_recommend_eaten(
                 "wellness_recommend_info": {
                     "user_nickname": current_user.nickname,
                     "total_kcal": decimal_to_float(total_today.total_kcal),
-                    "total_car": decimal_to_float(total_today.total_car),
-                    "total_prot": decimal_to_float(total_today.total_prot),
-                    "total_fat": decimal_to_float(total_today.total_fat),
+                    "total_car": round(decimal_to_float(total_today.total_car)),
+                    "total_prot": round(decimal_to_float(total_today.total_prot)),
+                    "total_fat": round(decimal_to_float(total_today.total_fat)),
                     "rec_kcal": decimal_to_float(recommendation.rec_kcal),
-                    "rec_car": decimal_to_float(recommendation.rec_car),
-                    "rec_prot": decimal_to_float(recommendation.rec_prot),
-                    "rec_fat": decimal_to_float(recommendation.rec_fat),
+                    "rec_car": round(decimal_to_float(recommendation.rec_car)),
+                    "rec_prot": round(decimal_to_float(recommendation.rec_prot)),
+                    "rec_fat": round(decimal_to_float(recommendation.rec_fat)),
                     "condition": total_today.condition
                 }
             },
@@ -94,3 +94,4 @@ async def get_recommend_eaten(
         },
         media_type="application/json; charset=utf-8"
     )
+    

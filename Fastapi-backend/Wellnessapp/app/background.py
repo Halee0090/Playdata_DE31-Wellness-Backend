@@ -2,12 +2,13 @@ import asyncio
 from datetime import datetime, timedelta
 import pytz
 import aioboto3
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession
 from db import crud
 from db.crud import get_daily_logs, delete_old_logs
 from db.session import async_session
 from core.logging import logger
 from core.config import BUCKET_NAME
+import os
 
 async def generate_daily_log():
     aws_session = aioboto3.Session()    
@@ -16,7 +17,7 @@ async def generate_daily_log():
         try:
             korea_timezone = pytz.timezone('Asia/Seoul')
             now = datetime.now(korea_timezone)
-            yesterday = (now - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+            yesterday = (now - timedelta(hours=12)).replace(hour=0, minute=0, second=0, microsecond=0)
 
             # 한국 시간을 UTC로 변환
             yesterday_utc = yesterday.astimezone(pytz.utc)
@@ -24,19 +25,22 @@ async def generate_daily_log():
             async with async_session() as session:
                 logs = await crud.get_daily_logs(session, yesterday_utc)
 
-                filename = fr"C:\Users\Playdata\backend\Fastapi-backend\Wellnessapp\app\dailylogtxt\{yesterday.strftime('%Y-%m-%d')}-errors.txt"
+                # 상대 경로로 파일 저장
+                log_directory = '/Fastapi-backend/Wellnessapp/app/dailylogt'
+                os.makedirs(log_directory, exist_ok=True)  
+                filename = os.path.join(log_directory, f"{yesterday.strftime('%Y-%m-%d')}-errors.txt")
+
                 try:
                     with open(filename, 'w', encoding='utf-8') as f:
                         for log in logs:
-                            # 로그의 타임스탬프를 한국 시간으로 변환
                             log_time_korea = log.time_stamp.astimezone(korea_timezone)
                             f.write(f"{log_time_korea}: {log.method} {log.req_url} - {log.code}\n")
 
                     logger.info(f"Log file {filename} created successfully.")
             
                     # S3 업로드 추후 진행
-                    # async with session.client('s3') as s3:
-                    #     await s3.upload_file(filename, bucket_name, f"logs/{filename}")
+                    # async with aws_session.client('s3') as s3:
+                    #     await s3.upload_file(filename, BUCKET_NAME, f"logs/{filename}")
                     # logger.info(f"Log file {filename} uploaded to S3 successfully.")
 
                 except IOError as e:
@@ -50,9 +54,8 @@ async def generate_daily_log():
             except Exception as e:
                 logger.error(f"Error deleting old logs: {e}")
 
-            # 다음 날 대기
-            tomorrow = (now + timedelta(hours=12)).replace(hour=0, minute=0, second=0, microsecond=0)
-            wait_time = (tomorrow - now).total_seconds()
+            # 10분 대기 (600초)
+            wait_time = 600
             logger.info(f"Waiting for {wait_time} seconds until next execution.")
             await asyncio.sleep(wait_time)
 
@@ -62,4 +65,3 @@ async def generate_daily_log():
 
 if __name__ == "__main__":
     asyncio.run(generate_daily_log())
-    

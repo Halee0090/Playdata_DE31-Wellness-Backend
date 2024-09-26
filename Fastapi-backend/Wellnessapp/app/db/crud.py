@@ -58,6 +58,7 @@ def mask_birthday(birthday: str) -> str:
     masked_parts = ['*' * len(part) for part in parts]
     return '-'.join(masked_parts)
 
+
 def secure_jwt_decode(token: str, secret_key: str) -> dict:
     try:
         decoded = jwt.decode(token, secret_key, algorithms=["HS256"])
@@ -111,6 +112,7 @@ async def create_log(db: AsyncSession, log: LogCreate, jwt_secret_key: str):
         
         masked_req_param = json.dumps(masked_req_param)
         masked_res_param = json.dumps(masked_res_param)
+
     except json.JSONDecodeError:
         masked_req_param = log.req_param
         masked_res_param = log.res_param

@@ -63,7 +63,7 @@ def determine_meal_type(taken_time: str) -> str:
         hour = taken_time_obj.hour
         
         # 시간대에 따라 아침, 점심, 저녁, 기타를 반환
-        if 6 <= hour <= 8:
+        if 6 <= hour <= 9:
             return "아침"
         elif 11 <= hour <= 14:
             return "점심"

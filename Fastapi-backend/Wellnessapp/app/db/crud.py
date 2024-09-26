@@ -30,30 +30,24 @@ async def execute_db_operation(db: AsyncSession, operation):
         await db.rollback()
         raise HTTPException(status_code=500, detail=f"Database operation failed: {str(e)}")
     
-# log db 관련
 def hash_token(token: str) -> str:
     """토큰을 해시화하는 함수"""
     return hashlib.sha256(token.encode()).hexdigest()
 
-# def hash_email(email: str) -> str:
-#     """이메일을 해시화하는 함수"""
-#     return hashlib.sha256(email.encode()).hexdigest()
-
-# def hash_nickname(nickname: str) -> str:
-#     """닉네임을 해시화하는 함수"""
-#     return hashlib.sha256(nickname.encode()).hexdigest()
-
-# def hash_birthday(birthday: str) -> str:
-#     """생년월일을 해시화하는 함수"""
-#     return hashlib.sha256(birthday.encode()).hexdigest()
-
-
-def mask_email(email:str) -> str:
+def mask_email(email: str) -> str:
+    """이메일을 마스킹하는 함수, '@' 기호만 남기고 나머지는 '*'로 처리"""
+    if not email or '@' not in email:
+        return '*' * len(email) if email else ''
+    
     parts = email.split('@')
-    return f"{parts[0][:3]}{'*' * (len(parts[0]) - 3)}@{parts[1]}" if email else email
-def mask_nickname(nicknaem: str) -> str:
-    return nicknaem[:1] + '*' * (len(nicknaem) - 1) if nicknaem else nicknaem
+    masked_local = '*' * len(parts[0])
+    masked_domain = '*' * len(parts[1])
+    
+    return f"{masked_local}@{masked_domain}"
 
+def mask_nickname(nickname: str) -> str:
+    """닉네임을 완전히 마스킹하는 함수"""
+    return '*' * len(nickname) if nickname else ''
 
 def secure_jwt_decode(token: str, secret_key: str) -> dict:
     try:
@@ -77,7 +71,6 @@ def process_token_for_logging(token: str, secret_key: str) -> dict:
 async def create_log(db: AsyncSession, log: LogCreate, jwt_secret_key: str):
     try:
         res_param = json.loads(log.res_param)
-
         # 마스크 처리 함수
         def mask_sensitive_info(info: dict) -> dict:
             if 'wellness_info' in info:
@@ -86,23 +79,20 @@ async def create_log(db: AsyncSession, log: LogCreate, jwt_secret_key: str):
                 if 'refresh_token' in info['wellness_info']:
                     info['wellness_info']['refresh_token'] = hash_token(info['wellness_info']['refresh_token'])  # 토큰 해시
                 if 'user_email' in info['wellness_info']:
-                    info['wellness_info']['user_email'] = '*' * len(info['wellness_info']['user_email'])  # 이메일 마스크
+                    info['wellness_info']['user_email'] = mask_email(info['wellness_info']['user_email'])  # 이메일 마스크
                 if 'user_nickname' in info['wellness_info']:
-                    info['wellness_info']['user_nickname'] = '*' * len(info['wellness_info']['user_nickname'])  # 닉네임 마스크
+                    info['wellness_info']['user_nickname'] = mask_nickname(info['wellness_info']['user_nickname'])  # 닉네임 마스크
                 if 'user_birthday' in info['wellness_info']:
                     info['wellness_info']['user_birthday'] = '*' * len(info['wellness_info']['user_birthday'])  # 생년월일 마스크
             return info
-
         if 'detail' in res_param:
             res_param['detail'] = mask_sensitive_info(res_param['detail'])
-
         masked_res_param = json.dumps(res_param)
     except json.JSONDecodeError:
         masked_res_param = log.res_param
     except Exception as e:
         print(f"Error during log hashing: {str(e)}")
         masked_res_param = log.res_param
-
     db_log = Log(
         req_url=log.req_url,
         method=log.method,
@@ -116,7 +106,6 @@ async def create_log(db: AsyncSession, log: LogCreate, jwt_secret_key: str):
     await db.commit()
     await db.refresh(db_log)
     return db_log
-
 
 
 async def get_daily_logs(session: AsyncSession, timestamp: datetime):

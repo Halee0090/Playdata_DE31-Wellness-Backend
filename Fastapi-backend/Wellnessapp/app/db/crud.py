@@ -49,6 +49,15 @@ def mask_nickname(nickname: str) -> str:
     """닉네임을 완전히 마스킹하는 함수"""
     return '*' * len(nickname) if nickname else ''
 
+def mask_birthday(birthday: str) -> str:
+    """생년월일을 마스킹하는 함수, '-' 기호는 유지"""
+    if not birthday:
+        return ''
+    
+    parts = birthday.split('-')
+    masked_parts = ['*' * len(part) for part in parts]
+    return '-'.join(masked_parts)
+
 def secure_jwt_decode(token: str, secret_key: str) -> dict:
     try:
         decoded = jwt.decode(token, secret_key, algorithms=["HS256"])
@@ -70,33 +79,50 @@ def process_token_for_logging(token: str, secret_key: str) -> dict:
 
 async def create_log(db: AsyncSession, log: LogCreate, jwt_secret_key: str):
     try:
+        # 요청 파라미터 처리
+        req_param = json.loads(log.req_param) if log.req_param else {}
+        
+        # 응답 파라미터 처리
         res_param = json.loads(log.res_param)
-        # 마스크 처리 함수
-        def mask_sensitive_info(info: dict) -> dict:
-            if 'wellness_info' in info:
-                if 'access_token' in info['wellness_info']:
-                    info['wellness_info']['access_token'] = hash_token(info['wellness_info']['access_token'])  # 토큰 해시
-                if 'refresh_token' in info['wellness_info']:
-                    info['wellness_info']['refresh_token'] = hash_token(info['wellness_info']['refresh_token'])  # 토큰 해시
-                if 'user_email' in info['wellness_info']:
-                    info['wellness_info']['user_email'] = mask_email(info['wellness_info']['user_email'])  # 이메일 마스크
-                if 'user_nickname' in info['wellness_info']:
-                    info['wellness_info']['user_nickname'] = mask_nickname(info['wellness_info']['user_nickname'])  # 닉네임 마스크
-                if 'user_birthday' in info['wellness_info']:
-                    info['wellness_info']['user_birthday'] = '*' * len(info['wellness_info']['user_birthday'])  # 생년월일 마스크
-            return info
-        if 'detail' in res_param:
-            res_param['detail'] = mask_sensitive_info(res_param['detail'])
-        masked_res_param = json.dumps(res_param)
+        
+        # 요청 및 응답 파라미터 마스킹/해싱 함수
+        def process_params(param):
+            if isinstance(param, dict):
+                for key, value in param.items():
+                    if key in ['access_token', 'refresh_token']:
+                        param[key] = hash_token(value)
+                    elif key == 'user_email':
+                        param[key] = mask_email(value)
+                    elif key == 'user_nickname':
+                        param[key] = mask_nickname(value)
+                    elif key == 'user_birthday':
+                        param[key] = mask_birthday(value)
+                    elif isinstance(value, (dict, list)):
+                        param[key] = process_params(value)
+            elif isinstance(param, list):
+                return [process_params(item) for item in param]
+            return param
+        
+        # 요청 파라미터 처리
+        masked_req_param = process_params(req_param)
+        
+        # 응답 파라미터 처리
+        masked_res_param = process_params(res_param)
+        
+        masked_req_param = json.dumps(masked_req_param)
+        masked_res_param = json.dumps(masked_res_param)
     except json.JSONDecodeError:
+        masked_req_param = log.req_param
         masked_res_param = log.res_param
     except Exception as e:
-        print(f"Error during log hashing: {str(e)}")
+        print(f"Error during log processing: {str(e)}")
+        masked_req_param = log.req_param
         masked_res_param = log.res_param
+
     db_log = Log(
         req_url=log.req_url,
         method=log.method,
-        req_param=log.req_param,  # 요청 파라미터도 필요하다면 해시화 고려
+        req_param=masked_req_param,
         res_param=masked_res_param,
         msg=log.msg,
         code=log.code,
